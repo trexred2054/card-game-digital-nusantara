@@ -3,6 +3,30 @@
 // main.ts - COMPLETE VERSION WITH ALL FIXES
 // ================================================
 
+
+// Mengambil PORT dari environment Railway atau default ke 8000
+const port = Number(Deno.env.get("PORT")) || 8000;
+
+Deno.serve({ port }, async (req) => {
+  const url = new URL(req.url);
+  
+  // Jika akses ke halaman utama (/), tampilkan index.html
+  if (url.pathname === "/") {
+    try {
+      const file = await Deno.readFile("./index.html");
+      return new Response(file, {
+        headers: { "content-type": "text/html; charset=utf-8" },
+      });
+    } catch (e) {
+      return new Response("File index.html tidak ditemukan!", { status: 404 });
+    }
+  }
+
+  // Respon jika halaman lain diakses
+  return new Response("Halaman tidak ditemukan", { status: 404 });
+});
+
+
 interface Card {
     id: string; name: string; type: string;
     rarity: string; power: number; province: string;
