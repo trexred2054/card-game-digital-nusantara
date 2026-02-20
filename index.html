@@ -1450,6 +1450,7 @@
                             <div class="profile-rank-label">Rank Tertinggi</div>
                             <img id="prf-peak-img" src="gambar/rank/Bronze III.png" alt="Bronze III" class="profile-rank-img">
                             <div class="profile-rank-name" id="prf-peak-name">Bronze III</div>
+                            <div class="profile-rank-points" id="prf-peak-points">0 / 100 poin</div>
                         </div>
                     </div>
                 </div>
@@ -1539,6 +1540,7 @@
                             <div class="profile-rank-label">Rank Tertinggi</div>
                             <img id="vp-peak-img" src="gambar/rank/Bronze III.png" alt="Bronze III" class="profile-rank-img">
                             <div class="profile-rank-name" id="vp-peak-name">Bronze III</div>
+                            <div class="profile-rank-points" id="vp-peak-points">0 / 100 poin</div>
                         </div>
                     </div>
                 </div>
@@ -3142,30 +3144,50 @@
 
         function updateGameUI(newState) {
             gameState = newState;
+            playCardInProgress = false; // state sudah diperbarui, boleh kirim aksi lagi
             updateUI();
         }
 
         // =============================================
         // PLAYER ACTIONS (Send to Server)
         // =============================================
+        // Debounce flag: cegah double-send PLAY_CARD akibat double-click atau lag
+        let playCardInProgress = false;
+
+        function _disableAllHandCards() {
+            document.querySelectorAll('#player-deck .card').forEach(el => {
+                el.classList.remove('selectable');
+                el.classList.add('disabled');
+                el.onclick = null;
+                el.style.cursor = 'default';
+            });
+        }
+
         function playerPlayPhase1(card) {
-            if (!ws || !currentRoomId) return;
+            if (!ws || !currentRoomId || playCardInProgress) return;
+            playCardInProgress = true;
+            _disableAllHandCards(); // langsung disable sebelum server balas
             ensureBgMusic2();
             ws.send(JSON.stringify({
                 type: 'PLAY_CARD',
                 roomId: currentRoomId,
                 cardId: card.id
             }));
+            // Reset setelah 3 detik jika server tidak kunjung reply (fallback)
+            setTimeout(() => { playCardInProgress = false; }, 3000);
         }
 
         function playerPlayCard(card) {
-            if (!ws || !currentRoomId) return;
+            if (!ws || !currentRoomId || playCardInProgress) return;
+            playCardInProgress = true;
+            _disableAllHandCards(); // langsung disable sebelum server balas
             ensureBgMusic2();
             ws.send(JSON.stringify({
                 type: 'PLAY_CARD',
                 roomId: currentRoomId,
                 cardId: card.id
             }));
+            setTimeout(() => { playCardInProgress = false; }, 3000);
         }
 
         function playerDrawCard() {
@@ -4149,15 +4171,18 @@
                 const r = snap.exists() ? snap.val() : { rankName: 'Bronze III', points: 0, peakRank: 'Bronze III' };
                 const rankName = r.rankName || 'Bronze III';
                 const points   = r.points   || 0;
-                const peakRank = r.peakRank  || 'Bronze III';
-                const isMax    = rankName === 'Platinum MAX';
+                const peakRank  = r.peakRank      || 'Bronze III';
+                const peakPts   = r.peakRankPoints || 0;
+                const isMax     = rankName === 'Platinum MAX';
+                const isPeakMax = peakRank === 'Platinum MAX';
                 document.getElementById('prf-rank-img').src    = `gambar/rank/${rankName}.png`;
                 document.getElementById('prf-rank-img').alt    = rankName;
                 document.getElementById('prf-rank-name').textContent   = rankName;
                 document.getElementById('prf-rank-points').textContent = isMax ? `${points} poin` : `${points} / 100 poin`;
                 document.getElementById('prf-peak-img').src    = `gambar/rank/${peakRank}.png`;
                 document.getElementById('prf-peak-img').alt    = peakRank;
-                document.getElementById('prf-peak-name').textContent   = peakRank;
+                document.getElementById('prf-peak-name').textContent  = peakRank;
+                document.getElementById('prf-peak-points').textContent = isPeakMax ? `${peakPts} poin` : `${peakPts} / 100 poin`;
             }).catch(() => {});
         }
 
@@ -4278,8 +4303,11 @@
                     r.points   = result.points;
                     const newIdx = RANKS.indexOf(result.rankName);
                     if (newIdx > (r.peakRankIndex || 0)) {
-                        r.peakRank      = result.rankName;
-                        r.peakRankIndex = newIdx;
+                        r.peakRank       = result.rankName;
+                        r.peakRankIndex  = newIdx;
+                        r.peakRankPoints = result.points;
+                    } else if (result.rankName === r.peakRank && result.points > (r.peakRankPoints || 0)) {
+                        r.peakRankPoints = result.points;
                     }
                     return r;
                 });
@@ -4572,8 +4600,10 @@
                     const r = rSnap.exists() ? rSnap.val() : { rankName: 'Bronze III', points: 0, peakRank: 'Bronze III' };
                     const rn    = r.rankName || 'Bronze III';
                     const pts   = r.points   || 0;
-                    const peak  = r.peakRank  || 'Bronze III';
-                    const isMax = rn === 'Platinum MAX';
+                    const peak      = r.peakRank       || 'Bronze III';
+                    const peakPts   = r.peakRankPoints  || 0;
+                    const isMax     = rn   === 'Platinum MAX';
+                    const isPeakMax = peak === 'Platinum MAX';
                     document.getElementById('vp-rank-img').src    = `gambar/rank/${rn}.png`;
                     document.getElementById('vp-rank-img').alt    = rn;
                     document.getElementById('vp-rank-name').textContent   = rn;
@@ -4581,6 +4611,7 @@
                     document.getElementById('vp-peak-img').src    = `gambar/rank/${peak}.png`;
                     document.getElementById('vp-peak-img').alt    = peak;
                     document.getElementById('vp-peak-name').textContent   = peak;
+                    document.getElementById('vp-peak-points').textContent = isPeakMax ? `${peakPts} poin` : `${peakPts} / 100 poin`;
                     document.getElementById('vp-rank-section').style.display = '';
                 }).catch(() => {});
 
