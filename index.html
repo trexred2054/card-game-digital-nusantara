@@ -2066,7 +2066,7 @@
         // =============================================
         // WEBSOCKET & GAME STATE
         // =============================================
-        const SERVER_URL = "wss://server-card-game-production.up.railway.app";
+        const SERVER_URL = "wss://card-server-production.up.railway.app";
 
         let ws = null;
         let currentRoomId = null;
@@ -2403,12 +2403,13 @@
             const rarityEmojis = { legendary:'👑', epic:'💜', rare:'💠', uncommon:'🟢', common:'⚪' };
             const emojiMap = { 'Ibu Kota':'🏛️', 'Rumah Adat':'🏠', 'Pakaian Adat':'👘', 'Tarian':'💃', 'Makanan Khas':'🍜' };
 
+            const fallbackEmoji = emojiMap[card.type] || '🎴';
             let imageContent = '';
             if (card.province) {
                 const imgSrc = `gambar/provinsi/${card.province}/${card.name}.png`;
-                imageContent = `<img src="${imgSrc}" alt="${card.name}" onerror="this.parentElement.innerHTML='🎴';">`;
+                imageContent = `<img src="${imgSrc}" alt="${card.name}" onerror="this.parentElement.innerHTML='${fallbackEmoji}';">`;
             } else {
-                imageContent = emojiMap[card.type] || '🎴';
+                imageContent = fallbackEmoji;
             }
 
             div.innerHTML = `
@@ -2444,9 +2445,10 @@
                 const isOwned = playerCardIds.includes(`${gameState.currentProvince}-${card.name}`);
                 cardDiv.className = `province-info-card ${card.rarity}`;
 
+                const fallbackEmoji = emojiMap[card.type] || '🎴';
                 let imageContent = '';
                 const imgSrc = `gambar/provinsi/${gameState.currentProvince}/${card.name}.png`;
-                imageContent = `<img src="${imgSrc}" alt="${card.name}" onerror="this.parentElement.innerHTML='🎴';">`;
+                imageContent = `<img src="${imgSrc}" alt="${card.name}" onerror="this.parentElement.innerHTML='${fallbackEmoji}';">`;
 
                 cardDiv.innerHTML = `
                     <div class="province-info-card-rarity">${rarityEmojis[card.rarity] || ''}</div>
