@@ -1188,7 +1188,11 @@
                     <span class="profile-stat-value" id="stat-total">0</span>
                 </div>
                 <div class="profile-stat-card">
-                    <span class="profile-stat-label">💀 Jumlah Kalah (Juara 4)</span>
+                    <span class="profile-stat-label">✅ Jumlah Menang (Juara 1-3)</span>
+                    <span class="profile-stat-value highlight" id="stat-wins">0</span>
+                </div>
+                <div class="profile-stat-card">
+                    <span class="profile-stat-label">💀 Jumlah Kalah</span>
                     <span class="profile-stat-value" id="stat-losses">0</span>
                 </div>
                 <div class="profile-stat-card">
@@ -3464,9 +3468,11 @@
                 const s = snap.exists() ? snap.val() : { totalMatches: 0, rank1: 0, rank2: 0, rank3: 0, rank4: 0 };
                 const total = s.totalMatches || 0;
                 const pct = n => total > 0 ? ((n / total) * 100).toFixed(1) + '%' : '0%';
+                const totalWins = (s.rank1 || 0) + (s.rank2 || 0) + (s.rank3 || 0);
                 document.getElementById('stat-total').textContent = total;
+                document.getElementById('stat-wins').textContent = totalWins;
                 document.getElementById('stat-losses').textContent = s.rank4 || 0;
-                document.getElementById('stat-winrate').textContent = pct(s.rank1 || 0);
+                document.getElementById('stat-winrate').textContent = pct(totalWins);
                 document.getElementById('stat-p1').textContent = pct(s.rank1 || 0);
                 document.getElementById('stat-p2').textContent = pct(s.rank2 || 0);
                 document.getElementById('stat-p3').textContent = pct(s.rank3 || 0);
