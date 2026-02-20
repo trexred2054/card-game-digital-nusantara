@@ -827,6 +827,109 @@
         .profile-history-rank { font-size: 1em; font-weight: bold; color: #fff; }
         .profile-history-date { color: rgba(255,255,255,0.65); font-size: 0.85em; }
         .profile-empty { color: rgba(255,255,255,0.5); text-align: center; padding: 40px 0; font-size: 1em; }
+
+        /* ============================================ */
+        /* FRIEND SYSTEM */
+        /* ============================================ */
+        .friend-search-row { display: flex; gap: 8px; margin-bottom: 16px; }
+        .friend-search-input {
+            flex: 1; padding: 11px 14px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 12px; color: #fff;
+            font-size: 0.92em; outline: none;
+        }
+        .friend-search-input::placeholder { color: rgba(255,255,255,0.45); }
+        .friend-search-input:focus { border-color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.2); }
+        .btn-friend-search {
+            padding: 11px 18px; border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff; border: none; cursor: pointer; font-weight: bold; font-size: 0.9em;
+        }
+        .btn-friend-search:hover { transform: translateY(-2px); }
+        .friend-section-title {
+            font-size: 0.95em; font-weight: bold; color: rgba(255,255,255,0.8);
+            margin: 18px 0 10px; padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.18);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .friend-req-badge {
+            background: rgba(244,67,54,0.85); border-radius: 50%;
+            width: 20px; height: 20px; display: none;
+            align-items: center; justify-content: center;
+            font-size: 0.72em; font-weight: bold; color: #fff;
+        }
+        .friend-card {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 14px; padding: 12px 14px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .friend-avatar {
+            width: 42px; height: 42px; background: rgba(255,255,255,0.2);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 1.3em; font-weight: bold; flex-shrink: 0;
+        }
+        .friend-info { flex: 1; min-width: 0; }
+        .friend-name { font-weight: bold; font-size: 0.93em; color: #fff; }
+        .friend-id { font-size: 0.76em; color: rgba(255,255,255,0.52); font-family: monospace; margin-top: 2px; }
+        .friend-actions { display: flex; gap: 5px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+        .btn-fa {
+            padding: 6px 11px; border-radius: 8px;
+            font-size: 0.8em; font-weight: bold;
+            border: none; cursor: pointer; transition: all 0.2s; color: #fff;
+        }
+        .btn-fa-add    { background: rgba(76,175,80,0.7); }
+        .btn-fa-add:hover { background: rgba(76,175,80,1); transform: translateY(-1px); }
+        .btn-fa-remove { background: rgba(244,67,54,0.55); }
+        .btn-fa-remove:hover { background: rgba(244,67,54,0.85); }
+        .btn-fa-accept { background: rgba(76,175,80,0.7); }
+        .btn-fa-accept:hover { background: rgba(76,175,80,1); }
+        .btn-fa-reject { background: rgba(244,67,54,0.5); }
+        .btn-fa-reject:hover { background: rgba(244,67,54,0.85); }
+        .btn-fa-view   { background: rgba(255,255,255,0.2); }
+        .btn-fa-view:hover { background: rgba(255,255,255,0.35); }
+        .btn-fa-sent   { background: rgba(255,193,7,0.35); cursor: default; }
+        .friend-pending { color: rgba(255,255,255,0.48); text-align: center; padding: 18px 0; font-size: 0.88em; }
+
+        /* Modal Lihat Profil Pemain */
+        #view-profile-modal {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.72);
+            z-index: 20000; justify-content: center; align-items: center; padding: 20px;
+        }
+        #view-profile-modal.active { display: flex; }
+        .vp-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px; padding: 28px; width: 100%; max-width: 400px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+            position: relative; animation: slideIn 0.3s;
+            max-height: 85vh; overflow-y: auto;
+        }
+        .vp-close {
+            position: absolute; top: 14px; right: 14px; width: 34px; height: 34px;
+            background: rgba(255,255,255,0.18); border: none; border-radius: 50%;
+            color: #fff; font-size: 1.1em; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .vp-close:hover { background: rgba(255,255,255,0.32); }
+        .vp-header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+        .vp-avatar {
+            width: 60px; height: 60px; background: rgba(255,255,255,0.22);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 1.9em; font-weight: bold; flex-shrink: 0;
+        }
+        .vp-name { font-size: 1.3em; font-weight: bold; }
+        .vp-uid  { font-size: 0.78em; color: rgba(255,255,255,0.58); font-family: monospace; }
+        .vp-joined { font-size: 0.78em; color: rgba(255,255,255,0.5); margin-top: 2px; }
+        .vp-stat {
+            background: rgba(255,255,255,0.1); border-radius: 12px;
+            padding: 11px 15px; margin-bottom: 7px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .vp-stat-label { color: rgba(255,255,255,0.72); font-size: 0.87em; }
+        .vp-stat-value { font-weight: bold; font-size: 0.97em; }
+
         @media (max-width: 480px) {
             #profile-screen { flex-direction: column; }
             #profile-sidebar {
@@ -1155,6 +1258,16 @@
             <button class="profile-tab active" id="btn-tab-profil" onclick="switchProfileTab('profil')">👤 Profil Pemain</button>
             <button class="profile-tab" id="btn-tab-statistik" onclick="switchProfileTab('statistik')">📊 Statistik</button>
             <button class="profile-tab" id="btn-tab-riwayat" onclick="switchProfileTab('riwayat')">📜 Riwayat</button>
+            <button class="profile-tab" id="btn-tab-teman" onclick="switchProfileTab('teman')" style="position:relative;">
+                👥 Teman
+                <span id="teman-tab-badge" style="
+                    position:absolute;top:6px;right:8px;
+                    background:rgba(244,67,54,0.9);color:#fff;
+                    border-radius:50%;width:18px;height:18px;
+                    font-size:0.7em;font-weight:bold;
+                    display:none;align-items:center;justify-content:center;">
+                </span>
+            </button>
             <button id="btn-profile-back" onclick="hideProfileScreen()">← Kembali</button>
         </div>
         <!-- Konten kanan -->
@@ -1219,6 +1332,45 @@
                 <div id="history-list">
                     <div class="profile-empty">Belum ada riwayat pertandingan.</div>
                 </div>
+            </div>
+
+            <!-- Tab: Teman -->
+            <div id="tab-teman" class="profile-panel">
+                <div class="profile-panel-title">👥 Teman</div>
+
+                <!-- Cari Pemain -->
+                <div class="friend-section-title">🔍 Cari Pemain</div>
+                <div class="friend-search-row">
+                    <input type="text" class="friend-search-input" id="friend-search-input"
+                           placeholder="Cari berdasarkan nama atau ID (#XXXXXX)..." maxlength="30"
+                           onkeydown="if(event.key==='Enter')searchPlayers()">
+                    <button class="btn-friend-search" onclick="searchPlayers()">Cari</button>
+                </div>
+                <div id="friend-search-results"></div>
+
+                <!-- Permintaan Teman Masuk -->
+                <div class="friend-section-title">
+                    📩 Permintaan Masuk
+                    <span class="friend-req-badge" id="friend-req-badge"></span>
+                </div>
+                <div id="friend-requests-list"><div class="friend-pending">⏳ Memuat...</div></div>
+
+                <!-- Daftar Teman -->
+                <div class="friend-section-title">
+                    🤝 Daftar Teman
+                    <span id="friends-count" style="color:rgba(255,255,255,0.5);font-size:0.85em;font-weight:normal;"></span>
+                </div>
+                <div id="friends-list"><div class="friend-pending">⏳ Memuat...</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LIHAT PROFIL PEMAIN LAIN -->
+    <div id="view-profile-modal">
+        <div class="vp-box">
+            <button class="vp-close" onclick="document.getElementById('view-profile-modal').classList.remove('active')">✕</button>
+            <div id="view-profile-content">
+                <div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);">⏳ Memuat profil...</div>
             </div>
         </div>
     </div>
@@ -3530,6 +3682,7 @@
             document.getElementById('profile-screen').style.display = 'flex';
             document.body.style.overflow = 'hidden';
             switchProfileTab('profil');
+            updateFriendTabBadge();
         }
 
         function hideProfileScreen() {
@@ -3538,13 +3691,14 @@
         }
 
         function switchProfileTab(tab) {
-            ['profil', 'statistik', 'riwayat'].forEach(t => {
+            ['profil', 'statistik', 'riwayat', 'teman'].forEach(t => {
                 document.getElementById(`btn-tab-${t}`).classList.toggle('active', t === tab);
                 document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
             });
             if (tab === 'profil') loadProfileData();
             if (tab === 'statistik') loadProfileStats();
             if (tab === 'riwayat') loadProfileHistory();
+            if (tab === 'teman') loadFriendsTab();
         }
 
         function loadProfileData() {
@@ -3672,6 +3826,332 @@
                 });
                 await db.ref(`users/${uid}/history`).push({ rank: myRank, date: Date.now() });
             } catch (e) { /* abaikan */ }
+        }
+
+        // =============================================
+        // FRIEND SYSTEM
+        // =============================================
+
+        function escHtml(str) {
+            return String(str)
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        // Cari pemain berdasarkan nama atau ID pendek
+        async function searchPlayers() {
+            if (!currentUser) return;
+            const query = (document.getElementById('friend-search-input').value || '').trim().toLowerCase();
+            const resultsEl = document.getElementById('friend-search-results');
+            if (!query) { resultsEl.innerHTML = ''; return; }
+
+            resultsEl.innerHTML = '<div class="friend-pending">⏳ Mencari...</div>';
+            try {
+                const [myFriendsSnap, mySentSnap] = await Promise.all([
+                    db.ref(`users/${currentUser.uid}/friends`).get(),
+                    db.ref(`users/${currentUser.uid}/friendRequests/sent`).get()
+                ]);
+                const myFriends = myFriendsSnap.exists() ? Object.keys(myFriendsSnap.val()) : [];
+                const mySent    = mySentSnap.exists()    ? Object.keys(mySentSnap.val())    : [];
+
+                const allSnap = await db.ref('users').get();
+                if (!allSnap.exists()) {
+                    resultsEl.innerHTML = '<div class="friend-pending">Tidak ada pemain ditemukan.</div>';
+                    return;
+                }
+
+                const results = [];
+                allSnap.forEach(child => {
+                    const uid  = child.key;
+                    if (uid === currentUser.uid) return;
+                    const data = child.val();
+                    if (!data || !data.nickname) return;
+                    const nick    = data.nickname.toLowerCase();
+                    const shortId = uid.slice(-6).toLowerCase();
+                    const qClean  = query.replace(/^#/, '');
+                    if (nick.includes(qClean) || shortId.includes(qClean)) {
+                        results.push({ uid, nickname: data.nickname, shortId: uid.slice(-6).toUpperCase() });
+                    }
+                });
+
+                if (results.length === 0) {
+                    resultsEl.innerHTML = '<div class="friend-pending">Tidak ada pemain ditemukan.</div>';
+                    return;
+                }
+
+                resultsEl.innerHTML = results.slice(0, 10).map(p => {
+                    const isFriend  = myFriends.includes(p.uid);
+                    const isPending = mySent.includes(p.uid);
+                    let actionBtn = '';
+                    if (isFriend) {
+                        actionBtn = `<button class="btn-fa btn-fa-sent" disabled>✅ Teman</button>`;
+                    } else if (isPending) {
+                        actionBtn = `<button class="btn-fa btn-fa-sent" disabled>⏳ Terkirim</button>`;
+                    } else {
+                        actionBtn = `<button class="btn-fa btn-fa-add" onclick="sendFriendRequest('${p.uid}','${p.nickname.replace(/'/g,"\\'")}',this)">➕ Tambah</button>`;
+                    }
+                    return `
+                    <div class="friend-card">
+                        <div class="friend-avatar">${escHtml(p.nickname.charAt(0).toUpperCase())}</div>
+                        <div class="friend-info">
+                            <div class="friend-name">${escHtml(p.nickname)}</div>
+                            <div class="friend-id">#${p.shortId}</div>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="btn-fa btn-fa-view" onclick="viewPlayerProfile('${p.uid}')">👁 Profil</button>
+                            ${actionBtn}
+                        </div>
+                    </div>`;
+                }).join('');
+
+            } catch(e) {
+                resultsEl.innerHTML = '<div class="friend-pending">❌ Gagal mencari pemain.</div>';
+            }
+        }
+
+        // Kirim permintaan teman
+        async function sendFriendRequest(targetUid, targetNickname, btn) {
+            if (!currentUser) return;
+            try {
+                const senderNick = currentNickname || 'Player';
+                await Promise.all([
+                    db.ref(`users/${currentUser.uid}/friendRequests/sent/${targetUid}`)
+                        .set({ nickname: targetNickname, timestamp: Date.now() }),
+                    db.ref(`users/${targetUid}/friendRequests/received/${currentUser.uid}`)
+                        .set({ nickname: senderNick, timestamp: Date.now() })
+                ]);
+                if (btn) {
+                    btn.textContent = '⏳ Terkirim';
+                    btn.className = 'btn-fa btn-fa-sent';
+                    btn.disabled = true;
+                }
+            } catch(e) {
+                alert('Gagal mengirim permintaan teman.');
+            }
+        }
+
+        // Terima permintaan teman
+        async function acceptFriendRequest(fromUid, fromNickname) {
+            if (!currentUser) return;
+            try {
+                await Promise.all([
+                    db.ref(`users/${currentUser.uid}/friends/${fromUid}`).set(true),
+                    db.ref(`users/${fromUid}/friends/${currentUser.uid}`).set(true),
+                    db.ref(`users/${currentUser.uid}/friendRequests/received/${fromUid}`).remove(),
+                    db.ref(`users/${fromUid}/friendRequests/sent/${currentUser.uid}`).remove()
+                ]);
+                loadFriendsTab();
+            } catch(e) {
+                alert('Gagal menerima permintaan teman.');
+            }
+        }
+
+        // Tolak permintaan teman
+        async function rejectFriendRequest(fromUid) {
+            if (!currentUser) return;
+            try {
+                await Promise.all([
+                    db.ref(`users/${currentUser.uid}/friendRequests/received/${fromUid}`).remove(),
+                    db.ref(`users/${fromUid}/friendRequests/sent/${currentUser.uid}`).remove()
+                ]);
+                loadFriendsTab();
+            } catch(e) {
+                alert('Gagal menolak permintaan teman.');
+            }
+        }
+
+        // Hapus teman
+        async function removeFriend(friendUid) {
+            if (!currentUser) return;
+            if (!confirm('Hapus teman ini dari daftar pertemanan?')) return;
+            try {
+                await Promise.all([
+                    db.ref(`users/${currentUser.uid}/friends/${friendUid}`).remove(),
+                    db.ref(`users/${friendUid}/friends/${currentUser.uid}`).remove()
+                ]);
+                loadFriendsTab();
+            } catch(e) {}
+        }
+
+        // Load semua konten tab Teman
+        async function loadFriendsTab() {
+            await Promise.all([ loadFriendRequests(), loadFriendsList() ]);
+        }
+
+        // Load daftar permintaan masuk
+        async function loadFriendRequests() {
+            if (!currentUser) return;
+            const el    = document.getElementById('friend-requests-list');
+            const badge = document.getElementById('friend-req-badge');
+            const tabBadge = document.getElementById('teman-tab-badge');
+            el.innerHTML = '<div class="friend-pending">⏳ Memuat...</div>';
+            try {
+                const snap = await db.ref(`users/${currentUser.uid}/friendRequests/received`).get();
+                if (!snap.exists()) {
+                    el.innerHTML = '<div class="friend-pending">Tidak ada permintaan teman masuk.</div>';
+                    badge.style.display = 'none';
+                    tabBadge.style.display = 'none';
+                    return;
+                }
+                const reqs = [];
+                snap.forEach(child => reqs.push({ uid: child.key, ...child.val() }));
+
+                badge.textContent = reqs.length;
+                badge.style.display = 'inline-flex';
+                tabBadge.textContent = reqs.length;
+                tabBadge.style.display = 'inline-flex';
+
+                el.innerHTML = reqs.map(r => `
+                    <div class="friend-card">
+                        <div class="friend-avatar">${escHtml((r.nickname||'?').charAt(0).toUpperCase())}</div>
+                        <div class="friend-info">
+                            <div class="friend-name">${escHtml(r.nickname || 'Unknown')}</div>
+                            <div class="friend-id">#${r.uid.slice(-6).toUpperCase()}</div>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="btn-fa btn-fa-view" onclick="viewPlayerProfile('${r.uid}')">👁</button>
+                            <button class="btn-fa btn-fa-accept" onclick="acceptFriendRequest('${r.uid}','${(r.nickname||'').replace(/'/g,"\\'")}')">✅ Terima</button>
+                            <button class="btn-fa btn-fa-reject" onclick="rejectFriendRequest('${r.uid}')">❌ Tolak</button>
+                        </div>
+                    </div>`).join('');
+            } catch(e) {
+                el.innerHTML = '<div class="friend-pending">❌ Gagal memuat permintaan.</div>';
+            }
+        }
+
+        // Load daftar teman
+        async function loadFriendsList() {
+            if (!currentUser) return;
+            const el       = document.getElementById('friends-list');
+            const countEl  = document.getElementById('friends-count');
+            el.innerHTML = '<div class="friend-pending">⏳ Memuat...</div>';
+            try {
+                const snap = await db.ref(`users/${currentUser.uid}/friends`).get();
+                if (!snap.exists()) {
+                    el.innerHTML = '<div class="friend-pending">Kamu belum punya teman. Gunakan fitur Cari Pemain untuk menjalin pertemanan!</div>';
+                    countEl.textContent = '(0)';
+                    return;
+                }
+                const uids = Object.keys(snap.val());
+                countEl.textContent = `(${uids.length})`;
+
+                const profiles = await Promise.all(
+                    uids.map(uid => db.ref(`users/${uid}`).get().then(s => s.exists() ? { uid, ...s.val() } : { uid, nickname: 'Unknown' }))
+                );
+
+                el.innerHTML = profiles.map(f => `
+                    <div class="friend-card">
+                        <div class="friend-avatar">${escHtml((f.nickname||'?').charAt(0).toUpperCase())}</div>
+                        <div class="friend-info">
+                            <div class="friend-name">${escHtml(f.nickname || 'Unknown')}</div>
+                            <div class="friend-id">#${f.uid.slice(-6).toUpperCase()}</div>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="btn-fa btn-fa-view" onclick="viewPlayerProfile('${f.uid}')">👁 Profil</button>
+                            <button class="btn-fa btn-fa-remove" onclick="removeFriend('${f.uid}')" title="Hapus teman">🗑</button>
+                        </div>
+                    </div>`).join('');
+            } catch(e) {
+                el.innerHTML = '<div class="friend-pending">❌ Gagal memuat daftar teman.</div>';
+            }
+        }
+
+        // Lihat profil pemain lain
+        async function viewPlayerProfile(uid) {
+            const modal   = document.getElementById('view-profile-modal');
+            const content = document.getElementById('view-profile-content');
+            modal.classList.add('active');
+            content.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);">⏳ Memuat profil...</div>';
+            try {
+                const [userSnap, statsSnap] = await Promise.all([
+                    db.ref(`users/${uid}`).get(),
+                    db.ref(`users/${uid}/stats`).get()
+                ]);
+                if (!userSnap.exists()) {
+                    content.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);">❌ Profil tidak ditemukan.</div>';
+                    return;
+                }
+                const u = userSnap.val();
+                const s = statsSnap.exists() ? statsSnap.val() : { totalMatches:0,rank1:0,rank2:0,rank3:0,rank4:0 };
+                const total     = s.totalMatches || 0;
+                const totalWins = (s.rank1||0) + (s.rank2||0) + (s.rank3||0);
+                const pct = n => total > 0 ? ((n/total)*100).toFixed(1)+'%' : '0%';
+                const nick    = u.nickname || 'Unknown';
+                const shortId = uid.slice(-6).toUpperCase();
+                const joined  = u.createdAt
+                    ? new Date(u.createdAt).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
+                    : '-';
+
+                // Cek status pertemanan
+                let friendBtnHtml = '';
+                if (currentUser && uid !== currentUser.uid) {
+                    const [isFriendSnap, isSentSnap] = await Promise.all([
+                        db.ref(`users/${currentUser.uid}/friends/${uid}`).get(),
+                        db.ref(`users/${currentUser.uid}/friendRequests/sent/${uid}`).get()
+                    ]);
+                    if (isFriendSnap.exists()) {
+                        friendBtnHtml = `<button class="btn-fa btn-fa-remove" style="margin-top:16px;width:100%;padding:12px;" onclick="removeFriend('${uid}');document.getElementById('view-profile-modal').classList.remove('active')">🗑 Hapus Teman</button>`;
+                    } else if (isSentSnap.exists()) {
+                        friendBtnHtml = `<button class="btn-fa btn-fa-sent" style="margin-top:16px;width:100%;padding:12px;" disabled>⏳ Permintaan Terkirim</button>`;
+                    } else {
+                        friendBtnHtml = `<button class="btn-fa btn-fa-add" style="margin-top:16px;width:100%;padding:12px;" onclick="sendFriendRequest('${uid}','${nick.replace(/'/g,"\\'")}',this)">➕ Tambah Teman</button>`;
+                    }
+                }
+
+                content.innerHTML = `
+                    <div class="vp-header">
+                        <div class="vp-avatar">${escHtml(nick.charAt(0).toUpperCase())}</div>
+                        <div>
+                            <div class="vp-name">${escHtml(nick)}</div>
+                            <div class="vp-uid">#${shortId}</div>
+                            <div class="vp-joined">Bergabung: ${joined}</div>
+                        </div>
+                    </div>
+                    <div class="vp-stat">
+                        <span class="vp-stat-label">🎮 Total Pertandingan</span>
+                        <span class="vp-stat-value">${total}</span>
+                    </div>
+                    <div class="vp-stat">
+                        <span class="vp-stat-label">🏆 Win Rate</span>
+                        <span class="vp-stat-value" style="color:#ffd700">${pct(totalWins)}</span>
+                    </div>
+                    <div class="vp-stat">
+                        <span class="vp-stat-label">🥇 Juara 1</span>
+                        <span class="vp-stat-value">${s.rank1||0} <small style="color:rgba(255,255,255,0.5)">(${pct(s.rank1||0)})</small></span>
+                    </div>
+                    <div class="vp-stat">
+                        <span class="vp-stat-label">🥈 Juara 2</span>
+                        <span class="vp-stat-value">${s.rank2||0} <small style="color:rgba(255,255,255,0.5)">(${pct(s.rank2||0)})</small></span>
+                    </div>
+                    <div class="vp-stat">
+                        <span class="vp-stat-label">🥉 Juara 3</span>
+                        <span class="vp-stat-value">${s.rank3||0} <small style="color:rgba(255,255,255,0.5)">(${pct(s.rank3||0)})</small></span>
+                    </div>
+                    <div class="vp-stat">
+                        <span class="vp-stat-label">💀 Juara 4</span>
+                        <span class="vp-stat-value">${s.rank4||0} <small style="color:rgba(255,255,255,0.5)">(${pct(s.rank4||0)})</small></span>
+                    </div>
+                    ${friendBtnHtml}
+                `;
+            } catch(e) {
+                content.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);">❌ Gagal memuat profil.</div>';
+            }
+        }
+
+        // Update badge notif teman di tab button setiap buka profile screen
+        async function updateFriendTabBadge() {
+            if (!currentUser) return;
+            try {
+                const snap = await db.ref(`users/${currentUser.uid}/friendRequests/received`).get();
+                const tabBadge = document.getElementById('teman-tab-badge');
+                if (snap.exists()) {
+                    const count = Object.keys(snap.val()).length;
+                    tabBadge.textContent = count;
+                    tabBadge.style.display = count > 0 ? 'inline-flex' : 'none';
+                } else {
+                    tabBadge.style.display = 'none';
+                }
+            } catch(e) {}
         }
 
         function showEncTab(tab) {
