@@ -1618,7 +1618,7 @@
                     <div class="profile-rank-display">
                         <div class="profile-rank-item">
                             <div class="profile-rank-label">Rank Saat Ini</div>
-                            <img id="prf-rank-img" src="gambar/rank/Bronze III.png" alt="Bronze III" class="profile-rank-img">
+                            <img id="prf-rank-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img">
                             <div class="profile-rank-name" id="prf-rank-name">Bronze III</div>
                             <div class="profile-rank-points" id="prf-rank-points">0 / 100 poin</div>
                         </div>
@@ -1627,7 +1627,7 @@
                                 Rank Tertinggi
                                 <button class="btn-rank-info" onclick="showRankInfo()" title="Info sistem rank">ℹ️</button>
                             </div>
-                            <img id="prf-peak-img" src="gambar/rank/Bronze III.png" alt="Bronze III" class="profile-rank-img">
+                            <img id="prf-peak-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img">
                             <div class="profile-rank-name" id="prf-peak-name">Bronze III</div>
                             <div class="profile-rank-points" id="prf-peak-points">0 / 100 poin</div>
                         </div>
@@ -1711,13 +1711,13 @@
                     <div class="profile-rank-display">
                         <div class="profile-rank-item">
                             <div class="profile-rank-label">Rank Saat Ini</div>
-                            <img id="vp-rank-img" src="gambar/rank/Bronze III.png" alt="Bronze III" class="profile-rank-img">
+                            <img id="vp-rank-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img">
                             <div class="profile-rank-name" id="vp-rank-name">Bronze III</div>
                             <div class="profile-rank-points" id="vp-rank-points">0 / 100 poin</div>
                         </div>
                         <div class="profile-rank-item">
                             <div class="profile-rank-label">Rank Tertinggi</div>
-                            <img id="vp-peak-img" src="gambar/rank/Bronze III.png" alt="Bronze III" class="profile-rank-img">
+                            <img id="vp-peak-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img">
                             <div class="profile-rank-name" id="vp-peak-name">Bronze III</div>
                             <div class="profile-rank-points" id="vp-peak-points">0 / 100 poin</div>
                         </div>
@@ -2056,6 +2056,13 @@
             if (rankName === 'Platinum MAX') return 'Platinum';
             const t = ['Bronze','Silver','Gold','Diamond','Platinum'].find(x => rankName.startsWith(x));
             return t || 'Bronze';
+        }
+        // Gambar rank: Bronze I/II/III pakai Bronze.png, dst.
+        // Platinum MAX pakai Platinum MAX.png (beda gambar)
+        function rankImgSrc(rankName) {
+            if (!rankName) return 'gambar/rank/Bronze.png';
+            if (rankName === 'Platinum MAX') return 'gambar/rank/Platinum MAX.png';
+            return `gambar/rank/${getRankTier(rankName)}.png`;
         }
         function calculateNewRank(rankName, points, position) {
             const tier    = getRankTier(rankName);
@@ -2674,7 +2681,7 @@
         // =============================================
         let isAutoMode = false;
         let autoModeTimer = null;
-        const AUTO_MODE_DELAY = 60000; // 60 detik sebelum auto mode aktif
+        const AUTO_MODE_DELAY = 25000; // 25 detik sebelum auto mode aktif
 
         function sendAutoMode(enabled) {
             if (ws && currentRoomId) {
@@ -3748,13 +3755,13 @@
                             <div class="rank-change-title">${title}</div>
                             <div class="rank-change-body">
                                 <div class="rank-change-item">
-                                    <img src="gambar/rank/${oldName}.png" class="rank-change-img" alt="${oldName}">
+                                    <img src="${rankImgSrc(oldName)}" class="rank-change-img" alt="${oldName}">
                                     <div>${oldName}</div>
                                     <div class="rank-pts-old">${oldPts} / 100</div>
                                 </div>
                                 <div class="rank-change-arrow">${deltaHtml}<br>→</div>
                                 <div class="rank-change-item">
-                                    <img src="gambar/rank/${result.rankName}.png" class="rank-change-img" alt="${result.rankName}">
+                                    <img src="${rankImgSrc(result.rankName)}" class="rank-change-img" alt="${result.rankName}">
                                     <div>${result.rankName}</div>
                                     <div class="rank-pts-new">${newPtsLabel}</div>
                                 </div>
@@ -3851,13 +3858,13 @@
                             <div class="rank-change-title">${title}</div>
                             <div class="rank-change-body">
                                 <div class="rank-change-item">
-                                    <img src="gambar/rank/${oldName}.png" class="rank-change-img" alt="${oldName}">
+                                    <img src="${rankImgSrc(oldName)}" class="rank-change-img" alt="${oldName}">
                                     <div>${oldName}</div>
                                     <div class="rank-pts-old">${oldPts} / 100</div>
                                 </div>
                                 <div class="rank-change-arrow">${deltaHtml}<br>→</div>
                                 <div class="rank-change-item">
-                                    <img src="gambar/rank/${result.rankName}.png" class="rank-change-img" alt="${result.rankName}">
+                                    <img src="${rankImgSrc(result.rankName)}" class="rank-change-img" alt="${result.rankName}">
                                     <div>${result.rankName}</div>
                                     <div class="rank-pts-new">${newPtsLabel}</div>
                                 </div>
@@ -4358,11 +4365,11 @@
                     ? Math.max(r.peakRankPoints || 0, points)
                     : (r.peakRankPoints || 0);
                 const isMax     = rankName === 'Platinum MAX';
-                document.getElementById('prf-rank-img').src    = `gambar/rank/${rankName}.png`;
+                document.getElementById('prf-rank-img').src    = rankImgSrc(rankName);
                 document.getElementById('prf-rank-img').alt    = rankName;
                 document.getElementById('prf-rank-name').textContent   = rankName;
                 document.getElementById('prf-rank-points').textContent = isMax ? `${points} poin` : `${points} / 100 poin`;
-                document.getElementById('prf-peak-img').src    = `gambar/rank/${peakRank}.png`;
+                document.getElementById('prf-peak-img').src    = rankImgSrc(peakRank);
                 document.getElementById('prf-peak-img').alt    = peakRank;
                 document.getElementById('prf-peak-name').textContent  = peakRank;
                 document.getElementById('prf-peak-points').textContent = `${peakPts} poin`;
@@ -4409,13 +4416,13 @@
                     const rankRowHtml = (m.rankBefore && m.rankAfter)
                         ? `<div class="phi-rank-row">
                             <div class="phi-rank-side">
-                                <img src="gambar/rank/${m.rankBefore}.png" class="phi-rank-img" onerror="this.style.display='none'">
+                                <img src="${rankImgSrc(m.rankBefore)}" class="phi-rank-img" onerror="this.style.display='none'">
                                 <span class="phi-rank-name">${m.rankBefore}</span>
                                 <span class="phi-rank-pts">${m.ptsBefore != null ? m.ptsBefore : 0} poin</span>
                             </div>
                             <span class="phi-arrow">→</span>
                             <div class="phi-rank-side">
-                                <img src="gambar/rank/${m.rankAfter}.png" class="phi-rank-img" onerror="this.style.display='none'">
+                                <img src="${rankImgSrc(m.rankAfter)}" class="phi-rank-img" onerror="this.style.display='none'">
                                 <span class="phi-rank-name">${m.rankAfter}</span>
                                 <span class="phi-rank-pts">${m.ptsAfter != null ? m.ptsAfter : 0} poin</span>
                             </div>
@@ -4822,11 +4829,11 @@
                         ? Math.max(r.peakRankPoints || 0, pts)
                         : (r.peakRankPoints || 0);
                     const isMax     = rn === 'Platinum MAX';
-                    document.getElementById('vp-rank-img').src    = `gambar/rank/${rn}.png`;
+                    document.getElementById('vp-rank-img').src    = rankImgSrc(rn);
                     document.getElementById('vp-rank-img').alt    = rn;
                     document.getElementById('vp-rank-name').textContent   = rn;
                     document.getElementById('vp-rank-points').textContent = isMax ? `${pts} poin` : `${pts} / 100 poin`;
-                    document.getElementById('vp-peak-img').src    = `gambar/rank/${peak}.png`;
+                    document.getElementById('vp-peak-img').src    = rankImgSrc(peak);
                     document.getElementById('vp-peak-img').alt    = peak;
                     document.getElementById('vp-peak-name').textContent   = peak;
                     document.getElementById('vp-peak-points').textContent = `${peakPts} poin`;
@@ -4907,13 +4914,13 @@
                     const rankRowHtml = (m.rankBefore && m.rankAfter)
                         ? `<div class="phi-rank-row">
                             <div class="phi-rank-side">
-                                <img src="gambar/rank/${m.rankBefore}.png" class="phi-rank-img" onerror="this.style.display='none'">
+                                <img src="${rankImgSrc(m.rankBefore)}" class="phi-rank-img" onerror="this.style.display='none'">
                                 <span class="phi-rank-name">${m.rankBefore}</span>
                                 <span class="phi-rank-pts">${m.ptsBefore != null ? m.ptsBefore : 0} poin</span>
                             </div>
                             <span class="phi-arrow">→</span>
                             <div class="phi-rank-side">
-                                <img src="gambar/rank/${m.rankAfter}.png" class="phi-rank-img" onerror="this.style.display='none'">
+                                <img src="${rankImgSrc(m.rankAfter)}" class="phi-rank-img" onerror="this.style.display='none'">
                                 <span class="phi-rank-name">${m.rankAfter}</span>
                                 <span class="phi-rank-pts">${m.ptsAfter != null ? m.ptsAfter : 0} poin</span>
                             </div>
@@ -4998,7 +5005,7 @@
                     const ptsTxt  = e.rankName === 'Platinum MAX' ? `${e.points} poin` : `${e.points} / 100 poin`;
                     return `<div class="lb-item ${topCls} ${selfCls}" onclick="visitPlayerProfile('${e.uid}')">
                         ${posDisp}
-                        <img src="gambar/rank/${e.rankName}.png" class="lb-rank-img" onerror="this.style.display='none'">
+                        <img src="${rankImgSrc(e.rankName)}" class="lb-rank-img" onerror="this.style.display='none'">
                         <div class="lb-info">
                             <div class="lb-name">${escHtml(e.nick)}${selfTag}</div>
                             <div class="lb-rank-label">${e.rankName} &bull; ${ptsTxt}</div>
