@@ -752,7 +752,7 @@
         .enc-tab-content { display: none; padding: 20px; }
         .enc-tab-content.active { display: block; }
 
-        .enc-province-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+        .enc-province-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; position: relative; }
         .enc-prov-btn {
             background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9);
             border: 1px solid rgba(255,255,255,0.3); border-radius: 20px;
@@ -761,6 +761,37 @@
         }
         .enc-prov-btn:hover { background: rgba(255,255,255,0.25); color: #fff; transform: none; box-shadow: none; }
         .enc-prov-btn.active { background: linear-gradient(135deg,#f093fb 0%,#f5576c 100%); color: #fff; border-color: transparent; box-shadow: 0 3px 10px rgba(0,0,0,0.25); }
+
+        /* Dropdown provinsi */
+        .enc-prov-dropdown-wrap { position: relative; display: inline-block; }
+        .enc-prov-dropdown-btn {
+            background: rgba(255,255,255,0.15); color: #fff;
+            border: 1px solid rgba(255,255,255,0.35); border-radius: 20px;
+            padding: 9px 20px; font-size: 0.88em; font-weight: bold;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: all 0.2s; box-shadow: none; white-space: nowrap;
+        }
+        .enc-prov-dropdown-btn:hover { background: rgba(255,255,255,0.25); }
+        .enc-prov-dropdown-btn.open { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.6); }
+        .enc-prov-arrow { transition: transform 0.25s; display: inline-block; font-style: normal; }
+        .enc-prov-dropdown-btn.open .enc-prov-arrow { transform: rotate(180deg); }
+        .enc-prov-list {
+            display: none; position: absolute; top: calc(100% + 8px); left: 0;
+            background: linear-gradient(160deg, #3a2d6e 0%, #1a1040 100%);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 14px;
+            min-width: 220px; max-height: 320px; overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 500;
+            padding: 6px;
+        }
+        .enc-prov-list.open { display: block; animation: encDropDown 0.2s ease; }
+        @keyframes encDropDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
+        .enc-prov-list-item {
+            padding: 9px 14px; border-radius: 10px; cursor: pointer;
+            font-size: 0.85em; font-weight: bold; color: rgba(255,255,255,0.85);
+            transition: background 0.15s;
+        }
+        .enc-prov-list-item:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        .enc-prov-list-item.active { background: linear-gradient(135deg,#f093fb 0%,#f5576c 100%); color: #fff; }
 
         .enc-province-section { margin-bottom: 36px; }
         .enc-province-name {
@@ -1498,23 +1529,36 @@
 
             <!-- Daftar urutan rank -->
             <div class="rank-info-section-title">📊 Urutan Rank (Rendah → Tinggi)</div>
-            <div class="rank-info-list">
-                <span class="ri-rank-badge" style="background:rgba(176,107,60,0.35);border-color:rgba(205,127,50,0.6);">Bronze III</span>
-                <span class="ri-rank-badge" style="background:rgba(176,107,60,0.35);border-color:rgba(205,127,50,0.6);">Bronze II</span>
-                <span class="ri-rank-badge" style="background:rgba(176,107,60,0.35);border-color:rgba(205,127,50,0.6);">Bronze I</span>
-                <span class="ri-rank-badge" style="background:rgba(150,150,180,0.35);border-color:rgba(192,192,210,0.6);">Silver III</span>
-                <span class="ri-rank-badge" style="background:rgba(150,150,180,0.35);border-color:rgba(192,192,210,0.6);">Silver II</span>
-                <span class="ri-rank-badge" style="background:rgba(150,150,180,0.35);border-color:rgba(192,192,210,0.6);">Silver I</span>
-                <span class="ri-rank-badge" style="background:rgba(200,170,0,0.3);border-color:rgba(255,215,0,0.6);">Gold III</span>
-                <span class="ri-rank-badge" style="background:rgba(200,170,0,0.3);border-color:rgba(255,215,0,0.6);">Gold II</span>
-                <span class="ri-rank-badge" style="background:rgba(200,170,0,0.3);border-color:rgba(255,215,0,0.6);">Gold I</span>
-                <span class="ri-rank-badge" style="background:rgba(0,180,220,0.25);border-color:rgba(0,210,255,0.6);">Diamond III</span>
-                <span class="ri-rank-badge" style="background:rgba(0,180,220,0.25);border-color:rgba(0,210,255,0.6);">Diamond II</span>
-                <span class="ri-rank-badge" style="background:rgba(0,180,220,0.25);border-color:rgba(0,210,255,0.6);">Diamond I</span>
-                <span class="ri-rank-badge" style="background:rgba(180,0,255,0.2);border-color:rgba(210,80,255,0.6);">Platinum III</span>
-                <span class="ri-rank-badge" style="background:rgba(180,0,255,0.2);border-color:rgba(210,80,255,0.6);">Platinum II</span>
-                <span class="ri-rank-badge" style="background:rgba(180,0,255,0.2);border-color:rgba(210,80,255,0.6);">Platinum I</span>
-                <span class="ri-rank-badge" style="background:linear-gradient(135deg,rgba(255,200,0,0.4),rgba(220,0,255,0.3));border-color:rgba(255,200,0,0.8);font-weight:bold;">✨ Platinum MAX</span>
+            <div style="display:flex; gap:12px; padding:0 20px 4px; flex-wrap:wrap; justify-content:center;">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                    <img src="gambar/rank/Bronze.png" style="width:56px;height:56px;object-fit:contain;" onerror="this.style.display='none'">
+                    <span style="font-size:0.8em;font-weight:bold;color:#cd7f32;">Bronze</span>
+                    <span style="font-size:0.7em;color:rgba(255,255,255,0.55);">I · II · III</span>
+                </div>
+                <div style="display:flex;align-items:center;color:rgba(255,255,255,0.4);font-size:1.2em;padding-bottom:20px;">›</div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                    <img src="gambar/rank/Silver.png" style="width:56px;height:56px;object-fit:contain;" onerror="this.style.display='none'">
+                    <span style="font-size:0.8em;font-weight:bold;color:#c0c0c0;">Silver</span>
+                    <span style="font-size:0.7em;color:rgba(255,255,255,0.55);">I · II · III</span>
+                </div>
+                <div style="display:flex;align-items:center;color:rgba(255,255,255,0.4);font-size:1.2em;padding-bottom:20px;">›</div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                    <img src="gambar/rank/Gold.png" style="width:56px;height:56px;object-fit:contain;" onerror="this.style.display='none'">
+                    <span style="font-size:0.8em;font-weight:bold;color:#ffd700;">Gold</span>
+                    <span style="font-size:0.7em;color:rgba(255,255,255,0.55);">I · II · III</span>
+                </div>
+                <div style="display:flex;align-items:center;color:rgba(255,255,255,0.4);font-size:1.2em;padding-bottom:20px;">›</div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                    <img src="gambar/rank/Diamond.png" style="width:56px;height:56px;object-fit:contain;" onerror="this.style.display='none'">
+                    <span style="font-size:0.8em;font-weight:bold;color:#67e8f9;">Diamond</span>
+                    <span style="font-size:0.7em;color:rgba(255,255,255,0.55);">I · II · III</span>
+                </div>
+                <div style="display:flex;align-items:center;color:rgba(255,255,255,0.4);font-size:1.2em;padding-bottom:20px;">›</div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                    <img src="gambar/rank/Platinum.png" style="width:56px;height:56px;object-fit:contain;" onerror="this.style.display='none'">
+                    <span style="font-size:0.8em;font-weight:bold;color:#d946ef;">Platinum</span>
+                    <span style="font-size:0.7em;color:rgba(255,255,255,0.55);">I · II · III</span>
+                </div>
             </div>
 
             <!-- Tabel perubahan poin -->
@@ -5034,27 +5078,67 @@
             if (!filterDiv) return;
             filterDiv.innerHTML = '';
 
-            const allBtn = document.createElement('button');
-            allBtn.className = 'enc-prov-btn active';
-            allBtn.textContent = '🌏 Semua Provinsi';
-            allBtn.onclick = () => {
-                document.querySelectorAll('.enc-prov-btn').forEach(b => b.classList.remove('active'));
-                allBtn.classList.add('active');
-                renderEncCards('Semua');
-            };
-            filterDiv.appendChild(allBtn);
+            let currentFilter = 'Semua';
 
+            // Wrapper dropdown
+            const wrap = document.createElement('div');
+            wrap.className = 'enc-prov-dropdown-wrap';
+
+            // Tombol utama
+            const mainBtn = document.createElement('button');
+            mainBtn.className = 'enc-prov-dropdown-btn';
+            mainBtn.innerHTML = '🌏 Semua Provinsi <span class="enc-prov-arrow">▼</span>';
+
+            // Daftar dropdown
+            const list = document.createElement('div');
+            list.className = 'enc-prov-list';
+
+            function setFilter(name, label) {
+                currentFilter = name;
+                mainBtn.innerHTML = `🌏 ${label} <span class="enc-prov-arrow">▼</span>`;
+                list.querySelectorAll('.enc-prov-list-item').forEach(el => {
+                    el.classList.toggle('active', el.dataset.name === name);
+                });
+                renderEncCards(name);
+                list.classList.remove('open');
+                mainBtn.classList.remove('open');
+            }
+
+            // Item "Semua Provinsi"
+            const allItem = document.createElement('div');
+            allItem.className = 'enc-prov-list-item active';
+            allItem.dataset.name = 'Semua';
+            allItem.textContent = '🌏 Semua Provinsi';
+            allItem.onclick = () => setFilter('Semua', 'Semua Provinsi');
+            list.appendChild(allItem);
+
+            // Item per provinsi
             provinces.forEach(prov => {
-                const btn = document.createElement('button');
-                btn.className = 'enc-prov-btn';
-                btn.textContent = prov.name;
-                btn.onclick = () => {
-                    document.querySelectorAll('.enc-prov-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    renderEncCards(prov.name);
-                };
-                filterDiv.appendChild(btn);
+                const item = document.createElement('div');
+                item.className = 'enc-prov-list-item';
+                item.dataset.name = prov.name;
+                item.textContent = prov.name;
+                item.onclick = () => setFilter(prov.name, prov.name);
+                list.appendChild(item);
             });
+
+            // Toggle dropdown saat tombol diklik
+            mainBtn.onclick = (e) => {
+                e.stopPropagation();
+                const isOpen = list.classList.contains('open');
+                list.classList.toggle('open', !isOpen);
+                mainBtn.classList.toggle('open', !isOpen);
+            };
+
+            // Tutup dropdown saat klik di luar
+            document.addEventListener('click', () => {
+                list.classList.remove('open');
+                mainBtn.classList.remove('open');
+            });
+
+            wrap.appendChild(mainBtn);
+            wrap.appendChild(list);
+            filterDiv.appendChild(wrap);
         }
 
         function renderEncCards(filter) {
