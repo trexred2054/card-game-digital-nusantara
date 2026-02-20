@@ -485,6 +485,29 @@
         .ranking-item { padding: 12px; margin: 6px 0; background: #f5f5f5; border-radius: 8px; font-weight: bold; }
         .ranking-item.winner { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
         .ranking-item.loser { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+        /* Rank change card in game-over modal */
+        .rank-change-card {
+            background: rgba(102,126,234,0.13);
+            border: 1px solid rgba(102,126,234,0.35);
+            border-radius: 16px; padding: 16px 12px; margin-top: 14px; text-align: center;
+        }
+        .rank-change-title {
+            font-size: 1em; font-weight: bold; margin-bottom: 12px; color: #667eea;
+        }
+        .rank-change-body {
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; flex-wrap: wrap;
+        }
+        .rank-change-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            font-size: 0.85em; font-weight: bold; color: #222;
+        }
+        .rank-change-img { width: 64px; height: 64px; object-fit: contain; border-radius: 8px; }
+        .rank-change-arrow { font-size: 1.4em; font-weight: bold; color: #444; }
+        .rank-pts-old { font-size: 0.78em; color: #555; }
+        .rank-pts-new { font-size: 0.78em; color: #555; }
+        .rank-change-delta-pos { color: #2e7d32; font-weight: bold; }
+        .rank-change-delta-neg { color: #c62828; font-weight: bold; }
 
         /* BADGES & NOTIFICATIONS */
         .warning-badge {
@@ -833,6 +856,57 @@
         .profile-history-rank { font-size: 1em; font-weight: bold; color: #fff; }
         .profile-history-date { color: rgba(255,255,255,0.65); font-size: 0.85em; }
         .profile-empty { color: rgba(255,255,255,0.5); text-align: center; padding: 40px 0; font-size: 1em; }
+        /* Rank display in profile */
+        .profile-rank-section {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+        .profile-rank-display {
+            display: flex;
+            gap: 20px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+        .profile-rank-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 16px;
+            padding: 16px 20px;
+            min-width: 130px;
+            gap: 8px;
+        }
+        .profile-rank-label {
+            font-size: 0.78em;
+            color: rgba(255,255,255,0.6);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .profile-rank-img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 10px;
+            image-rendering: auto;
+        }
+        .profile-rank-name {
+            font-size: 0.95em;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+        }
+        .profile-rank-points {
+            font-size: 0.8em;
+            color: rgba(255,255,255,0.65);
+        }
+        @media (max-width: 480px) {
+            .profile-rank-img { width: 70px; height: 70px; }
+            .profile-rank-item { min-width: 100px; padding: 12px 14px; }
+        }
 
         /* ============================================ */
         /* FRIEND SYSTEM */
@@ -1363,6 +1437,22 @@
                     <span class="profile-info-label">Bergabung</span>
                     <span class="profile-info-value" id="prf-joined">-</span>
                 </div>
+                <!-- Rank Section -->
+                <div class="profile-rank-section">
+                    <div class="profile-rank-display">
+                        <div class="profile-rank-item">
+                            <div class="profile-rank-label">Rank Saat Ini</div>
+                            <img id="prf-rank-img" src="gambar/rank/Bronze III.png" alt="Bronze III" class="profile-rank-img">
+                            <div class="profile-rank-name" id="prf-rank-name">Bronze III</div>
+                            <div class="profile-rank-points" id="prf-rank-points">0 / 100 poin</div>
+                        </div>
+                        <div class="profile-rank-item">
+                            <div class="profile-rank-label">Rank Tertinggi</div>
+                            <img id="prf-peak-img" src="gambar/rank/Bronze III.png" alt="Bronze III" class="profile-rank-img">
+                            <div class="profile-rank-name" id="prf-peak-name">Bronze III</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Tab: Statistik -->
@@ -1436,6 +1526,22 @@
                     </div>
                 </div>
                 <div id="vp-friend-action"></div>
+                <!-- Rank Section -->
+                <div class="profile-rank-section" id="vp-rank-section" style="display:none;">
+                    <div class="profile-rank-display">
+                        <div class="profile-rank-item">
+                            <div class="profile-rank-label">Rank Saat Ini</div>
+                            <img id="vp-rank-img" src="gambar/rank/Bronze III.png" alt="Bronze III" class="profile-rank-img">
+                            <div class="profile-rank-name" id="vp-rank-name">Bronze III</div>
+                            <div class="profile-rank-points" id="vp-rank-points">0 / 100 poin</div>
+                        </div>
+                        <div class="profile-rank-item">
+                            <div class="profile-rank-label">Rank Tertinggi</div>
+                            <img id="vp-peak-img" src="gambar/rank/Bronze III.png" alt="Bronze III" class="profile-rank-img">
+                            <div class="profile-rank-name" id="vp-peak-name">Bronze III</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- Tab Statistik -->
             <div id="vtab-statistik" class="visit-panel">
@@ -1675,6 +1781,7 @@
             <div id="match-result-stats"
                 style="margin-top:12px; padding:10px 14px; background:#f0f4ff;
                        border-radius:8px; font-size:0.85em; color:#555; text-align:left;"></div>
+            <div id="match-result-rank-change"></div>
             <button onclick="goToHome()"
                 style="margin-top:20px; width:100%; padding:14px; font-size:1.1em; font-weight:bold;
                        background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
@@ -1745,6 +1852,58 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
+
+        // =============================================
+        // RANK SYSTEM
+        // =============================================
+        const RANKS = [
+            'Bronze III', 'Bronze II', 'Bronze I',
+            'Silver III', 'Silver II', 'Silver I',
+            'Gold III',   'Gold II',   'Gold I',
+            'Diamond III','Diamond II','Diamond I',
+            'Platinum III','Platinum II','Platinum I',
+            'Platinum MAX'
+        ];
+        const RANK_CHANGES = {
+            'Bronze':   [20, 10,  5,  -5],
+            'Silver':   [16,  8,  4, -12],
+            'Gold':     [12,  6,  3, -20],
+            'Diamond':  [ 8,  4,  2, -28],
+            'Platinum': [ 5,  2,  1, -35]
+        };
+        function getRankTier(rankName) {
+            if (rankName === 'Platinum MAX') return 'Platinum';
+            const t = ['Bronze','Silver','Gold','Diamond','Platinum'].find(x => rankName.startsWith(x));
+            return t || 'Bronze';
+        }
+        function calculateNewRank(rankName, points, position) {
+            const tier    = getRankTier(rankName);
+            const change  = RANK_CHANGES[tier][position - 1];
+            const idx     = RANKS.indexOf(rankName);
+            // Platinum MAX: no cap, no demotion, min 0
+            if (rankName === 'Platinum MAX') {
+                return { rankName: 'Platinum MAX', points: Math.max(0, points + change) };
+            }
+            let newPoints   = points + change;
+            let newRankName = rankName;
+            if (newPoints >= 100) {
+                // Promote to next rank
+                if (idx < RANKS.length - 1) {
+                    newRankName = RANKS[idx + 1];
+                    newPoints   = newPoints - 100;
+                }
+            } else if (newPoints < 0) {
+                // Bronze III: can never demote
+                if (rankName === 'Bronze III') {
+                    newPoints = 0;
+                } else {
+                    const deficit = -newPoints;
+                    newRankName   = RANKS[idx - 1];
+                    newPoints     = Math.max(0, 100 - deficit);
+                }
+            }
+            return { rankName: newRankName, points: newPoints };
+        }
 
         // =============================================
         // LOCALSTORAGE KEYS
@@ -2222,7 +2381,12 @@
             reconnectAttempts++;
             addLog(`🔄 Menyambung kembali... (percobaan ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
             
-            if (ws) { try { ws.close(); } catch(e) {} ws = null; }
+            if (ws) {
+                // Hapus handler dulu agar onclose lama tidak trigger reconnect lagi
+                ws.onclose = null; ws.onerror = null; ws.onmessage = null;
+                try { ws.close(); } catch(e) {}
+                ws = null;
+            }
 
             // Tampilkan game container agar log terlihat
             document.getElementById('pre-loading-screen').style.display = 'none';
@@ -2243,12 +2407,12 @@
                 }));
             };
 
-            let reconnected = false;
+            let reconnected = { value: false };
 
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.type === 'GAME_STATE_UPDATE') {
-                    reconnected = true;
+                    reconnected.value = true;
                     reconnectAttempts = 0; // reset karena berhasil
                     currentRoomId = roomId;
                     myPlayerId = playerId;
@@ -2261,10 +2425,16 @@
                         soundEffects.bgMusic2.currentTime = 0;
                         soundEffects.bgMusic2.play().catch(() => {
                             // Autoplay diblokir browser, tunggu interaksi pertama user
-                            document.addEventListener('click', function playOnFirstClick() {
+                            // Hapus listener lama dulu agar tidak akumulasi saat reconnect berulang
+                            if (window._bgMusic2FirstClickHandler) {
+                                document.removeEventListener('click', window._bgMusic2FirstClickHandler);
+                            }
+                            window._bgMusic2FirstClickHandler = function() {
                                 soundEffects.bgMusic2.play().catch(() => {});
-                                document.removeEventListener('click', playOnFirstClick);
-                            });
+                                document.removeEventListener('click', window._bgMusic2FirstClickHandler);
+                                window._bgMusic2FirstClickHandler = null;
+                            };
+                            document.addEventListener('click', window._bgMusic2FirstClickHandler);
                         });
                     } catch(e) {}
                     // Pindah ke onmessage normal
@@ -2292,13 +2462,19 @@
 
             ws.onclose = (e) => {
                 stopClientKeepAlive();
-                // Gunakan flag `reconnected` (bukan currentRoomId) karena
-                // currentRoomId bisa di-set lebih awal oleh pesan LOG.
-                if (!reconnected && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                if (!reconnected.value && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
                     if (reconnectTimer) clearTimeout(reconnectTimer);
                     reconnectTimer = setTimeout(() => reconnectToGame(roomId, playerId), 3000);
-                } else if (reconnected) {
-                    sendAutoMode(true);
+                } else if (reconnected.value) {
+                    // Sudah berhasil reconnect sebelumnya tapi disconnect lagi — coba reconnect ulang
+                    reconnected.value = false;
+                    if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                        addLog('🔄 Koneksi terputus lagi, mencoba sambung kembali...');
+                        if (reconnectTimer) clearTimeout(reconnectTimer);
+                        reconnectTimer = setTimeout(() => reconnectToGame(roomId, playerId), 3000);
+                    } else {
+                        sendAutoMode(true);
+                    }
                 }
             };
         }
@@ -2852,13 +3028,17 @@
 
             ws.onclose = () => {
                 console.log("🔌 Disconnected from server");
-                stopClientKeepAlive(); // ← TAMBAHKAN INI
-                // Jika koneksi terputus saat sudah di dalam game,
-                // simpan sesi ke localStorage agar bisa reconnect nanti.
-                if (currentRoomId) {
+                stopClientKeepAlive();
+                stopAutoModeTimer();
+                // Jika koneksi terputus saat sudah di dalam game, coba reconnect otomatis
+                if (currentRoomId && myPlayerId) {
                     lsSet(LS.ROOM_ID, currentRoomId);
                     lsSet(LS.PLAYER_ID, myPlayerId);
                     lsSet(LS.GAME_ACTIVE, 'true');
+                    addLog('🔄 Koneksi terputus, mencoba reconnect...');
+                    reconnectAttempts = 0;
+                    if (reconnectTimer) clearTimeout(reconnectTimer);
+                    reconnectTimer = setTimeout(() => reconnectToGame(currentRoomId, myPlayerId), 2000);
                 }
             };
         }
@@ -2866,7 +3046,9 @@
         function cancelMatchmaking() {
             if (ws) {
                 try { ws.send(JSON.stringify({ type: 'LEAVE_QUEUE' })); } catch(e) {}
+                ws.onclose = null; ws.onerror = null;
                 ws.close();
+                ws = null;
             }
             DOM.matchmakingScreen.querySelector('#matchmaking-idle').style.display = 'flex';
             DOM.matchmakingScreen.querySelector('#matchmaking-waiting').style.display = 'none';
@@ -2911,11 +3093,36 @@
                 case 'GAME_STATE_UPDATE':
 				    console.log("🔄 STATE UPDATE received!", data.state); // ← TAMBAHKAN INI
                     updateGameUI(data.state);
+                    // Catat rank segera saat kita menang (misal menyerah),
+                    // agar pendingClientSaveRank sudah siap sebelum SAVE_STATS_CLIENT tiba.
+                    if (!hasGameOverSaved && !pendingClientSaveRank && myPlayerId && data.state && data.state.players) {
+                        const _me = data.state.players.find(p => p.id === myPlayerId);
+                        if (_me && _me.winner && _me.rank > 0 && !_me.isBot) {
+                            pendingClientSaveRank = _me.rank;
+                        }
+                    }
                     break;
 
                 case 'GAME_OVER':
                     endGame(data.players);
                     break;
+
+                case 'SAVE_STATS_CLIENT': {
+                    // Server gagal menyimpan — client menjadi fallback.
+                    // Jika pendingClientSaveRank belum diset, ambil dari gameState.
+                    let _rankToSave = pendingClientSaveRank;
+                    if (!_rankToSave && gameState && myPlayerId && gameState.players) {
+                        const _me2 = gameState.players.find(p => p.id === myPlayerId);
+                        if (_me2 && _me2.winner && _me2.rank > 0 && !_me2.isBot) _rankToSave = _me2.rank;
+                    }
+                    if (_rankToSave) {
+                        const _r = _rankToSave;
+                        saveMatchResult(_r).then(() => {
+                            if (pendingClientSaveRank === _r) pendingClientSaveRank = null;
+                        });
+                    }
+                    break;
+                }
 
                 case 'LOG':
                     if (data.message) addLog(data.message);
@@ -3270,7 +3477,9 @@
         // =============================================
         // GAME OVER
         // =============================================
-        // Flag untuk cegah double-save stats dalam satu sesi pertandingan
+        // Rank posisi (1-4) yang menunggu disimpan sebagai fallback jika server gagal
+        let pendingClientSaveRank = null;
+        // Flag untuk kasus surrender → goToHome sebelum GAME_OVER diterima
         let hasGameOverSaved = false;
 
         function endGame(finalRankings) {
@@ -3302,15 +3511,53 @@
             });
             modal.classList.add('active');
 
-            // Simpan hasil pertandingan ke Firebase (hanya sekali per pertandingan)
-            if (!hasGameOverSaved && (myPlayerId || myName)) {
-                const myResult = [...finalRankings].find(p =>
-                    (myPlayerId ? p.id === myPlayerId : p.name === myName) && !p.isBot
-                );
-                if (myResult) {
-                    saveMatchResult(myResult.rank).then(() => {
-                        hasGameOverSaved = true;
-                    });
+            // Simpan rank sementara — server yang menyimpan ke Firebase secara utama.
+            // Jika server gagal, server akan kirim SAVE_STATS_CLIENT dan client menjadi fallback.
+            const myResult = (myPlayerId || myName)
+                ? [...finalRankings].find(p => (myPlayerId ? p.id === myPlayerId : p.name === myName) && !p.isBot)
+                : null;
+            if (myResult) {
+                pendingClientSaveRank = myResult.rank;
+                hasGameOverSaved = true;
+
+                // Tampilkan rank change card (baca rank lama dari Firebase, hitung perubahan)
+                if (currentUser) {
+                    db.ref(`users/${currentUser.uid}/rankData`).get().then(snap => {
+                        const r       = snap.exists() ? snap.val() : { rankName: 'Bronze III', points: 0 };
+                        const oldName = r.rankName || 'Bronze III';
+                        const oldPts  = r.points   || 0;
+                        const result  = calculateNewRank(oldName, oldPts, myResult.rank);
+                        const tier    = getRankTier(oldName);
+                        const delta   = RANK_CHANGES[tier][myResult.rank - 1];
+
+                        const promoted = RANKS.indexOf(result.rankName) > RANKS.indexOf(oldName);
+                        const demoted  = RANKS.indexOf(result.rankName) < RANKS.indexOf(oldName);
+                        const title    = promoted ? '⬆️ NAIK RANK!' : demoted ? '⬇️ TURUN RANK!' : '📊 Perubahan Rank';
+                        const deltaHtml = delta >= 0
+                            ? `<span class="rank-change-delta-pos">+${delta} poin</span>`
+                            : `<span class="rank-change-delta-neg">${delta} poin</span>`;
+                        const newPtsLabel = result.rankName === 'Platinum MAX'
+                            ? `${result.points} poin` : `${result.points} / 100`;
+
+                        const card = document.createElement('div');
+                        card.className = 'rank-change-card';
+                        card.innerHTML = `
+                            <div class="rank-change-title">${title}</div>
+                            <div class="rank-change-body">
+                                <div class="rank-change-item">
+                                    <img src="gambar/rank/${oldName}.png" class="rank-change-img" alt="${oldName}">
+                                    <div>${oldName}</div>
+                                    <div class="rank-pts-old">${oldPts} / 100</div>
+                                </div>
+                                <div class="rank-change-arrow">${deltaHtml}<br>→</div>
+                                <div class="rank-change-item">
+                                    <img src="gambar/rank/${result.rankName}.png" class="rank-change-img" alt="${result.rankName}">
+                                    <div>${result.rankName}</div>
+                                    <div class="rank-pts-new">${newPtsLabel}</div>
+                                </div>
+                            </div>`;
+                        DOM.rankings.after(card);
+                    }).catch(() => {});
                 }
             }
         }
@@ -3371,21 +3618,70 @@
             `;
 
             document.getElementById('match-result-modal').classList.add('active');
-        }
 
-        /** Kembali ke halaman home: tutup semua modal, putar bgMusic, reset ke pre-loading screen */
-        function goToHome() {
-            // Jika player sudah surrender (winner=true, rank>0) tapi GAME_OVER belum diterima,
-            // simpan stats sebelum state di-reset agar data tidak hilang.
-            if (!hasGameOverSaved && gameState && myPlayerId) {
+            // Tampilkan rank change jika rank pemain sudah ditentukan
+            const rcContainer = document.getElementById('match-result-rank-change');
+            rcContainer.innerHTML = '';
+            if (currentUser && myPlayerId) {
                 const me = gameState.players.find(p => p.id === myPlayerId);
                 if (me && me.winner && me.rank > 0) {
-                    saveMatchResult(me.rank);
-                    hasGameOverSaved = true;
+                    db.ref(`users/${currentUser.uid}/rankData`).get().then(snap => {
+                        const r       = snap.exists() ? snap.val() : { rankName: 'Bronze III', points: 0 };
+                        const oldName = r.rankName || 'Bronze III';
+                        const oldPts  = r.points   || 0;
+                        const result  = calculateNewRank(oldName, oldPts, me.rank);
+                        const tier    = getRankTier(oldName);
+                        const delta   = RANK_CHANGES[tier][me.rank - 1];
+
+                        const promoted = RANKS.indexOf(result.rankName) > RANKS.indexOf(oldName);
+                        const demoted  = RANKS.indexOf(result.rankName) < RANKS.indexOf(oldName);
+                        const title    = promoted ? '⬆️ NAIK RANK!' : demoted ? '⬇️ TURUN RANK!' : '📊 Perubahan Rank';
+                        const deltaHtml = delta >= 0
+                            ? `<span class="rank-change-delta-pos">+${delta} poin</span>`
+                            : `<span class="rank-change-delta-neg">${delta} poin</span>`;
+                        const newPtsLabel = result.rankName === 'Platinum MAX'
+                            ? `${result.points} poin` : `${result.points} / 100`;
+
+                        const card = document.createElement('div');
+                        card.className = 'rank-change-card';
+                        card.innerHTML = `
+                            <div class="rank-change-title">${title}</div>
+                            <div class="rank-change-body">
+                                <div class="rank-change-item">
+                                    <img src="gambar/rank/${oldName}.png" class="rank-change-img" alt="${oldName}">
+                                    <div>${oldName}</div>
+                                    <div class="rank-pts-old">${oldPts} / 100</div>
+                                </div>
+                                <div class="rank-change-arrow">${deltaHtml}<br>→</div>
+                                <div class="rank-change-item">
+                                    <img src="gambar/rank/${result.rankName}.png" class="rank-change-img" alt="${result.rankName}">
+                                    <div>${result.rankName}</div>
+                                    <div class="rank-pts-new">${newPtsLabel}</div>
+                                </div>
+                            </div>`;
+                        rcContainer.appendChild(card);
+                    }).catch(() => {});
                 }
             }
+        }
 
-            // Reset flag save stats untuk pertandingan berikutnya
+        let goToHomeInProgress = false;
+        /** Kembali ke halaman home: tutup semua modal, putar bgMusic, reset ke pre-loading screen */
+        function goToHome() {
+            if (goToHomeInProgress) return; // guard double-click
+            goToHomeInProgress = true;
+            setTimeout(() => { goToHomeInProgress = false; }, 1000);
+
+            // Jika player sudah surrender tapi GAME_OVER belum diterima,
+            // simpan rank sementara — server akan tetap menyimpan saat game selesai.
+            // pendingClientSaveRank hanya dipakai jika server mengirim SAVE_STATS_CLIENT.
+            if (!hasGameOverSaved && gameState && myPlayerId) {
+                const me = gameState.players.find(p => p.id === myPlayerId);
+                if (me && me.winner && me.rank > 0) pendingClientSaveRank = me.rank;
+            }
+
+            // Reset flag untuk pertandingan berikutnya
+            // JANGAN null-kan pendingClientSaveRank di sini — biarkan handler SAVE_STATS_CLIENT yang clear-nya
             hasGameOverSaved = false;
 
             // Tutup semua overlay/modal
@@ -3506,8 +3802,9 @@
         }
 
         function updateTopCardsUI() {
-            if (!gameState) return;
+            if (!gameState || !gameState.topCard) return;
             const topCardsDiv = document.getElementById('top-cards');
+            if (!topCardsDiv) return;
             const player = gameState.players.find(p => p.id === myPlayerId);
 
             // Remove cards no longer in topCard
@@ -3847,6 +4144,21 @@
                     document.getElementById('prf-joined').textContent = '-';
                 }
             }).catch(() => {});
+            // Load rank data
+            db.ref(`users/${currentUser.uid}/rankData`).get().then(snap => {
+                const r = snap.exists() ? snap.val() : { rankName: 'Bronze III', points: 0, peakRank: 'Bronze III' };
+                const rankName = r.rankName || 'Bronze III';
+                const points   = r.points   || 0;
+                const peakRank = r.peakRank  || 'Bronze III';
+                const isMax    = rankName === 'Platinum MAX';
+                document.getElementById('prf-rank-img').src    = `gambar/rank/${rankName}.png`;
+                document.getElementById('prf-rank-img').alt    = rankName;
+                document.getElementById('prf-rank-name').textContent   = rankName;
+                document.getElementById('prf-rank-points').textContent = isMax ? `${points} poin` : `${points} / 100 poin`;
+                document.getElementById('prf-peak-img').src    = `gambar/rank/${peakRank}.png`;
+                document.getElementById('prf-peak-img').alt    = peakRank;
+                document.getElementById('prf-peak-name').textContent   = peakRank;
+            }).catch(() => {});
         }
 
         function loadProfileStats() {
@@ -3958,6 +4270,19 @@
                     return s;
                 });
                 await db.ref(`users/${uid}/history`).push({ rank: myRank, date: Date.now() });
+                // Update rank points
+                await db.ref(`users/${uid}/rankData`).transaction(r => {
+                    if (!r) r = { rankName: 'Bronze III', points: 0, peakRank: 'Bronze III', peakRankIndex: 0 };
+                    const result = calculateNewRank(r.rankName || 'Bronze III', r.points || 0, myRank);
+                    r.rankName = result.rankName;
+                    r.points   = result.points;
+                    const newIdx = RANKS.indexOf(result.rankName);
+                    if (newIdx > (r.peakRankIndex || 0)) {
+                        r.peakRank      = result.rankName;
+                        r.peakRankIndex = newIdx;
+                    }
+                    return r;
+                });
                 console.log(`✅ Stats berhasil disimpan ke Firebase (rank ${myRank})`);
             } catch (e) {
                 console.error('❌ GAGAL simpan stats ke Firebase:', e);
@@ -4241,6 +4566,23 @@
                 document.getElementById('vp-name').textContent   = nick;
                 document.getElementById('vp-uid').textContent    = '#' + shortId;
                 document.getElementById('vp-joined').textContent = 'Bergabung: ' + joined;
+
+                // Load rank data for visited player
+                db.ref(`users/${uid}/rankData`).get().then(rSnap => {
+                    const r = rSnap.exists() ? rSnap.val() : { rankName: 'Bronze III', points: 0, peakRank: 'Bronze III' };
+                    const rn    = r.rankName || 'Bronze III';
+                    const pts   = r.points   || 0;
+                    const peak  = r.peakRank  || 'Bronze III';
+                    const isMax = rn === 'Platinum MAX';
+                    document.getElementById('vp-rank-img').src    = `gambar/rank/${rn}.png`;
+                    document.getElementById('vp-rank-img').alt    = rn;
+                    document.getElementById('vp-rank-name').textContent   = rn;
+                    document.getElementById('vp-rank-points').textContent = isMax ? `${pts} poin` : `${pts} / 100 poin`;
+                    document.getElementById('vp-peak-img').src    = `gambar/rank/${peak}.png`;
+                    document.getElementById('vp-peak-img').alt    = peak;
+                    document.getElementById('vp-peak-name').textContent   = peak;
+                    document.getElementById('vp-rank-section').style.display = '';
+                }).catch(() => {});
 
                 // Tombol pertemanan
                 const actionDiv = document.getElementById('vp-friend-action');
