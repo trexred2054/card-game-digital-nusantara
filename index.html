@@ -3192,11 +3192,14 @@
             modal.classList.add('active');
 
             // Simpan hasil pertandingan ke Firebase (hanya sekali per pertandingan)
-            if (!hasGameOverSaved && myName) {
-                const myResult = [...finalRankings].find(p => p.name === myName && !p.isBot);
+            if (!hasGameOverSaved && (myPlayerId || myName)) {
+                const myResult = [...finalRankings].find(p =>
+                    (myPlayerId ? p.id === myPlayerId : p.name === myName) && !p.isBot
+                );
                 if (myResult) {
-                    hasGameOverSaved = true;
-                    saveMatchResult(myResult.rank);
+                    saveMatchResult(myResult.rank).then(() => {
+                        hasGameOverSaved = true;
+                    });
                 }
             }
         }
@@ -3825,7 +3828,10 @@
                     return s;
                 });
                 await db.ref(`users/${uid}/history`).push({ rank: myRank, date: Date.now() });
-            } catch (e) { /* abaikan */ }
+                console.log(`✅ Stats berhasil disimpan ke Firebase (rank ${myRank})`);
+            } catch (e) {
+                console.error('❌ GAGAL simpan stats ke Firebase:', e);
+            }
         }
 
         // =============================================
