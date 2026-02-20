@@ -768,6 +768,7 @@
             border-right: 1px solid rgba(255,255,255,0.15);
             display: flex; flex-direction: column;
             padding: 20px 12px; gap: 10px;
+            overflow-y: auto;
         }
         .profile-tab {
             background: rgba(255,255,255,0.1);
@@ -888,8 +889,8 @@
         .btn-fa-reject:hover { background: rgba(244,67,54,0.85); }
         .btn-fa-view   { background: rgba(255,255,255,0.2); }
         .btn-fa-view:hover { background: rgba(255,255,255,0.35); }
-        .btn-fa-visit  { background: rgba(76,175,80,0.75); }
-        .btn-fa-visit:hover { background: rgba(76,175,80,1); transform: translateY(-1px); }
+        .btn-fa-visit  { background: rgba(33,150,243,0.75); }
+        .btn-fa-visit:hover { background: rgba(33,150,243,1); transform: translateY(-1px); }
         .btn-fa-sent   { background: rgba(255,193,7,0.35); cursor: default; }
         .friend-pending { color: rgba(255,255,255,0.48); text-align: center; padding: 18px 0; font-size: 0.88em; }
 
@@ -1176,7 +1177,7 @@
                 <p style="font-size:1.2em; margin-bottom:30px;">Main dengan pemain lain secara online!</p>
                 <button class="btn-start" onclick="startMatchmaking()">🎮 MAIN ONLINE</button>
                 <button class="btn-encyclopedia" onclick="showEncyclopedia()">🧭 &nbsp; Ensiklopedia &nbsp; 🧭</button>
-                <button class="btn-encyclopedia" onclick="showProfileScreen();switchProfileTab('teman')" style="background:linear-gradient(135deg,#43cea2 0%,#185a9d 100%);box-shadow:0 6px 20px rgba(67,206,162,0.4);">👥 &nbsp; Teman &nbsp; 👥</button>
+                <button class="btn-encyclopedia" onclick="showTemanScreen()" style="background:linear-gradient(135deg,#43cea2 0%,#185a9d 100%);box-shadow:0 6px 20px rgba(67,206,162,0.4);">👥 &nbsp; Teman &nbsp; 👥</button>
                 <button class="btn-settings" onclick="showSettingsScreen()">⚙️ &nbsp; Pengaturan &nbsp; ⚙️</button>
             </div>
 
@@ -1295,6 +1296,39 @@
         </div>
     </div>
 
+    <!-- TEMAN SCREEN -->
+    <div id="teman-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); z-index:15000; overflow-y:auto;">
+        <div class="enc-header">
+            <div class="enc-title">👥 Teman</div>
+            <button class="btn-enc-close" onclick="hideTemanScreen()">✖ Tutup</button>
+        </div>
+        <div style="padding:20px; max-width:680px; margin:0 auto;">
+            <!-- Cari Pemain -->
+            <div class="friend-section-title">🔍 Cari Pemain</div>
+            <div class="friend-search-row">
+                <input type="text" class="friend-search-input" id="friend-search-input"
+                       placeholder="Cari berdasarkan nama atau ID (#XXXXXX)..." maxlength="30"
+                       onkeydown="if(event.key==='Enter')searchPlayers()">
+                <button class="btn-friend-search" onclick="searchPlayers()">Cari</button>
+            </div>
+            <div id="friend-search-results"></div>
+
+            <!-- Permintaan Teman Masuk -->
+            <div class="friend-section-title">
+                📩 Permintaan Masuk
+                <span class="friend-req-badge" id="friend-req-badge"></span>
+            </div>
+            <div id="friend-requests-list"><div class="friend-pending">⏳ Memuat...</div></div>
+
+            <!-- Daftar Teman -->
+            <div class="friend-section-title">
+                🤝 Daftar Teman
+                <span id="friends-count" style="color:rgba(255,255,255,0.5);font-size:0.85em;font-weight:normal;"></span>
+            </div>
+            <div id="friends-list"><div class="friend-pending">⏳ Memuat...</div></div>
+        </div>
+    </div>
+
     <!-- PROFILE SCREEN -->
     <div id="profile-screen" style="display:none;">
         <!-- Sidebar kiri -->
@@ -1302,16 +1336,6 @@
             <button class="profile-tab active" id="btn-tab-profil" onclick="switchProfileTab('profil')">👤 Profil Pemain</button>
             <button class="profile-tab" id="btn-tab-statistik" onclick="switchProfileTab('statistik')">📊 Statistik</button>
             <button class="profile-tab" id="btn-tab-riwayat" onclick="switchProfileTab('riwayat')">📜 Riwayat</button>
-            <button class="profile-tab" id="btn-tab-teman" onclick="switchProfileTab('teman')" style="position:relative;">
-                👥 Teman
-                <span id="teman-tab-badge" style="
-                    position:absolute;top:6px;right:8px;
-                    background:rgba(244,67,54,0.9);color:#fff;
-                    border-radius:50%;width:18px;height:18px;
-                    font-size:0.7em;font-weight:bold;
-                    display:none;align-items:center;justify-content:center;">
-                </span>
-            </button>
             <button id="btn-profile-back" onclick="hideProfileScreen()">← Kembali</button>
         </div>
         <!-- Konten kanan -->
@@ -1372,40 +1396,12 @@
 
             <!-- Tab: Riwayat -->
             <div id="tab-riwayat" class="profile-panel">
-                <div class="profile-panel-title">📜 Riwayat (10 Terakhir)</div>
+                <div class="profile-panel-title">📜 Riwayat</div>
                 <div id="history-list">
                     <div class="profile-empty">Belum ada riwayat pertandingan.</div>
                 </div>
             </div>
 
-            <!-- Tab: Teman -->
-            <div id="tab-teman" class="profile-panel">
-                <div class="profile-panel-title">👥 Teman</div>
-
-                <!-- Cari Pemain -->
-                <div class="friend-section-title">🔍 Cari Pemain</div>
-                <div class="friend-search-row">
-                    <input type="text" class="friend-search-input" id="friend-search-input"
-                           placeholder="Cari berdasarkan nama atau ID (#XXXXXX)..." maxlength="30"
-                           onkeydown="if(event.key==='Enter')searchPlayers()">
-                    <button class="btn-friend-search" onclick="searchPlayers()">Cari</button>
-                </div>
-                <div id="friend-search-results"></div>
-
-                <!-- Permintaan Teman Masuk -->
-                <div class="friend-section-title">
-                    📩 Permintaan Masuk
-                    <span class="friend-req-badge" id="friend-req-badge"></span>
-                </div>
-                <div id="friend-requests-list"><div class="friend-pending">⏳ Memuat...</div></div>
-
-                <!-- Daftar Teman -->
-                <div class="friend-section-title">
-                    🤝 Daftar Teman
-                    <span id="friends-count" style="color:rgba(255,255,255,0.5);font-size:0.85em;font-weight:normal;"></span>
-                </div>
-                <div id="friends-list"><div class="friend-pending">⏳ Memuat...</div></div>
-            </div>
         </div>
     </div>
 
@@ -1471,7 +1467,7 @@
             </div>
             <!-- Tab Riwayat -->
             <div id="vtab-riwayat" class="visit-panel">
-                <div class="visit-panel-title">📜 Riwayat (10 Terakhir)</div>
+                <div class="visit-panel-title">📜 Riwayat</div>
                 <div id="vp-history-list">
                     <div class="profile-empty">Memuat riwayat...</div>
                 </div>
@@ -3802,7 +3798,6 @@
             document.getElementById('profile-screen').style.display = 'flex';
             document.body.style.overflow = 'hidden';
             switchProfileTab('profil');
-            updateFriendTabBadge();
         }
 
         function hideProfileScreen() {
@@ -3810,15 +3805,25 @@
             document.body.style.overflow = '';
         }
 
+        function showTemanScreen() {
+            document.getElementById('teman-screen').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            loadFriendsTab();
+        }
+
+        function hideTemanScreen() {
+            document.getElementById('teman-screen').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
         function switchProfileTab(tab) {
-            ['profil', 'statistik', 'riwayat', 'teman'].forEach(t => {
+            ['profil', 'statistik', 'riwayat'].forEach(t => {
                 document.getElementById(`btn-tab-${t}`).classList.toggle('active', t === tab);
                 document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
             });
             if (tab === 'profil') loadProfileData();
             if (tab === 'statistik') loadProfileStats();
             if (tab === 'riwayat') loadProfileHistory();
-            if (tab === 'teman') loadFriendsTab();
         }
 
         function loadProfileData() {
@@ -4106,14 +4111,12 @@
             if (!currentUser) return;
             const el    = document.getElementById('friend-requests-list');
             const badge = document.getElementById('friend-req-badge');
-            const tabBadge = document.getElementById('teman-tab-badge');
             el.innerHTML = '<div class="friend-pending">⏳ Memuat...</div>';
             try {
                 const snap = await db.ref(`users/${currentUser.uid}/friendRequests/received`).get();
                 if (!snap.exists()) {
                     el.innerHTML = '<div class="friend-pending">Tidak ada permintaan teman masuk.</div>';
                     badge.style.display = 'none';
-                    tabBadge.style.display = 'none';
                     return;
                 }
                 const reqs = [];
@@ -4121,8 +4124,6 @@
 
                 badge.textContent = reqs.length;
                 badge.style.display = 'inline-flex';
-                tabBadge.textContent = reqs.length;
-                tabBadge.style.display = 'inline-flex';
 
                 el.innerHTML = reqs.map(r => `
                     <div class="friend-card">
@@ -4314,21 +4315,8 @@
         // Alias compat - fungsi lama tidak dipakai lagi tapi biarkan jika ada referensi
         function viewPlayerProfile(uid) { visitPlayerProfile(uid); }
 
-        // Update badge notif teman di tab button setiap buka profile screen
-        async function updateFriendTabBadge() {
-            if (!currentUser) return;
-            try {
-                const snap = await db.ref(`users/${currentUser.uid}/friendRequests/received`).get();
-                const tabBadge = document.getElementById('teman-tab-badge');
-                if (snap.exists()) {
-                    const count = Object.keys(snap.val()).length;
-                    tabBadge.textContent = count;
-                    tabBadge.style.display = count > 0 ? 'inline-flex' : 'none';
-                } else {
-                    tabBadge.style.display = 'none';
-                }
-            } catch(e) {}
-        }
+        // Fungsi lama — tidak digunakan lagi (teman-tab-badge sudah dihapus)
+        function updateFriendTabBadge() {}
 
         function showEncTab(tab) {
             document.getElementById('enc-tab-btn-cards').classList.toggle('active', tab === 'cards');
