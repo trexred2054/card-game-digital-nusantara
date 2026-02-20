@@ -2063,10 +2063,19 @@
             } catch(e) {}
         }
 
+        function ensureBgMusic2() {
+            try {
+                if (soundEffects.bgMusic2.paused) {
+                    soundEffects.bgMusic.pause();
+                    soundEffects.bgMusic2.play().catch(() => {});
+                }
+            } catch(e) {}
+        }
+
         // =============================================
         // WEBSOCKET & GAME STATE
         // =============================================
-        const SERVER_URL = "wss://card-server-production.up.railway.app";
+        const SERVER_URL = "wss://server-card-game-production.up.railway.app";
 
         let ws = null;
         let currentRoomId = null;
@@ -2084,19 +2093,11 @@
         let clientKeepAliveInterval = null;
         let deckInitialized = false;
 
-        // Bot name disguise
-        const botNames = ['Miya','Nayla','Aldi','Marcel','Zoe','Kara','Mega','Genta','Flex','Angel','Teorita','Miko','Luba','Nana','Kong','Walka'];
-        const botNameMap = {};
+        // Nama bot langsung dari server (sudah konsisten, tidak berubah saat refresh)
+        const botNameMap = {}; // tetap ada agar referensi lain tidak error
 
         function getBotDisplayName(player) {
-            if (!player.isBot) return player.name;
-            if (!botNameMap[player.id]) {
-                const used = Object.values(botNameMap);
-                const available = botNames.filter(n => !used.includes(n));
-                const pool = available.length > 0 ? available : botNames;
-                botNameMap[player.id] = pool[Math.floor(Math.random() * pool.length)];
-            }
-            return botNameMap[player.id];
+            return player.name;
         }
 
         // Tambahkan ini setelah baris "let refreshButtonTimer = null;"
@@ -2284,6 +2285,7 @@
         // =============================================
         function playerPlayPhase1(card) {
             if (!ws || !currentRoomId) return;
+            ensureBgMusic2();
             ws.send(JSON.stringify({
                 type: 'PLAY_CARD',
                 roomId: currentRoomId,
@@ -2293,6 +2295,7 @@
 
         function playerPlayCard(card) {
             if (!ws || !currentRoomId) return;
+            ensureBgMusic2();
             ws.send(JSON.stringify({
                 type: 'PLAY_CARD',
                 roomId: currentRoomId,
@@ -2303,6 +2306,7 @@
         function playerDrawCard() {
             const player = gameState && gameState.players.find(p => p.id === myPlayerId);
             if (!player || !player.mustDraw || !ws || !currentRoomId) return;
+            ensureBgMusic2();
             playSound('drawCard');
             ws.send(JSON.stringify({
                 type: 'DRAW_CARD',
@@ -2315,6 +2319,7 @@
             if (!player) return;
 
             if (forcePickClickDebounce || player.isProcessingAction) return;
+            ensureBgMusic2();
 
             if (autoForcePickTimer) { clearTimeout(autoForcePickTimer); autoForcePickTimer = null; }
             if (player.emergencyTimeoutId) { clearTimeout(player.emergencyTimeoutId); player.emergencyTimeoutId = null; }
