@@ -888,31 +888,59 @@
         .btn-fa-reject:hover { background: rgba(244,67,54,0.85); }
         .btn-fa-view   { background: rgba(255,255,255,0.2); }
         .btn-fa-view:hover { background: rgba(255,255,255,0.35); }
+        .btn-fa-visit  { background: rgba(76,175,80,0.75); }
+        .btn-fa-visit:hover { background: rgba(76,175,80,1); transform: translateY(-1px); }
         .btn-fa-sent   { background: rgba(255,193,7,0.35); cursor: default; }
         .friend-pending { color: rgba(255,255,255,0.48); text-align: center; padding: 18px 0; font-size: 0.88em; }
 
-        /* Modal Lihat Profil Pemain */
-        #view-profile-modal {
+        /* Modal Lihat Profil Pemain (tidak dipakai lagi, diganti halaman penuh) */
+        #view-profile-modal { display: none; }
+
+        /* Halaman Penuh: Kunjungi Profil Pemain */
+        #visit-profile-screen {
             display: none; position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.72);
-            z-index: 20000; justify-content: center; align-items: center; padding: 20px;
-        }
-        #view-profile-modal.active { display: flex; }
-        .vp-box {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px; padding: 28px; width: 100%; max-width: 400px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
-            position: relative; animation: slideIn 0.3s;
-            max-height: 85vh; overflow-y: auto;
+            z-index: 20000; flex-direction: row;
         }
-        .vp-close {
-            position: absolute; top: 14px; right: 14px; width: 34px; height: 34px;
-            background: rgba(255,255,255,0.18); border: none; border-radius: 50%;
-            color: #fff; font-size: 1.1em; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+        #visit-profile-screen.active { display: flex; }
+        #visit-profile-sidebar {
+            width: 180px; flex-shrink: 0;
+            background: rgba(0,0,0,0.25);
+            border-right: 1px solid rgba(255,255,255,0.15);
+            display: flex; flex-direction: column;
+            padding: 20px 12px; gap: 10px;
         }
-        .vp-close:hover { background: rgba(255,255,255,0.32); }
+        .visit-tab {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px; padding: 14px 12px;
+            font-size: 0.9em; font-weight: bold;
+            text-align: left; cursor: pointer; transition: all 0.2s;
+        }
+        .visit-tab:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        .visit-tab.active {
+            background: rgba(255,255,255,0.25); color: #fff;
+            border-color: rgba(255,255,255,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        #btn-visit-back {
+            margin-top: auto;
+            background: rgba(244,67,54,0.25);
+            color: #ffcdd2; border: 1px solid rgba(244,67,54,0.4);
+            border-radius: 12px; padding: 12px;
+            font-size: 0.9em; font-weight: bold; cursor: pointer;
+        }
+        #btn-visit-back:hover { background: rgba(244,67,54,0.45); }
+        #visit-profile-content { flex: 1; overflow-y: auto; padding: 30px; }
+        .visit-panel { display: none; }
+        .visit-panel.active { display: block; }
+        .visit-panel-title {
+            font-size: 1.4em; font-weight: bold; color: #fff;
+            margin-bottom: 24px; padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.25);
+        }
         .vp-header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
         .vp-avatar {
             width: 60px; height: 60px; background: rgba(255,255,255,0.22);
@@ -929,6 +957,21 @@
         }
         .vp-stat-label { color: rgba(255,255,255,0.72); font-size: 0.87em; }
         .vp-stat-value { font-weight: bold; font-size: 0.97em; }
+        .btn-visit-friend {
+            width: 100%; padding: 14px; border-radius: 12px; border: none;
+            font-size: 0.95em; font-weight: bold; cursor: pointer;
+            margin-top: 16px; transition: all 0.2s;
+        }
+        @media (max-width: 480px) {
+            #visit-profile-screen { flex-direction: column; }
+            #visit-profile-sidebar {
+                width: auto; flex-direction: row; padding: 10px;
+                border-right: none; border-bottom: 1px solid rgba(255,255,255,0.15);
+                gap: 6px; overflow-x: auto;
+            }
+            #btn-visit-back { margin-top: 0; }
+            .visit-tab { padding: 10px; font-size: 0.82em; white-space: nowrap; }
+        }
 
         @media (max-width: 480px) {
             #profile-screen { flex-direction: column; }
@@ -1133,6 +1176,7 @@
                 <p style="font-size:1.2em; margin-bottom:30px;">Main dengan pemain lain secara online!</p>
                 <button class="btn-start" onclick="startMatchmaking()">🎮 MAIN ONLINE</button>
                 <button class="btn-encyclopedia" onclick="showEncyclopedia()">🧭 &nbsp; Ensiklopedia &nbsp; 🧭</button>
+                <button class="btn-encyclopedia" onclick="showProfileScreen();switchProfileTab('teman')" style="background:linear-gradient(135deg,#43cea2 0%,#185a9d 100%);box-shadow:0 6px 20px rgba(67,206,162,0.4);">👥 &nbsp; Teman &nbsp; 👥</button>
                 <button class="btn-settings" onclick="showSettingsScreen()">⚙️ &nbsp; Pengaturan &nbsp; ⚙️</button>
             </div>
 
@@ -1301,7 +1345,7 @@
                     <span class="profile-stat-value" id="stat-total">0</span>
                 </div>
                 <div class="profile-stat-card">
-                    <span class="profile-stat-label">✅ Jumlah Menang (Juara 1-3)</span>
+                    <span class="profile-stat-label">🎖️ Jumlah Menang</span>
                     <span class="profile-stat-value highlight" id="stat-wins">0</span>
                 </div>
                 <div class="profile-stat-card">
@@ -1365,15 +1409,78 @@
         </div>
     </div>
 
-    <!-- MODAL LIHAT PROFIL PEMAIN LAIN -->
-    <div id="view-profile-modal">
-        <div class="vp-box">
-            <button class="vp-close" onclick="document.getElementById('view-profile-modal').classList.remove('active')">✕</button>
-            <div id="view-profile-content">
-                <div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);">⏳ Memuat profil...</div>
+    <!-- HALAMAN PENUH: KUNJUNGI PROFIL PEMAIN LAIN -->
+    <div id="visit-profile-screen">
+        <!-- Sidebar kiri -->
+        <div id="visit-profile-sidebar">
+            <button class="visit-tab active" id="btn-vtab-profil" onclick="switchVisitTab('profil')">👤 Profil</button>
+            <button class="visit-tab" id="btn-vtab-statistik" onclick="switchVisitTab('statistik')">📊 Statistik</button>
+            <button class="visit-tab" id="btn-vtab-riwayat" onclick="switchVisitTab('riwayat')">📜 Riwayat</button>
+            <button id="btn-visit-back" onclick="closeVisitProfile()">← Kembali</button>
+        </div>
+        <!-- Konten kanan -->
+        <div id="visit-profile-content">
+            <!-- Tab Profil -->
+            <div id="vtab-profil" class="visit-panel active">
+                <div class="visit-panel-title">👤 Profil Pemain</div>
+                <div class="vp-header">
+                    <div class="vp-avatar" id="vp-avatar">👤</div>
+                    <div>
+                        <div class="vp-name" id="vp-name">-</div>
+                        <div class="vp-uid" id="vp-uid">-</div>
+                        <div class="vp-joined" id="vp-joined">-</div>
+                    </div>
+                </div>
+                <div id="vp-friend-action"></div>
+            </div>
+            <!-- Tab Statistik -->
+            <div id="vtab-statistik" class="visit-panel">
+                <div class="visit-panel-title">📊 Statistik</div>
+                <div class="profile-stat-card">
+                    <span class="profile-stat-label">🏆 Win Rate</span>
+                    <span class="profile-stat-value highlight" id="vp-stat-winrate">0%</span>
+                </div>
+                <div class="profile-stat-card">
+                    <span class="profile-stat-label">🎮 Total Pertandingan</span>
+                    <span class="profile-stat-value" id="vp-stat-total">0</span>
+                </div>
+                <div class="profile-stat-card">
+                    <span class="profile-stat-label">🎖️ Jumlah Menang</span>
+                    <span class="profile-stat-value highlight" id="vp-stat-wins">0</span>
+                </div>
+                <div class="profile-stat-card">
+                    <span class="profile-stat-label">💀 Jumlah Kalah</span>
+                    <span class="profile-stat-value" id="vp-stat-losses">0</span>
+                </div>
+                <div class="profile-stat-card">
+                    <span class="profile-stat-label">🥇 % Juara 1</span>
+                    <span class="profile-stat-value" id="vp-stat-p1">0%</span>
+                </div>
+                <div class="profile-stat-card">
+                    <span class="profile-stat-label">🥈 % Juara 2</span>
+                    <span class="profile-stat-value" id="vp-stat-p2">0%</span>
+                </div>
+                <div class="profile-stat-card">
+                    <span class="profile-stat-label">🥉 % Juara 3</span>
+                    <span class="profile-stat-value" id="vp-stat-p3">0%</span>
+                </div>
+                <div class="profile-stat-card">
+                    <span class="profile-stat-label">💀 % Juara 4</span>
+                    <span class="profile-stat-value" id="vp-stat-p4">0%</span>
+                </div>
+            </div>
+            <!-- Tab Riwayat -->
+            <div id="vtab-riwayat" class="visit-panel">
+                <div class="visit-panel-title">📜 Riwayat (10 Terakhir)</div>
+                <div id="vp-history-list">
+                    <div class="profile-empty">Memuat riwayat...</div>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal lama (kosong, tetap ada agar tidak error referensi) -->
+    <div id="view-profile-modal" style="display:none;"></div>
 
     <!-- SETTINGS SCREEN -->
     <div id="settings-screen" style="display:none;">
@@ -3264,6 +3371,16 @@
 
         /** Kembali ke halaman home: tutup semua modal, putar bgMusic, reset ke pre-loading screen */
         function goToHome() {
+            // Jika player sudah surrender (winner=true, rank>0) tapi GAME_OVER belum diterima,
+            // simpan stats sebelum state di-reset agar data tidak hilang.
+            if (!hasGameOverSaved && gameState && myPlayerId) {
+                const me = gameState.players.find(p => p.id === myPlayerId);
+                if (me && me.winner && me.rank > 0) {
+                    saveMatchResult(me.rank);
+                    hasGameOverSaved = true;
+                }
+            }
+
             // Reset flag save stats untuk pertandingan berikutnya
             hasGameOverSaved = false;
 
@@ -3904,7 +4021,7 @@
                             <div class="friend-id">#${p.shortId}</div>
                         </div>
                         <div class="friend-actions">
-                            <button class="btn-fa btn-fa-view" onclick="viewPlayerProfile('${p.uid}')">👁 Profil</button>
+                            <button class="btn-fa btn-fa-visit" onclick="visitPlayerProfile('${p.uid}')">🌿 Kunjungi</button>
                             ${actionBtn}
                         </div>
                     </div>`;
@@ -4015,7 +4132,7 @@
                             <div class="friend-id">#${r.uid.slice(-6).toUpperCase()}</div>
                         </div>
                         <div class="friend-actions">
-                            <button class="btn-fa btn-fa-view" onclick="viewPlayerProfile('${r.uid}')">👁</button>
+                            <button class="btn-fa btn-fa-visit" onclick="visitPlayerProfile('${r.uid}')">🌿 Kunjungi</button>
                             <button class="btn-fa btn-fa-accept" onclick="acceptFriendRequest('${r.uid}','${(r.nickname||'').replace(/'/g,"\\'")}')">✅ Terima</button>
                             <button class="btn-fa btn-fa-reject" onclick="rejectFriendRequest('${r.uid}')">❌ Tolak</button>
                         </div>
@@ -4053,7 +4170,7 @@
                             <div class="friend-id">#${f.uid.slice(-6).toUpperCase()}</div>
                         </div>
                         <div class="friend-actions">
-                            <button class="btn-fa btn-fa-view" onclick="viewPlayerProfile('${f.uid}')">👁 Profil</button>
+                            <button class="btn-fa btn-fa-visit" onclick="visitPlayerProfile('${f.uid}')">🌿 Kunjungi</button>
                             <button class="btn-fa btn-fa-remove" onclick="removeFriend('${f.uid}')" title="Hapus teman">🗑</button>
                         </div>
                     </div>`).join('');
@@ -4062,87 +4179,140 @@
             }
         }
 
-        // Lihat profil pemain lain
-        async function viewPlayerProfile(uid) {
-            const modal   = document.getElementById('view-profile-modal');
-            const content = document.getElementById('view-profile-content');
-            modal.classList.add('active');
-            content.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);">⏳ Memuat profil...</div>';
+        // =============================================
+        // KUNJUNGI PROFIL PEMAIN LAIN (halaman penuh)
+        // =============================================
+        let _visitUid = null; // uid pemain yang sedang dikunjungi
+
+        async function visitPlayerProfile(uid) {
+            _visitUid = uid;
+            document.getElementById('visit-profile-screen').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            switchVisitTab('profil');
+        }
+
+        function closeVisitProfile() {
+            document.getElementById('visit-profile-screen').classList.remove('active');
+            document.body.style.overflow = '';
+            _visitUid = null;
+        }
+
+        function switchVisitTab(tab) {
+            ['profil','statistik','riwayat'].forEach(t => {
+                document.getElementById(`btn-vtab-${t}`).classList.toggle('active', t === tab);
+                document.getElementById(`vtab-${t}`).classList.toggle('active', t === tab);
+            });
+            if (tab === 'profil')     loadVisitProfil();
+            if (tab === 'statistik') loadVisitStats();
+            if (tab === 'riwayat')   loadVisitHistory();
+        }
+
+        async function loadVisitProfil() {
+            const uid = _visitUid;
+            if (!uid) return;
+            document.getElementById('vp-avatar').textContent = '⏳';
+            document.getElementById('vp-name').textContent = 'Memuat...';
+            document.getElementById('vp-uid').textContent = '';
+            document.getElementById('vp-joined').textContent = '';
+            document.getElementById('vp-friend-action').innerHTML = '';
             try {
-                const [userSnap, statsSnap] = await Promise.all([
-                    db.ref(`users/${uid}`).get(),
-                    db.ref(`users/${uid}/stats`).get()
-                ]);
-                if (!userSnap.exists()) {
-                    content.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);">❌ Profil tidak ditemukan.</div>';
+                const snap = await db.ref(`users/${uid}`).get();
+                if (!snap.exists()) {
+                    document.getElementById('vp-name').textContent = '❌ Profil tidak ditemukan';
                     return;
                 }
-                const u = userSnap.val();
-                const s = statsSnap.exists() ? statsSnap.val() : { totalMatches:0,rank1:0,rank2:0,rank3:0,rank4:0 };
-                const total     = s.totalMatches || 0;
-                const totalWins = (s.rank1||0) + (s.rank2||0) + (s.rank3||0);
-                const pct = n => total > 0 ? ((n/total)*100).toFixed(1)+'%' : '0%';
+                const u = snap.val();
                 const nick    = u.nickname || 'Unknown';
                 const shortId = uid.slice(-6).toUpperCase();
                 const joined  = u.createdAt
                     ? new Date(u.createdAt).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
                     : '-';
 
-                // Cek status pertemanan
-                let friendBtnHtml = '';
+                document.getElementById('vp-avatar').textContent = nick.charAt(0).toUpperCase();
+                document.getElementById('vp-name').textContent   = nick;
+                document.getElementById('vp-uid').textContent    = '#' + shortId;
+                document.getElementById('vp-joined').textContent = 'Bergabung: ' + joined;
+
+                // Tombol pertemanan
+                const actionDiv = document.getElementById('vp-friend-action');
+                actionDiv.innerHTML = '';
                 if (currentUser && uid !== currentUser.uid) {
                     const [isFriendSnap, isSentSnap] = await Promise.all([
                         db.ref(`users/${currentUser.uid}/friends/${uid}`).get(),
                         db.ref(`users/${currentUser.uid}/friendRequests/sent/${uid}`).get()
                     ]);
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-visit-friend';
                     if (isFriendSnap.exists()) {
-                        friendBtnHtml = `<button class="btn-fa btn-fa-remove" style="margin-top:16px;width:100%;padding:12px;" onclick="removeFriend('${uid}');document.getElementById('view-profile-modal').classList.remove('active')">🗑 Hapus Teman</button>`;
+                        btn.style.cssText = 'background:rgba(244,67,54,0.7);color:#fff;';
+                        btn.textContent = '🗑 Hapus Teman';
+                        btn.onclick = () => { removeFriend(uid); closeVisitProfile(); };
                     } else if (isSentSnap.exists()) {
-                        friendBtnHtml = `<button class="btn-fa btn-fa-sent" style="margin-top:16px;width:100%;padding:12px;" disabled>⏳ Permintaan Terkirim</button>`;
+                        btn.style.cssText = 'background:rgba(255,193,7,0.4);color:#fff;cursor:default;';
+                        btn.textContent = '⏳ Permintaan Terkirim';
+                        btn.disabled = true;
                     } else {
-                        friendBtnHtml = `<button class="btn-fa btn-fa-add" style="margin-top:16px;width:100%;padding:12px;" onclick="sendFriendRequest('${uid}','${nick.replace(/'/g,"\\'")}',this)">➕ Tambah Teman</button>`;
+                        btn.style.cssText = 'background:rgba(76,175,80,0.8);color:#fff;';
+                        btn.textContent = '➕ Tambah Teman';
+                        btn.onclick = () => sendFriendRequest(uid, nick, btn);
                     }
+                    actionDiv.appendChild(btn);
                 }
-
-                content.innerHTML = `
-                    <div class="vp-header">
-                        <div class="vp-avatar">${escHtml(nick.charAt(0).toUpperCase())}</div>
-                        <div>
-                            <div class="vp-name">${escHtml(nick)}</div>
-                            <div class="vp-uid">#${shortId}</div>
-                            <div class="vp-joined">Bergabung: ${joined}</div>
-                        </div>
-                    </div>
-                    <div class="vp-stat">
-                        <span class="vp-stat-label">🎮 Total Pertandingan</span>
-                        <span class="vp-stat-value">${total}</span>
-                    </div>
-                    <div class="vp-stat">
-                        <span class="vp-stat-label">🏆 Win Rate</span>
-                        <span class="vp-stat-value" style="color:#ffd700">${pct(totalWins)}</span>
-                    </div>
-                    <div class="vp-stat">
-                        <span class="vp-stat-label">🥇 Juara 1</span>
-                        <span class="vp-stat-value">${s.rank1||0} <small style="color:rgba(255,255,255,0.5)">(${pct(s.rank1||0)})</small></span>
-                    </div>
-                    <div class="vp-stat">
-                        <span class="vp-stat-label">🥈 Juara 2</span>
-                        <span class="vp-stat-value">${s.rank2||0} <small style="color:rgba(255,255,255,0.5)">(${pct(s.rank2||0)})</small></span>
-                    </div>
-                    <div class="vp-stat">
-                        <span class="vp-stat-label">🥉 Juara 3</span>
-                        <span class="vp-stat-value">${s.rank3||0} <small style="color:rgba(255,255,255,0.5)">(${pct(s.rank3||0)})</small></span>
-                    </div>
-                    <div class="vp-stat">
-                        <span class="vp-stat-label">💀 Juara 4</span>
-                        <span class="vp-stat-value">${s.rank4||0} <small style="color:rgba(255,255,255,0.5)">(${pct(s.rank4||0)})</small></span>
-                    </div>
-                    ${friendBtnHtml}
-                `;
             } catch(e) {
-                content.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);">❌ Gagal memuat profil.</div>';
+                document.getElementById('vp-name').textContent = '❌ Gagal memuat profil';
             }
         }
+
+        async function loadVisitStats() {
+            const uid = _visitUid;
+            if (!uid) return;
+            try {
+                const snap = await db.ref(`users/${uid}/stats`).get();
+                const s = snap.exists() ? snap.val() : { totalMatches:0, rank1:0, rank2:0, rank3:0, rank4:0 };
+                const total     = s.totalMatches || 0;
+                const totalWins = (s.rank1||0) + (s.rank2||0) + (s.rank3||0);
+                const pct = n => total > 0 ? ((n/total)*100).toFixed(1)+'%' : '0%';
+                document.getElementById('vp-stat-total').textContent   = total;
+                document.getElementById('vp-stat-wins').textContent    = totalWins;
+                document.getElementById('vp-stat-losses').textContent  = s.rank4 || 0;
+                document.getElementById('vp-stat-winrate').textContent = pct(totalWins);
+                document.getElementById('vp-stat-p1').textContent = pct(s.rank1||0);
+                document.getElementById('vp-stat-p2').textContent = pct(s.rank2||0);
+                document.getElementById('vp-stat-p3').textContent = pct(s.rank3||0);
+                document.getElementById('vp-stat-p4').textContent = pct(s.rank4||0);
+            } catch(e) {}
+        }
+
+        async function loadVisitHistory() {
+            const uid = _visitUid;
+            if (!uid) return;
+            const listEl = document.getElementById('vp-history-list');
+            listEl.innerHTML = '<div class="profile-empty">Memuat riwayat...</div>';
+            try {
+                const snap = await db.ref(`users/${uid}/history`).orderByKey().limitToLast(10).get();
+                if (!snap.exists()) {
+                    listEl.innerHTML = '<div class="profile-empty">Belum ada riwayat pertandingan.</div>';
+                    return;
+                }
+                const medals = { 1:'🥇 Juara 1', 2:'🥈 Juara 2', 3:'🥉 Juara 3', 4:'💀 Juara 4' };
+                const items = [];
+                snap.forEach(child => items.push(child.val()));
+                items.reverse();
+                listEl.innerHTML = items.map((m, i) => {
+                    const d = new Date(m.date);
+                    const tanggal = d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+                    return `<div class="profile-history-item">
+                        <span class="profile-history-rank">${i+1}. ${medals[m.rank] || `Juara ${m.rank}`}</span>
+                        <span class="profile-history-date">${tanggal}</span>
+                    </div>`;
+                }).join('');
+            } catch(e) {
+                listEl.innerHTML = '<div class="profile-empty">Gagal memuat riwayat.</div>';
+            }
+        }
+
+        // Alias compat - fungsi lama tidak dipakai lagi tapi biarkan jika ada referensi
+        function viewPlayerProfile(uid) { visitPlayerProfile(uid); }
 
         // Update badge notif teman di tab button setiap buka profile screen
         async function updateFriendTabBadge() {
