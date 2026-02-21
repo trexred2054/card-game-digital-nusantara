@@ -3450,6 +3450,13 @@
                     endGame(data.players);
                     break;
 
+                case 'STATS_SAVED':
+                    // Server berhasil simpan ke Firebase — re-fetch profil agar UI ter-update
+                    setTimeout(() => {
+                        if (currentUser) { loadProfileData(); loadProfileStats(); loadProfileHistory(); }
+                    }, 1000);
+                    break;
+
                 case 'SAVE_STATS_CLIENT': {
                     // Server gagal menyimpan — client menjadi fallback.
                     // Prioritas: rank dari pesan server > pendingClientSaveRank > gameState
@@ -3465,6 +3472,10 @@
                         pendingClientSaveRank = null;
                         saveMatchResult(_rankToSave);
                     }
+                    // Re-fetch setelah client save selesai menulis ke Firebase
+                    setTimeout(() => {
+                        if (currentUser) { loadProfileData(); loadProfileStats(); loadProfileHistory(); }
+                    }, 2000);
                     break;
                 }
 
@@ -4516,8 +4527,10 @@
                 document.getElementById(`btn-tab-${t}`).classList.toggle('active', t === tab);
                 document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
             });
-            // Data otomatis diperbarui oleh real-time listeners (attachProfileListeners)
-            // loadProfileData/Stats/History tidak perlu dipanggil manual lagi
+            // Re-fetch dari Firebase setiap kali tab dibuka agar data selalu fresh
+            if (tab === 'profil')         loadProfileData();
+            else if (tab === 'statistik') loadProfileStats();
+            else if (tab === 'riwayat')   loadProfileHistory();
         }
 
         function loadProfileData() {
