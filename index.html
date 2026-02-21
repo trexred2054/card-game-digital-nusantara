@@ -2390,6 +2390,9 @@
         // =============================================
         let _presenceRef = null;
         let _connectedRef = null;
+        // Real-time listener refs untuk profile & leaderboard
+        let _profileListeners = { rankData: null, stats: null, history: null };
+        let _leaderboardRef = null;
 
         /**
          * Tulis status online ke Firebase Realtime DB.
@@ -2440,6 +2443,104 @@
                 _presenceRef.remove().catch(() => {});
                 _presenceRef = null;
             }
+        }
+
+        /** Pasang real-time listeners untuk profile (rankData, stats, history). */
+        function attachProfileListeners() {
+            if (!currentUser) return;
+            detachProfileListeners();
+            const uid = currentUser.uid;
+            const medals = { 1: '🥇 Juara 1', 2: '🥈 Juara 2', 3: '🥉 Juara 3', 4: '💀 Juara 4' };
+
+            // ── rankData (profil tab) ──
+            _profileListeners.rankData = db.ref(`users/${uid}/rankData`);
+            _profileListeners.rankData.on('value', snap => {
+                const r = snap.exists() ? snap.val() : { rankName: 'Bronze III', points: 0, peakRank: 'Bronze III' };
+                const rankName = r.rankName || 'Bronze III';
+                const points   = r.points   || 0;
+                const peakRank = r.peakRank || 'Bronze III';
+                const peakPts  = peakRank === rankName
+                    ? Math.max(r.peakRankPoints || 0, points)
+                    : (r.peakRankPoints || 0);
+                const isMax = rankName === 'Platinum MAX';
+                const ri = document.getElementById('prf-rank-img');
+                const pi = document.getElementById('prf-peak-img');
+                if (ri) { ri.src = rankImgSrc(rankName); ri.alt = rankName; }
+                if (pi) { pi.src = rankImgSrc(peakRank); pi.alt = peakRank; }
+                const rn = document.getElementById('prf-rank-name');   if (rn) rn.textContent = rankName;
+                const rp = document.getElementById('prf-rank-points'); if (rp) rp.textContent = isMax ? `${points} poin` : `${points} / 100 poin`;
+                const pn = document.getElementById('prf-peak-name');   if (pn) pn.textContent = peakRank;
+                const pp = document.getElementById('prf-peak-points'); if (pp) pp.textContent = `${peakPts} poin`;
+            });
+
+            // ── stats (statistik tab) ──
+            _profileListeners.stats = db.ref(`users/${uid}/stats`);
+            _profileListeners.stats.on('value', snap => {
+                const s = snap.exists() ? snap.val() : { totalMatches: 0, rank1: 0, rank2: 0, rank3: 0, rank4: 0 };
+                const total = s.totalMatches || 0;
+                const pct = n => total > 0 ? ((n / total) * 100).toFixed(1) + '%' : '0%';
+                const totalWins = (s.rank1 || 0) + (s.rank2 || 0) + (s.rank3 || 0);
+                const el = id => document.getElementById(id);
+                if (el('stat-total'))   el('stat-total').textContent   = total;
+                if (el('stat-wins'))    el('stat-wins').textContent    = totalWins;
+                if (el('stat-losses')) el('stat-losses').textContent  = s.rank4 || 0;
+                if (el('stat-winrate'))el('stat-winrate').textContent = pct(totalWins);
+                if (el('stat-p1'))     el('stat-p1').textContent      = pct(s.rank1 || 0);
+                if (el('stat-p2'))     el('stat-p2').textContent      = pct(s.rank2 || 0);
+                if (el('stat-p3'))     el('stat-p3').textContent      = pct(s.rank3 || 0);
+                if (el('stat-p4'))     el('stat-p4').textContent      = pct(s.rank4 || 0);
+            });
+
+            // ── history (riwayat tab) ──
+            _profileListeners.history = db.ref(`users/${uid}/history`).orderByKey().limitToLast(10);
+            _profileListeners.history.on('value', snap => {
+                const listEl = document.getElementById('history-list');
+                if (!listEl) return;
+                if (!snap.exists()) {
+                    listEl.innerHTML = '<div class="profile-empty">Belum ada riwayat pertandingan.</div>';
+                    return;
+                }
+                const items = [];
+                snap.forEach(child => items.push(child.val()));
+                items.reverse();
+                listEl.innerHTML = items.map((m, i) => {
+                    const d = new Date(m.date);
+                    const tanggal = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const pts = m.ptsChange;
+                    const ptsHtml = pts == null ? '' :
+                        `<span class="phi-pts ${pts > 0 ? 'plus' : pts < 0 ? 'minus' : 'zero'}">${pts > 0 ? '+' : ''}${pts} poin</span>`;
+                    const rankRowHtml = (m.rankBefore && m.rankAfter)
+                        ? `<div class="phi-rank-row">
+                            <div class="phi-rank-side">
+                                <img src="${rankImgSrc(m.rankBefore)}" class="phi-rank-img" onerror="this.style.display='none'">
+                                <span class="phi-rank-name">${m.rankBefore}</span>
+                                <span class="phi-rank-pts">${m.ptsBefore != null ? m.ptsBefore : 0} poin</span>
+                            </div>
+                            <span class="phi-arrow">→</span>
+                            <div class="phi-rank-side">
+                                <img src="${rankImgSrc(m.rankAfter)}" class="phi-rank-img" onerror="this.style.display='none'">
+                                <span class="phi-rank-name">${m.rankAfter}</span>
+                                <span class="phi-rank-pts">${m.ptsAfter != null ? m.ptsAfter : 0} poin</span>
+                            </div>
+                            <span class="phi-date">${tanggal}</span>
+                          </div>`
+                        : `<span class="phi-date">${tanggal}</span>`;
+                    return `<div class="profile-history-item">
+                        <div class="phi-header">
+                            <span class="phi-result">${i + 1}. ${medals[m.rank] || `Juara ${m.rank}`}</span>
+                            ${ptsHtml}
+                        </div>
+                        ${rankRowHtml}
+                    </div>`;
+                }).join('');
+            });
+        }
+
+        /** Lepas semua real-time listeners profile. */
+        function detachProfileListeners() {
+            if (_profileListeners.rankData) { _profileListeners.rankData.off(); _profileListeners.rankData = null; }
+            if (_profileListeners.stats)    { _profileListeners.stats.off();    _profileListeners.stats    = null; }
+            if (_profileListeners.history)  { _profileListeners.history.off();  _profileListeners.history  = null; }
         }
 
         /**
@@ -4389,12 +4490,14 @@
         function showProfileScreen() {
             document.getElementById('profile-screen').style.display = 'flex';
             document.body.style.overflow = 'hidden';
+            attachProfileListeners(); // pasang real-time listeners
             switchProfileTab('profil');
         }
 
         function hideProfileScreen() {
             document.getElementById('profile-screen').style.display = 'none';
             document.body.style.overflow = '';
+            detachProfileListeners(); // lepas listener saat tutup
         }
 
         function showTemanScreen() {
@@ -4413,9 +4516,8 @@
                 document.getElementById(`btn-tab-${t}`).classList.toggle('active', t === tab);
                 document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
             });
-            if (tab === 'profil') loadProfileData();
-            if (tab === 'statistik') loadProfileStats();
-            if (tab === 'riwayat') loadProfileHistory();
+            // Data otomatis diperbarui oleh real-time listeners (attachProfileListeners)
+            // loadProfileData/Stats/History tidak perlu dipanggil manual lagi
         }
 
         function loadProfileData() {
@@ -4845,17 +4947,20 @@
         // KUNJUNGI PROFIL PEMAIN LAIN (halaman penuh)
         // =============================================
         let _visitUid = null; // uid pemain yang sedang dikunjungi
+        let _visitListeners = { rankData: null, stats: null, history: null };
 
         async function visitPlayerProfile(uid) {
             _visitUid = uid;
             document.getElementById('visit-profile-screen').classList.add('active');
             document.body.style.overflow = 'hidden';
+            attachVisitListeners(uid);
             switchVisitTab('profil');
         }
 
         function closeVisitProfile() {
             document.getElementById('visit-profile-screen').classList.remove('active');
             document.body.style.overflow = '';
+            detachVisitListeners();
             _visitUid = null;
         }
 
@@ -4864,9 +4969,103 @@
                 document.getElementById(`btn-vtab-${t}`).classList.toggle('active', t === tab);
                 document.getElementById(`vtab-${t}`).classList.toggle('active', t === tab);
             });
-            if (tab === 'profil')     loadVisitProfil();
-            if (tab === 'statistik') loadVisitStats();
-            if (tab === 'riwayat')   loadVisitHistory();
+            // Data diperbarui real-time oleh attachVisitListeners
+            // Hanya loadVisitProfil dipanggil sekali untuk info statis (nickname, join date, tombol teman)
+            if (tab === 'profil') loadVisitProfil();
+        }
+
+        function attachVisitListeners(uid) {
+            detachVisitListeners();
+            const medals = { 1:'🥇 Juara 1', 2:'🥈 Juara 2', 3:'🥉 Juara 3', 4:'💀 Juara 4' };
+
+            // ── rankData ──
+            _visitListeners.rankData = db.ref(`users/${uid}/rankData`);
+            _visitListeners.rankData.on('value', rSnap => {
+                const r = rSnap.exists() ? rSnap.val() : { rankName: 'Bronze III', points: 0, peakRank: 'Bronze III' };
+                const rn    = r.rankName || 'Bronze III';
+                const pts   = r.points   || 0;
+                const peak  = r.peakRank || 'Bronze III';
+                const peakPts = peak === rn
+                    ? Math.max(r.peakRankPoints || 0, pts)
+                    : (r.peakRankPoints || 0);
+                const isMax = rn === 'Platinum MAX';
+                const el = id => document.getElementById(id);
+                if (el('vp-rank-img'))    { el('vp-rank-img').src = rankImgSrc(rn); el('vp-rank-img').alt = rn; }
+                if (el('vp-rank-name'))   el('vp-rank-name').textContent   = rn;
+                if (el('vp-rank-points')) el('vp-rank-points').textContent = isMax ? `${pts} poin` : `${pts} / 100 poin`;
+                if (el('vp-peak-img'))    { el('vp-peak-img').src = rankImgSrc(peak); el('vp-peak-img').alt = peak; }
+                if (el('vp-peak-name'))   el('vp-peak-name').textContent   = peak;
+                if (el('vp-peak-points')) el('vp-peak-points').textContent = `${peakPts} poin`;
+                const rs = el('vp-rank-section'); if (rs) rs.style.display = '';
+            });
+
+            // ── stats ──
+            _visitListeners.stats = db.ref(`users/${uid}/stats`);
+            _visitListeners.stats.on('value', snap => {
+                const s = snap.exists() ? snap.val() : { totalMatches:0, rank1:0, rank2:0, rank3:0, rank4:0 };
+                const total = s.totalMatches || 0;
+                const totalWins = (s.rank1||0) + (s.rank2||0) + (s.rank3||0);
+                const pct = n => total > 0 ? ((n/total)*100).toFixed(1)+'%' : '0%';
+                const el = id => document.getElementById(id);
+                if (el('vp-stat-total'))   el('vp-stat-total').textContent   = total;
+                if (el('vp-stat-wins'))    el('vp-stat-wins').textContent    = totalWins;
+                if (el('vp-stat-losses'))  el('vp-stat-losses').textContent  = s.rank4 || 0;
+                if (el('vp-stat-winrate')) el('vp-stat-winrate').textContent = pct(totalWins);
+                if (el('vp-stat-p1'))      el('vp-stat-p1').textContent      = pct(s.rank1||0);
+                if (el('vp-stat-p2'))      el('vp-stat-p2').textContent      = pct(s.rank2||0);
+                if (el('vp-stat-p3'))      el('vp-stat-p3').textContent      = pct(s.rank3||0);
+                if (el('vp-stat-p4'))      el('vp-stat-p4').textContent      = pct(s.rank4||0);
+            });
+
+            // ── history ──
+            _visitListeners.history = db.ref(`users/${uid}/history`).orderByKey().limitToLast(10);
+            _visitListeners.history.on('value', snap => {
+                const listEl = document.getElementById('vp-history-list');
+                if (!listEl) return;
+                if (!snap.exists()) {
+                    listEl.innerHTML = '<div class="profile-empty">Belum ada riwayat pertandingan.</div>';
+                    return;
+                }
+                const items = [];
+                snap.forEach(child => items.push(child.val()));
+                items.reverse();
+                listEl.innerHTML = items.map((m, i) => {
+                    const d = new Date(m.date);
+                    const tanggal = d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+                    const pts = m.ptsChange;
+                    const ptsHtml = pts == null ? '' :
+                        `<span class="phi-pts ${pts > 0 ? 'plus' : pts < 0 ? 'minus' : 'zero'}">${pts > 0 ? '+' : ''}${pts} poin</span>`;
+                    const rankRowHtml = (m.rankBefore && m.rankAfter)
+                        ? `<div class="phi-rank-row">
+                            <div class="phi-rank-side">
+                                <img src="${rankImgSrc(m.rankBefore)}" class="phi-rank-img" onerror="this.style.display='none'">
+                                <span class="phi-rank-name">${m.rankBefore}</span>
+                                <span class="phi-rank-pts">${m.ptsBefore != null ? m.ptsBefore : 0} poin</span>
+                            </div>
+                            <span class="phi-arrow">→</span>
+                            <div class="phi-rank-side">
+                                <img src="${rankImgSrc(m.rankAfter)}" class="phi-rank-img" onerror="this.style.display='none'">
+                                <span class="phi-rank-name">${m.rankAfter}</span>
+                                <span class="phi-rank-pts">${m.ptsAfter != null ? m.ptsAfter : 0} poin</span>
+                            </div>
+                            <span class="phi-date">${tanggal}</span>
+                          </div>`
+                        : `<span class="phi-date">${tanggal}</span>`;
+                    return `<div class="profile-history-item">
+                        <div class="phi-header">
+                            <span class="phi-result">${i+1}. ${medals[m.rank] || `Juara ${m.rank}`}</span>
+                            ${ptsHtml}
+                        </div>
+                        ${rankRowHtml}
+                    </div>`;
+                }).join('');
+            });
+        }
+
+        function detachVisitListeners() {
+            if (_visitListeners.rankData) { _visitListeners.rankData.off(); _visitListeners.rankData = null; }
+            if (_visitListeners.stats)    { _visitListeners.stats.off();    _visitListeners.stats    = null; }
+            if (_visitListeners.history)  { _visitListeners.history.off();  _visitListeners.history  = null; }
         }
 
         async function loadVisitProfil() {
@@ -5039,34 +5238,36 @@
         }
         function hideLeaderboard() {
             document.getElementById('leaderboard-screen').style.display = 'none';
+            // Lepas listener saat leaderboard ditutup
+            if (_leaderboardRef) { _leaderboardRef.off(); _leaderboardRef = null; }
         }
-        async function loadLeaderboard() {
+        function loadLeaderboard() {
             const listEl = document.getElementById('leaderboard-list');
             listEl.innerHTML = '<div class="profile-empty">⏳ Memuat leaderboard...</div>';
-            try {
-                const snap = await db.ref('users').get();
+            // Lepas listener lama jika ada
+            if (_leaderboardRef) { _leaderboardRef.off(); _leaderboardRef = null; }
+            // Baca dari node /leaderboard (ditulis server, flat & cepat) secara real-time
+            _leaderboardRef = db.ref('leaderboard');
+            _leaderboardRef.on('value', snap => {
                 if (!snap.exists()) {
                     listEl.innerHTML = '<div class="profile-empty">Belum ada data pemain.</div>';
                     return;
                 }
                 const entries = [];
                 snap.forEach(userSnap => {
-                    const uid  = userSnap.key;
-                    const data = userSnap.val() || {};
-                    const nick = data.nickname || 'Unknown';
-                    const rd   = data.rankData  || {};
-                    const rankName  = rd.rankName || 'Bronze III';
-                    const points    = rd.points   || 0;
+                    const uid = userSnap.key;
+                    const d   = userSnap.val() || {};
+                    const rankName  = d.rankName || 'Bronze III';
+                    const points    = d.points   || 0;
                     const rankIndex = RANKS.indexOf(rankName);
-                    entries.push({ uid, nick, rankName, points, rankIndex });
+                    entries.push({ uid, nick: d.name || 'Unknown', rankName, points, rankIndex });
                 });
-                // Urutkan: rank tertinggi dulu, lalu poin terbanyak
                 entries.sort((a, b) => {
                     if (b.rankIndex !== a.rankIndex) return b.rankIndex - a.rankIndex;
                     return b.points - a.points;
                 });
-                const top100 = entries.slice(0, 100);
-                const myUid  = currentUser ? currentUser.uid : null;
+                const top100    = entries.slice(0, 100);
+                const myUid     = currentUser ? currentUser.uid : null;
                 const posLabels = ['🥇','🥈','🥉'];
                 const posClass  = ['gold','silver','bronze'];
                 const itemClass = ['lb-top1','lb-top2','lb-top3'];
@@ -5090,10 +5291,10 @@
                     </div>`;
                 }).join('');
                 if (top100.length === 0) listEl.innerHTML = '<div class="profile-empty">Belum ada data pemain.</div>';
-            } catch(e) {
+            }, err => {
                 listEl.innerHTML = '<div class="profile-empty">Gagal memuat leaderboard.</div>';
-                console.error('Leaderboard error:', e);
-            }
+                console.error('Leaderboard error:', err);
+            });
         }
 
         // Fungsi lama — tidak digunakan lagi (teman-tab-badge sudah dihapus)
