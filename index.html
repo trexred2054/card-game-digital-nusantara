@@ -3451,7 +3451,10 @@
                     break;
 
                 case 'STATS_SAVED':
-                    // Server berhasil simpan ke Firebase — re-fetch profil agar UI ter-update
+                    // Server berhasil simpan ke Firebase — tandai agar goToHome tidak double-save
+                    hasGameOverSaved = true;
+                    pendingClientSaveRank = null;
+                    // Re-fetch profil agar UI ter-update
                     setTimeout(() => {
                         if (currentUser) { loadProfileData(); loadProfileStats(); loadProfileHistory(); }
                     }, 1000);
