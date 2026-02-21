@@ -1889,7 +1889,7 @@
 
             <!-- PANEL KIRI: LAWAN -->
             <div class="opponents-panel" id="opponents-panel">
-                <div class="opponents-title">🎃 Lawan</div>
+                <div class="opponents-title">🤖 Lawan</div>
                 <div style="margin-bottom:8px; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px; text-align:center;">
                     <div style="font-size:0.85em; margin-bottom:5px;">📋 Tersisa: <strong id="draw-pile-count-2">0</strong></div>
                     <div style="font-size:0.85em;">📥 Terpakai: <strong id="discard-pile-count-2">0</strong></div>
@@ -3351,8 +3351,9 @@
 
                 case 'SAVE_STATS_CLIENT': {
                     // Server gagal menyimpan — client menjadi fallback.
-                    // Jika pendingClientSaveRank belum diset, ambil dari gameState.
-                    let _rankToSave = pendingClientSaveRank;
+                    // Prioritas: rank dari pesan server > pendingClientSaveRank > gameState
+                    // (data.rank selalu ada karena server sekarang menyertakannya)
+                    let _rankToSave = data.rank || pendingClientSaveRank;
                     if (!_rankToSave && gameState && myPlayerId && gameState.players) {
                         const _me2 = gameState.players.find(p => p.id === myPlayerId);
                         if (_me2 && _me2.winner && _me2.rank > 0 && !_me2.isBot) _rankToSave = _me2.rank;
