@@ -4050,12 +4050,15 @@
             goToHomeInProgress = true;
             setTimeout(() => { goToHomeInProgress = false; }, 1000);
 
-            // Jika player sudah surrender tapi GAME_OVER belum diterima,
-            // simpan rank sementara — server akan tetap menyimpan saat game selesai.
-            // pendingClientSaveRank hanya dipakai jika server mengirim SAVE_STATS_CLIENT.
+            // Cek apakah player menang mid-game (checkWin) tapi save belum dikonfirmasi.
+            // Jika ya, perlu beri waktu lebih lama agar server selesai savePlayerStats()
+            // sebelum WebSocket ditutup — sehingga STATS_SAVED / SAVE_STATS_CLIENT bisa diterima.
+            let _pendingWinSave = false;
             if (!hasGameOverSaved && gameState && myPlayerId) {
-                const me = gameState.players.find(p => p.id === myPlayerId);
-                if (me && me.winner && me.rank > 0) pendingClientSaveRank = me.rank;
+                const me = gameState.players ? gameState.players.find(p => p.id === myPlayerId) : null;
+                if (me && me.winner && me.rank > 0 && !me.isBot) {
+                    _pendingWinSave = true; // server sedang simpan (checkWin) → beri waktu lebih
+                }
             }
 
             // Reset flag untuk pertandingan berikutnya
@@ -4105,14 +4108,17 @@
             } catch(e) {}
 
             // Simpan ref ws & roomId sebelum di-null, lalu kirim LEAVE_MATCH ke server.
-            // ws.close() dipanggil 200ms setelah send agar pesan sempat terkirim dulu.
+            // Jika ada pending win save (checkWin sedang proses), beri waktu 5 detik agar
+            // server sempat mengirim STATS_SAVED / SAVE_STATS_CLIENT sebelum socket ditutup.
+            // Jika tidak ada pending save (surrender sudah selesai), tutup setelah 200ms.
             const _ws = ws;
             const _roomId = currentRoomId;
             stopClientKeepAlive();
             ws = null; // null-kan segera agar tidak ada handler lain yang pakai
             if (_ws && _ws.readyState === WebSocket.OPEN && _roomId) {
                 try { _ws.send(JSON.stringify({ type: 'LEAVE_MATCH', roomId: _roomId })); } catch(e) {}
-                setTimeout(() => { try { _ws.close(); } catch(e) {} }, 200);
+                const _closeDelay = _pendingWinSave ? 5000 : 200;
+                setTimeout(() => { try { _ws.close(); } catch(e) {} }, _closeDelay);
             } else if (_ws) {
                 try { _ws.close(); } catch(e) {}
             }
