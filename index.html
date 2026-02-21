@@ -475,37 +475,38 @@
         }
         .modal.active { display: flex; }
         .modal-content {
-            background: white; padding: 40px; border-radius: 20px;
-            text-align: center; color: #333; max-width: 500px;
+            background: white; padding: 20px 24px; border-radius: 16px;
+            text-align: center; color: #333; max-width: 500px; width: 92%;
+            max-height: 90vh; overflow-y: auto;
             animation: slideIn 0.4s;
         }
         @keyframes slideIn { from{transform:translateY(-50px);opacity:0;} to{transform:translateY(0);opacity:1;} }
-        .modal-content h2 { font-size: 2.5em; margin-bottom: 20px; color: #667eea; }
-        .rankings { margin: 20px 0; font-size: 1.1em; }
-        .ranking-item { padding: 12px; margin: 6px 0; background: #f5f5f5; border-radius: 8px; font-weight: bold; }
+        .modal-content h2 { font-size: 1.5em; margin-bottom: 6px; color: #667eea; }
+        .rankings { margin: 10px 0; font-size: 0.92em; }
+        .ranking-item { padding: 7px 10px; margin: 4px 0; background: #f5f5f5; border-radius: 8px; font-weight: bold; }
         .ranking-item.winner { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
         .ranking-item.loser { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
         /* Rank change card in game-over modal */
         .rank-change-card {
             background: rgba(102,126,234,0.13);
             border: 1px solid rgba(102,126,234,0.35);
-            border-radius: 16px; padding: 16px 12px; margin-top: 14px; text-align: center;
+            border-radius: 12px; padding: 10px 10px; margin-top: 8px; text-align: center;
         }
         .rank-change-title {
-            font-size: 1em; font-weight: bold; margin-bottom: 12px; color: #667eea;
+            font-size: 0.88em; font-weight: bold; margin-bottom: 8px; color: #667eea;
         }
         .rank-change-body {
             display: flex; align-items: center; justify-content: center;
-            gap: 12px; flex-wrap: wrap;
+            gap: 10px; flex-wrap: wrap;
         }
         .rank-change-item {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            font-size: 0.85em; font-weight: bold; color: #222;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            font-size: 0.78em; font-weight: bold; color: #222;
         }
-        .rank-change-img { width: 64px; height: 64px; object-fit: contain; border-radius: 8px; }
-        .rank-change-arrow { font-size: 1.4em; font-weight: bold; color: #444; }
-        .rank-pts-old { font-size: 0.78em; color: #555; }
-        .rank-pts-new { font-size: 0.78em; color: #555; }
+        .rank-change-img { width: 44px; height: 44px; object-fit: contain; border-radius: 6px; }
+        .rank-change-arrow { font-size: 1.1em; font-weight: bold; color: #444; }
+        .rank-pts-old { font-size: 0.74em; color: #555; }
+        .rank-pts-new { font-size: 0.74em; color: #555; }
         .rank-change-delta-pos { color: #2e7d32; font-weight: bold; }
         .rank-change-delta-neg { color: #c62828; font-weight: bold; }
 
@@ -2004,18 +2005,18 @@
 
     <!-- MATCH RESULT MODAL -->
     <div class="modal" id="match-result-modal">
-        <div class="modal-content" style="max-width:520px;">
-            <h2 style="font-size:2em; margin-bottom:4px;">📊 Hasil Pertandingan</h2>
-            <p id="match-result-round" style="color:#888; font-size:0.9em; margin-bottom:16px;"></p>
-            <div id="match-result-rankings" class="rankings" style="text-align:left; max-height:300px; overflow-y:auto;"></div>
+        <div class="modal-content" style="max-width:480px;">
+            <h2 style="font-size:1.3em; margin-bottom:3px;">📊 Hasil Pertandingan</h2>
+            <p id="match-result-round" style="color:#888; font-size:0.8em; margin-bottom:8px;"></p>
+            <div id="match-result-rankings" class="rankings" style="text-align:left; max-height:180px; overflow-y:auto;"></div>
             <div id="match-result-stats"
-                style="margin-top:12px; padding:10px 14px; background:#f0f4ff;
-                       border-radius:8px; font-size:0.85em; color:#555; text-align:left;"></div>
+                style="margin-top:6px; padding:6px 10px; background:#f0f4ff;
+                       border-radius:8px; font-size:0.78em; color:#555; text-align:left;"></div>
             <div id="match-result-rank-change"></div>
             <button onclick="goToHome()"
-                style="margin-top:20px; width:100%; padding:14px; font-size:1.1em; font-weight:bold;
+                style="margin-top:10px; width:100%; padding:10px; font-size:0.95em; font-weight:bold;
                        background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-                       color:white; border:none; border-radius:12px; cursor:pointer;
+                       color:white; border:none; border-radius:10px; cursor:pointer;
                        box-shadow:0 4px 15px rgba(102,126,234,0.4); transition:transform 0.15s;"
                 onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                 🎮 Kembali ke Home
@@ -2055,10 +2056,9 @@
         <div class="modal-content">
             <h2>🏆 GAME OVER! 🏆</h2>
             <div class="rankings" id="rankings"></div>
-            <div style="display:flex; gap:12px; margin-top:18px; justify-content:center; flex-wrap:wrap;">
-                <button class="btn-draw" onclick="location.reload()" style="font-size:1em;">🔄 Main Lagi</button>
+            <div style="display:flex; gap:12px; margin-top:12px; justify-content:center; flex-wrap:wrap;">
                 <button class="btn-draw" onclick="goToHome()"
-                    style="font-size:1em; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); border-color:transparent;">
+                    style="font-size:0.95em; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); border-color:transparent;">
                     🎮 Kembali ke Home
                 </button>
             </div>
@@ -2114,6 +2114,9 @@
             return `gambar/rank/${getRankTier(rankName)}.png`;
         }
         function calculateNewRank(rankName, points, position) {
+            // Validasi input untuk mencegah crash saat data tidak valid
+            if (!RANKS.includes(rankName)) rankName = 'Bronze III';
+            if (position < 1 || position > 4) return { rankName, points };
             const tier    = getRankTier(rankName);
             const change  = RANK_CHANGES[tier][position - 1];
             const idx     = RANKS.indexOf(rankName);
@@ -3355,10 +3358,10 @@
                         if (_me2 && _me2.winner && _me2.rank > 0 && !_me2.isBot) _rankToSave = _me2.rank;
                     }
                     if (_rankToSave) {
-                        const _r = _rankToSave;
-                        saveMatchResult(_r).then(() => {
-                            if (pendingClientSaveRank === _r) pendingClientSaveRank = null;
-                        });
+                        // Clear SEBELUM save agar jika server kirim SAVE_STATS_CLIENT 2x,
+                        // save kedua tidak dipicu (mencegah double-count rank di Firebase)
+                        pendingClientSaveRank = null;
+                        saveMatchResult(_rankToSave);
                     }
                     break;
                 }
@@ -3940,8 +3943,25 @@
             }
 
             // Reset flag untuk pertandingan berikutnya
-            // JANGAN null-kan pendingClientSaveRank di sini — biarkan handler SAVE_STATS_CLIENT yang clear-nya
             hasGameOverSaved = false;
+            pendingClientSaveRank = null; // reset untuk pertandingan berikutnya
+
+            // Bersihkan semua timer dan handler force pick agar tidak bocor ke pertandingan berikutnya
+            stopForcePickHeartbeat();
+            if (autoForcePickTimer) { clearTimeout(autoForcePickTimer); autoForcePickTimer = null; }
+            forcePickClickDebounce = false;
+            // Hapus event listener force pick dari semua elemen kartu
+            document.querySelectorAll('[data-card-id]').forEach(el => {
+                if (el._forcePickHandler) {
+                    el.removeEventListener('click', el._forcePickHandler);
+                    el._forcePickHandler = null;
+                }
+            });
+            // Bersihkan bgMusic2 first-click handler jika masih terdaftar
+            if (window._bgMusic2FirstClickHandler) {
+                document.removeEventListener('click', window._bgMusic2FirstClickHandler);
+                window._bgMusic2FirstClickHandler = null;
+            }
 
             // Tutup semua overlay/modal
             ['surrender-choice-modal', 'match-result-modal', 'game-over-modal'].forEach(id => {
@@ -3949,16 +3969,23 @@
                 if (el) el.classList.remove('active');
             });
 
-            // Hentikan bgMusic2 (musik matchmaking) jika masih berjalan
+            // Hentikan bgMusic2 (musik game) jika masih berjalan
             try {
                 soundEffects.bgMusic2.pause();
                 soundEffects.bgMusic2.currentTime = 0;
             } catch(e) {}
 
             // Putar bgMusic (user gesture sudah terjadi karena klik tombol)
+            // Dengan fallback autoplay policy
             try {
                 soundEffects.bgMusic.currentTime = 0;
-                soundEffects.bgMusic.play().catch(() => {});
+                soundEffects.bgMusic.play().catch(() => {
+                    const onClick = function() {
+                        soundEffects.bgMusic.play().catch(() => {});
+                        document.removeEventListener('click', onClick);
+                    };
+                    document.addEventListener('click', onClick);
+                });
             } catch(e) {}
 
             // Simpan ref ws & roomId sebelum di-null, lalu kirim LEAVE_MATCH ke server.
