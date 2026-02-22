@@ -1333,8 +1333,8 @@
             <!-- Register Form -->
             <div id="register-form" style="display:none;">
                 <div style="background:rgba(255,193,7,0.2);border:1px solid rgba(255,193,7,0.5);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:0.85em;text-align:left;line-height:1.6;">
-                    ℹ️ Format email: <strong>namakamu@cardgame.local</strong><br>
-                    Contoh: <em>glory@cardgame.local</em>
+                    ℹ️ Format email: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e18f808c808a808c94a18280938586808c84cf8d8e82808d">[email&#160;protected]</a></strong><br>
+                    Contoh: <em><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5c3b30332e251c3f3d2e383b3d31397230333f3d30">[email&#160;protected]</a></em>
                 </div>
                 <input type="text" class="auth-input" id="reg-email" placeholder="📧 Email (@cardgame.local)" autocomplete="off">
                 <input type="password" class="auth-input" id="reg-password" placeholder="🔑 Password (min 6 karakter)">
@@ -1889,7 +1889,7 @@
 
             <!-- PANEL KIRI: LAWAN -->
             <div class="opponents-panel" id="opponents-panel">
-                <div class="opponents-title">🦁Lawan🦁</div>
+                <div class="opponents-title">🤖 Lawan</div>
                 <div style="margin-bottom:8px; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px; text-align:center;">
                     <div style="font-size:0.85em; margin-bottom:5px;">📋 Tersisa: <strong id="draw-pile-count-2">0</strong></div>
                     <div style="font-size:0.85em;">📥 Terpakai: <strong id="discard-pile-count-2">0</strong></div>
@@ -2065,7 +2065,7 @@
         </div>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // =============================================
         // FIREBASE INITIALIZATION
         // =============================================
@@ -5058,7 +5058,7 @@
                     return;
                 }
                 const items = [];
-                snap.forEach(child => items.push(child.val()));
+                snap.forEach(child => { items.push(child.val()); });
                 items.reverse();
                 listEl.innerHTML = items.map((m, i) => {
                     const d = new Date(m.date);
@@ -5210,7 +5210,7 @@
                 }
                 const medals = { 1:'🥇 Juara 1', 2:'🥈 Juara 2', 3:'🥉 Juara 3', 4:'💀 Juara 4' };
                 const items = [];
-                snap.forEach(child => items.push(child.val()));
+                snap.forEach(child => { items.push(child.val()); });
                 items.reverse();
                 listEl.innerHTML = items.map((m, i) => {
                     const d = new Date(m.date);
@@ -5450,7 +5450,7 @@
                     rarityBadge.className = `enc-rarity-badge ${cardData.rarity}`;
                     rarityBadge.textContent = rarityLabels[cardData.rarity] || cardData.rarity;
 
-                    wrapper.appendChild(cardEl);
+                      wrapper.appendChild(cardEl);
                     wrapper.appendChild(powerBadge);
                     wrapper.appendChild(rarityBadge);
                     cardsRow.appendChild(wrapper);
