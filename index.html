@@ -176,20 +176,24 @@
             gap: 10px;
             width: 100%;
             padding: 14px 20px 28px;
-            background: rgba(0,0,0,0.18);
-            backdrop-filter: blur(6px);
+            background: transparent;
         }
         .menu-nav-scroll {
             display: flex;
             flex-direction: row;
             gap: 10px;
             overflow: hidden;
-            /* Show exactly 3 buttons; each btn ~160px + 10px gap */
             width: calc(3 * 160px + 2 * 10px);
-            scroll-behavior: smooth;
-            transition: transform 0.3s ease;
+            flex-shrink: 0;
         }
-        .menu-nav-scroll .btn-encyclopedia {
+        .menu-nav-scroll-inner {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            transition: transform 0.3s ease;
+            will-change: transform;
+        }
+        .menu-nav-scroll-inner .btn-encyclopedia {
             flex: 0 0 160px;
             width: 160px;
         }
@@ -1464,10 +1468,12 @@
                 <div class="menu-bottom-nav">
                     <button class="menu-nav-arrow" onclick="scrollMenuNav(-1)">◀</button>
                     <div class="menu-nav-scroll" id="menu-nav-scroll">
-                        <button class="btn-encyclopedia btn-leaderboard" onclick="showLeaderboard()">🏆 Leaderboard</button>
-                        <button class="btn-encyclopedia btn-ensiklopedia-style" onclick="showEncyclopedia()">🧭 Ensiklopedia</button>
-                        <button class="btn-encyclopedia btn-teman-style" onclick="showTemanScreen()">👥 Teman</button>
-                        <button class="btn-encyclopedia btn-settings-style" onclick="showSettingsScreen()">⚙️ Pengaturan</button>
+                        <div class="menu-nav-scroll-inner" id="menu-nav-inner">
+                            <button class="btn-encyclopedia btn-leaderboard" onclick="showLeaderboard()">🏆 Leaderboard</button>
+                            <button class="btn-encyclopedia btn-ensiklopedia-style" onclick="showEncyclopedia()">🧭 Ensiklopedia</button>
+                            <button class="btn-encyclopedia btn-teman-style" onclick="showTemanScreen()">👥 Teman</button>
+                            <button class="btn-encyclopedia btn-settings-style" onclick="showSettingsScreen()">⚙️ Pengaturan</button>
+                        </div>
                     </div>
                     <button class="menu-nav-arrow" onclick="scrollMenuNav(1)">▶</button>
                 </div>
@@ -5467,12 +5473,21 @@
         let _menuNavIndex = 0;
         const _menuNavVisible = 3;
         function scrollMenuNav(dir) {
-            const btns = document.querySelectorAll('#menu-nav-scroll .btn-encyclopedia');
+            const btns = document.querySelectorAll('#menu-nav-inner .btn-encyclopedia');
             const total = btns.length;
             _menuNavIndex = Math.max(0, Math.min(_menuNavIndex + dir, total - _menuNavVisible));
-            const btnWidth = 160 + 10; // width + gap
-            document.getElementById('menu-nav-scroll').style.transform = `translateX(-${_menuNavIndex * btnWidth}px)`;
+            const btnWidth = 160 + 10; // 160px button + 10px gap
+            document.getElementById('menu-nav-inner').style.transform = `translateX(-${_menuNavIndex * btnWidth}px)`;
+            // Update arrow visibility
+            const arrows = document.querySelectorAll('.menu-nav-arrow');
+            arrows[0].style.visibility = _menuNavIndex === 0 ? 'hidden' : 'visible';
+            arrows[1].style.visibility = _menuNavIndex >= total - _menuNavVisible ? 'hidden' : 'visible';
         }
+        // Init arrow states on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const arrows = document.querySelectorAll('.menu-nav-arrow');
+            if (arrows.length >= 2) arrows[0].style.visibility = 'hidden'; // hide left arrow initially
+        });
 
         function showEncTab(tab) {
             document.getElementById('enc-tab-btn-cards').classList.toggle('active', tab === 'cards');
