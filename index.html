@@ -109,11 +109,11 @@
         #matchmaking-screen {
             display: none;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-end;
             align-items: center;
             min-height: 100vh;
             text-align: center;
-            padding: 20px;
+            padding: 0;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
@@ -125,11 +125,15 @@
         #matchmaking-screen.hidden { display: none; }
 
         .matchmaking-container {
-            background: rgba(255,255,255,0.1);
-            padding: 50px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            backdrop-filter: none;
+            box-shadow: none;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .matchmaking-title {
             font-size: 2.5em;
@@ -154,13 +158,64 @@
         }
         .btn-cancel:hover { background: rgba(244,67,54,1); transform: translateY(-2px); }
         .btn-start {
-            padding: 20px 60px; font-size: 1.5em; font-weight: bold;
+            padding: 22px 80px; font-size: 1.8em; font-weight: bold;
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white; border: none; border-radius: 50px; cursor: pointer;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: all 0.3s ease;
             text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 20px;
         }
         .btn-start:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
+
+        /* Bottom nav bar for menu buttons */
+        .menu-bottom-nav {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 20px 28px;
+            background: rgba(0,0,0,0.18);
+            backdrop-filter: blur(6px);
+        }
+        .menu-nav-scroll {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            overflow: hidden;
+            /* Show exactly 3 buttons; each btn ~160px + 10px gap */
+            width: calc(3 * 160px + 2 * 10px);
+            scroll-behavior: smooth;
+            transition: transform 0.3s ease;
+        }
+        .menu-nav-scroll .btn-encyclopedia {
+            flex: 0 0 160px;
+            width: 160px;
+        }
+        .btn-ensiklopedia-style {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+            box-shadow: 0 4px 14px rgba(240,147,251,0.4) !important;
+        }
+        .btn-teman-style {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            box-shadow: 0 4px 14px rgba(102,126,234,0.4) !important;
+        }
+        .btn-settings-style {
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%) !important;
+            box-shadow: 0 4px 14px rgba(161,140,209,0.4) !important;
+            color: #3d1a6e !important;
+        }
+        .menu-nav-arrow {
+            background: rgba(255,255,255,0.18);
+            border: none; border-radius: 50%;
+            width: 36px; height: 36px;
+            color: white; font-size: 1.1em;
+            cursor: pointer; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .menu-nav-arrow:hover { background: rgba(255,255,255,0.35); }
 
         /* ============================================ */
         /* GAME CONTAINER */
@@ -680,21 +735,22 @@
         /* ENSIKLOPEDIA */
         /* ============================================ */
         .btn-encyclopedia {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: #fff; font-size: 1em; font-weight: bold;
-            padding: 14px 32px; border-radius: 14px;
-            margin-top: 16px; display: block;
-            width: 100%; max-width: 280px; border: none;
-            box-shadow: 0 6px 20px rgba(240,147,251,0.4);
-            letter-spacing: 0.3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff; font-size: 0.95em; font-weight: bold;
+            padding: 12px 22px; border-radius: 30px;
+            margin-top: 0; display: inline-flex; align-items: center; gap: 6px;
+            width: auto; border: none;
+            box-shadow: 0 4px 14px rgba(102,126,234,0.4);
+            letter-spacing: 0.3px; cursor: pointer; transition: all 0.2s;
+            white-space: nowrap;
         }
-        .btn-encyclopedia:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(240,147,251,0.6); }
+        .btn-encyclopedia:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(102,126,234,0.6); }
         .btn-leaderboard {
             background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important;
-            box-shadow: 0 6px 20px rgba(247,151,30,0.5) !important;
+            box-shadow: 0 4px 14px rgba(247,151,30,0.5) !important;
             color: #3d2000 !important;
         }
-        .btn-leaderboard:hover { box-shadow: 0 10px 28px rgba(255,210,0,0.7) !important; }
+        .btn-leaderboard:hover { box-shadow: 0 8px 22px rgba(255,210,0,0.7) !important; }
 
         /* ===== LEADERBOARD SCREEN ===== */
         #leaderboard-screen {
@@ -1403,15 +1459,18 @@
     <!-- MATCHMAKING SCREEN -->
     <div id="matchmaking-screen">
         <div class="matchmaking-container">
-            <h1 class="matchmaking-title">🎮 Card Game Online</h1>
-
-            <div id="matchmaking-idle" style="display:flex;flex-direction:column;align-items:center;">
-                <p style="font-size:1.2em; margin-bottom:30px;">Main dengan pemain lain secara online!</p>
+            <div id="matchmaking-idle" style="display:flex;flex-direction:column;align-items:center;width:100%;">
                 <button class="btn-start" onclick="startMatchmaking()">🎮 MAIN ONLINE</button>
-                <button class="btn-encyclopedia btn-leaderboard" onclick="showLeaderboard()">🏆 &nbsp; Leaderboard &nbsp; 🏆</button>
-                <button class="btn-encyclopedia" onclick="showEncyclopedia()">🧭 &nbsp; Ensiklopedia &nbsp; 🧭</button>
-                <button class="btn-encyclopedia" onclick="showTemanScreen()" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);box-shadow:0 6px 20px rgba(102,126,234,0.4);">👥 &nbsp; Teman &nbsp; 👥</button>
-                <button class="btn-settings" onclick="showSettingsScreen()">⚙️ &nbsp; Pengaturan &nbsp; ⚙️</button>
+                <div class="menu-bottom-nav">
+                    <button class="menu-nav-arrow" onclick="scrollMenuNav(-1)">◀</button>
+                    <div class="menu-nav-scroll" id="menu-nav-scroll">
+                        <button class="btn-encyclopedia btn-leaderboard" onclick="showLeaderboard()">🏆 Leaderboard</button>
+                        <button class="btn-encyclopedia btn-ensiklopedia-style" onclick="showEncyclopedia()">🧭 Ensiklopedia</button>
+                        <button class="btn-encyclopedia btn-teman-style" onclick="showTemanScreen()">👥 Teman</button>
+                        <button class="btn-encyclopedia btn-settings-style" onclick="showSettingsScreen()">⚙️ Pengaturan</button>
+                    </div>
+                    <button class="menu-nav-arrow" onclick="scrollMenuNav(1)">▶</button>
+                </div>
             </div>
 
             <div id="matchmaking-waiting" style="display:none;">
@@ -5403,6 +5462,17 @@
 
         // Fungsi lama — tidak digunakan lagi (teman-tab-badge sudah dihapus)
         function updateFriendTabBadge() {}
+
+        // Nav bar scroll for menu buttons
+        let _menuNavIndex = 0;
+        const _menuNavVisible = 3;
+        function scrollMenuNav(dir) {
+            const btns = document.querySelectorAll('#menu-nav-scroll .btn-encyclopedia');
+            const total = btns.length;
+            _menuNavIndex = Math.max(0, Math.min(_menuNavIndex + dir, total - _menuNavVisible));
+            const btnWidth = 160 + 10; // width + gap
+            document.getElementById('menu-nav-scroll').style.transform = `translateX(-${_menuNavIndex * btnWidth}px)`;
+        }
 
         function showEncTab(tab) {
             document.getElementById('enc-tab-btn-cards').classList.toggle('active', tab === 'cards');
