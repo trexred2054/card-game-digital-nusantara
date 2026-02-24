@@ -1343,8 +1343,8 @@
             <!-- Register Form -->
             <div id="register-form" style="display:none;">
                 <div style="background:rgba(255,193,7,0.2);border:1px solid rgba(255,193,7,0.5);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:0.85em;text-align:left;line-height:1.6;">
-                    ℹ️ Format email: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e18f808c808a808c94a18280938586808c84cf8d8e82808d">[email&#160;protected]</a></strong><br>
-                    Contoh: <em><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5c3b30332e251c3f3d2e383b3d31397230333f3d30">[email&#160;protected]</a></em>
+                    ℹ️ Gunakan username bebas, lalu tambahkan <strong>&#64;cardgame.local</strong> di belakangnya.<br>
+                    Contoh: <em>muridbaik&#64;cardgame.local</em>
                 </div>
                 <input type="text" class="auth-input" id="reg-email" placeholder="📧 Email (@cardgame.local)" autocomplete="off">
                 <input type="password" class="auth-input" id="reg-password" placeholder="🔑 Password (min 6 karakter)">
@@ -2328,6 +2328,13 @@
             if (!email || !pass) { showAuthError('⚠️ Email dan password tidak boleh kosong!'); return; }
             if (!email.endsWith('@cardgame.local')) { showAuthError('⚠️ Email harus berformat: namakamu@cardgame.local'); return; }
             if (email === '@cardgame.local') { showAuthError('⚠️ Bagian sebelum @ tidak boleh kosong!'); return; }
+
+            const usernameInput = email.split('@')[0];
+            if (usernameInput === 'muridbaik') {
+                showAuthError('⚠️ Username tersebut tidak boleh digunakan, pilih username lain!');
+                return;
+            }
+
             if (pass.length < 6) { showAuthError('⚠️ Password minimal 6 karakter!'); return; }
             if (pass !== confirm) { showAuthError('⚠️ Konfirmasi password tidak cocok!'); return; }
             setAuthLoading(true); showAuthError('');
