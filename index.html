@@ -5836,11 +5836,16 @@
                     powerBadge.textContent = '⚡ Power ' + cardData.power;
 
                     const rarityLabels = {
-                        legendary: '👑 Legendary',
-                        epic:      '💜 Epic',
-                        rare:      '💠 Rare',
-                        uncommon:  '🟢 Uncommon',
-                        common:    '⚪ Common'
+                        mythic:      '🔥 Mythic',
+                        legendary:   '👑 Legendary',
+                        epic:        '👾 Epic',
+                        rareplus:    '💎 Rare+',
+                        rarestar:    '💙 Rare★',
+                        rare:        '💠 Rare',
+                        uncommon:    '💚 Uncommon',
+                        uncommonplus:'🍀 Uncommon+',
+                        commonplus:  '🟢 Common+',
+                        common:      '⚪ Common'
                     };
                     const rarityBadge = document.createElement('div');
                     rarityBadge.className = `enc-rarity-badge ${cardData.rarity}`;
