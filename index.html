@@ -306,9 +306,9 @@
             backdrop-filter: blur(18px);
             border: 2px solid rgba(255,255,255,0.18);
             border-radius: 20px;
-            padding: 24px 28px;
-            max-width: 480px;
-            width: 92%;
+            padding: 20px 22px;
+            max-width: 600px;
+            width: 96%;
             text-align: center;
             margin: 0 auto;
             animation: fadeInUp 0.4s ease;
@@ -327,18 +327,20 @@
         }
         .prov-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 18px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 7px;
+            margin-bottom: 16px;
+            max-height: 280px;
+            overflow-y: auto;
         }
         .prov-chip {
             background: rgba(255,255,255,0.1);
             border: 1.5px solid rgba(255,255,255,0.2);
             border-radius: 10px;
-            padding: 8px 10px;
-            font-size: 0.9em;
+            padding: 6px 8px;
+            font-size: 0.78em;
             color: #fff;
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; gap: 5px;
             text-align: left;
         }
         .prov-chip.mandatory {
@@ -347,7 +349,7 @@
             color: #ffd700;
             font-weight: bold;
         }
-        .prov-chip-icon { font-size: 1.1em; flex-shrink: 0; }
+        .prov-chip-icon { width: 40px; height: 30px; object-fit: contain; border-radius: 4px; flex-shrink: 0; }
         .prov-countdown {
             font-size: 1.1em; color: rgba(255,255,255,0.8);
         }
@@ -422,7 +424,7 @@
         .card.mythic      { border: 2px solid #ff6d00; background: linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%); }
         .card.legendary   { border: 2px solid #ffd700; background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); }
         .card.epic        { border: 2px solid #9c27b0; background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%); }
-        .card.rareplus    { border: 2px solid #1565c0; background: linear-gradient(135deg, #e3f2fd 0%, #90caf9 100%); }
+        .card.rareplus    { border: 2px solid #0d2b6e; background: linear-gradient(135deg, #1a4faf 0%, #0d2b6e 100%); color: #fff; }
         .card.rarestar    { border: 2px solid #2196f3; background: linear-gradient(135deg, #bbdefb 0%, #64b5f6 100%); }
         .card.rare        { border: 2px solid #00acc1; background: linear-gradient(135deg, #e0f7fa 0%, #80deea 100%); }
         .card.uncommon    { border: 2px solid #2e7d32; background: linear-gradient(135deg, #c8e6c9 0%, #81c784 100%); }
@@ -598,7 +600,7 @@
         .province-info-card.mythic      { border: 2px solid #ff6d00; background: linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%); }
         .province-info-card.legendary   { border: 2px solid #ffd700; background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); }
         .province-info-card.epic        { border: 2px solid #9c27b0; background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%); }
-        .province-info-card.rareplus    { border: 2px solid #1565c0; background: linear-gradient(135deg, #e3f2fd 0%, #90caf9 100%); }
+        .province-info-card.rareplus    { border: 2px solid #0d2b6e; background: linear-gradient(135deg, #1a4faf 0%, #0d2b6e 100%); color: #fff; }
         .province-info-card.rarestar    { border: 2px solid #2196f3; background: linear-gradient(135deg, #bbdefb 0%, #64b5f6 100%); }
         .province-info-card.rare        { border: 2px solid #00acc1; background: linear-gradient(135deg, #e0f7fa 0%, #80deea 100%); }
         .province-info-card.uncommon    { border: 2px solid #2e7d32; background: linear-gradient(135deg, #c8e6c9 0%, #81c784 100%); }
@@ -982,7 +984,7 @@
         .enc-rarity-badge.mythic      { background: linear-gradient(135deg,#fff3e0,#ff6d00); color: #fff; border-color: #ff6d00; }
         .enc-rarity-badge.legendary   { background: linear-gradient(135deg,#fff9c4,#ffd700); color: #5d4037; border-color: #ffd700; }
         .enc-rarity-badge.epic        { background: linear-gradient(135deg,#e1bee7,#9c27b0); color: #fff; border-color: #9c27b0; }
-        .enc-rarity-badge.rareplus    { background: linear-gradient(135deg,#e3f2fd,#1565c0); color: #fff; border-color: #1565c0; }
+        .enc-rarity-badge.rareplus    { background: linear-gradient(135deg,#1a4faf,#0d2b6e); color: #fff; border-color: #0d2b6e; }
         .enc-rarity-badge.rarestar    { background: linear-gradient(135deg,#bbdefb,#2196f3); color: #fff; border-color: #2196f3; }
         .enc-rarity-badge.rare        { background: linear-gradient(135deg,#e0f7fa,#00acc1); color: #fff; border-color: #00acc1; }
         .enc-rarity-badge.uncommon    { background: linear-gradient(135deg,#c8e6c9,#2e7d32); color: #fff; border-color: #2e7d32; }
@@ -1155,6 +1157,71 @@
             font-size: 0.8em; color: rgba(255,255,255,0.7);
             padding: 6px 20px 0; line-height: 1.5;
         }
+        /* DRAW LEVEL POPUP */
+        #draw-level-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.65); z-index: 31000;
+            align-items: center; justify-content: center;
+        }
+        #draw-level-overlay.active { display: flex; }
+        .dl-modal {
+            background: linear-gradient(160deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+            border: 1px solid rgba(255,255,255,0.18); border-radius: 18px;
+            width: 320px; max-width: 94vw; padding: 0 0 18px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            animation: popIn .18s ease;
+        }
+        @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .dl-header {
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            border-radius: 18px 18px 0 0; padding: 14px 18px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .dl-title { font-size: 1.05em; font-weight: bold; color: #fff; }
+        .dl-level-badge {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; padding: 14px 18px 8px;
+        }
+        .dl-level-star {
+            font-size: 1.8em; filter: drop-shadow(0 0 8px #ffd700);
+        }
+        .dl-level-text { font-size: 1.3em; font-weight: bold; color: #ffd700; }
+        .dl-progress-wrap { padding: 0 18px 12px; }
+        .dl-progress-label {
+            font-size: 0.8em; color: rgba(255,255,255,0.7); margin-bottom: 5px;
+            display: flex; justify-content: space-between;
+        }
+        .dl-progress-bar-bg {
+            background: rgba(255,255,255,0.12); border-radius: 20px; height: 10px; overflow: hidden;
+        }
+        .dl-progress-bar-fill {
+            height: 100%; border-radius: 20px; transition: width .4s ease;
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+        }
+        .dl-section-title {
+            font-size: 0.75em; font-weight: bold; color: rgba(255,255,255,0.6);
+            text-transform: uppercase; letter-spacing: 0.06em;
+            padding: 6px 18px 4px;
+        }
+        .dl-rate-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 5px; padding: 0 18px;
+        }
+        .dl-rate-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.07); border-radius: 8px;
+            padding: 5px 10px; font-size: 0.82em;
+        }
+        .dl-rate-name { color: rgba(255,255,255,0.85); }
+        .dl-rate-pct  { font-weight: bold; color: #ffd700; }
+        .btn-dl-info {
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+            color: #fff; border-radius: 50%; width: 26px; height: 26px;
+            font-size: 0.85em; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: background .15s; flex-shrink: 0;
+        }
+        .btn-dl-info:hover { background: rgba(255,255,255,0.28); }
         .profile-empty { color: rgba(255,255,255,0.5); text-align: center; padding: 40px 0; font-size: 1em; }
         /* Rank display in profile */
         .profile-rank-section {
@@ -1628,10 +1695,10 @@
                     <div class="enc-rule-heading">Jenis Kartu & Kekuatannya</div>
                     <div class="enc-rule-text">Setiap provinsi punya 10 kartu dengan kekuatan berbeda:</div>
                     <div class="enc-rarity-row">
-                        <span class="enc-rarity-chip" style="background:linear-gradient(135deg,#fff3e0,#ffcc80);color:#bf360c;">🔥 SDA Unggulan — Power 10</span>
-                        <span class="enc-rarity-chip" style="background:linear-gradient(135deg,#fff9c4,#fff59d);color:#5d4037;">👑 Bangunan Bersejarah — Power 9</span>
+                        <span class="enc-rarity-chip" style="background:linear-gradient(135deg,#fff3e0,#ffcc80);color:#bf360c;">👑 SDA Unggulan — Power 10</span>
+                        <span class="enc-rarity-chip" style="background:linear-gradient(135deg,#fff9c4,#fff59d);color:#5d4037;">🔥 Bangunan Bersejarah — Power 9</span>
                         <span class="enc-rarity-chip" style="background:linear-gradient(135deg,#e1bee7,#ce93d8);color:#4a148c;">👾 Sektor Ekonomi — Power 8</span>
-                        <span class="enc-rarity-chip" style="background:linear-gradient(135deg,#e3f2fd,#90caf9);color:#0d47a1;">💎 Rumah Adat — Power 7</span>
+                        <span class="enc-rarity-chip" style="background:linear-gradient(135deg,#1a4faf,#0d2b6e);color:#fff;">💎 Rumah Adat — Power 7</span>
                         <span class="enc-rarity-chip" style="background:linear-gradient(135deg,#bbdefb,#64b5f6);color:#0d47a1;">💙 Senjata Tradisional — Power 6</span>
                         <span class="enc-rarity-chip" style="background:linear-gradient(135deg,#e0f7fa,#80deea);color:#006064;">💠 Pakaian Adat — Power 5</span>
                         <span class="enc-rarity-chip" style="background:linear-gradient(135deg,#c8e6c9,#81c784);color:#1b5e20;">💚 Alat Musik — Power 4</span>
@@ -1682,6 +1749,50 @@
                     </div>
                 </div>
 
+                <div class="enc-rule-card" style="border-color:#f093fb;">
+                    <span class="enc-rule-icon">🎰</span>
+                    <div class="enc-rule-heading">Sistem Draw Level — Makin Sering Draw, Makin Bagus Kartunya!</div>
+                    <div class="enc-rule-text">
+                        Setiap pemain punya <strong>Draw Level</strong> (Level 1–5) yang naik otomatis setiap kali kamu melakukan Draw Card. Semakin tinggi levelmu, semakin besar peluang mendapat kartu langka!<br><br>
+                        <strong>📈 Cara Naik Level:</strong><br>
+                        ⭐ Level 1 → Level 2 : 2 Draw Card<br>
+                        ⭐⭐ Level 2 → Level 3 : 3 Draw Card (total 5)<br>
+                        ⭐⭐⭐ Level 3 → Level 4 : 4 Draw Card (total 9)<br>
+                        ⭐⭐⭐⭐ Level 4 → Level 5 : 5 Draw Card (total 14)<br>
+                        ⭐⭐⭐⭐⭐ Level 5 : Level tertinggi, tidak bisa naik lagi<br><br>
+                        <strong>🎴 Peluang Kartu per Level:</strong>
+                    </div>
+                    <div style="overflow-x:auto; margin-top:8px;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.78em; text-align:center;">
+                            <thead>
+                                <tr style="background:rgba(255,255,255,0.12);">
+                                    <th style="padding:5px 4px; text-align:left; border-radius:6px 0 0 0;">Kartu</th>
+                                    <th style="padding:5px 3px;">⭐ Lv1</th>
+                                    <th style="padding:5px 3px;">⭐⭐ Lv2</th>
+                                    <th style="padding:5px 3px;">⭐⭐⭐ Lv3</th>
+                                    <th style="padding:5px 3px;">⭐⭐⭐⭐ Lv4</th>
+                                    <th style="padding:5px 3px; border-radius:0 6px 0 0;">⭐×5 Lv5</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td style="text-align:left;padding:4px;">👑 Mythic</td><td>0.5%</td><td>2%</td><td>5%</td><td>8%</td><td style="color:#ffd700;font-weight:bold;">25%</td></tr>
+                                <tr style="background:rgba(255,255,255,0.05);"><td style="text-align:left;padding:4px;">🔥 Legendary</td><td>1%</td><td>4%</td><td>8%</td><td>12%</td><td style="color:#ffd700;font-weight:bold;">20%</td></tr>
+                                <tr><td style="text-align:left;padding:4px;">👾 Epic</td><td>2.5%</td><td>7%</td><td>12%</td><td>15%</td><td>15%</td></tr>
+                                <tr style="background:rgba(255,255,255,0.05);"><td style="text-align:left;padding:4px;">💎 Rare+</td><td>5%</td><td>10%</td><td>13%</td><td>15%</td><td>12%</td></tr>
+                                <tr><td style="text-align:left;padding:4px;">💙 Rare★</td><td>8%</td><td>12%</td><td>13%</td><td>14%</td><td>10%</td></tr>
+                                <tr style="background:rgba(255,255,255,0.05);"><td style="text-align:left;padding:4px;">💠 Rare</td><td>12%</td><td>15%</td><td>12%</td><td>13%</td><td>8%</td></tr>
+                                <tr><td style="text-align:left;padding:4px;">💚 Uncommon</td><td>16%</td><td>18%</td><td>13%</td><td>10%</td><td>5%</td></tr>
+                                <tr style="background:rgba(255,255,255,0.05);"><td style="text-align:left;padding:4px;">🍀 nCommon</td><td>18%</td><td>15%</td><td>10%</td><td>7%</td><td>3%</td></tr>
+                                <tr><td style="text-align:left;padding:4px;">🟢 Common+</td><td>19%</td><td>9.5%</td><td>8%</td><td>3.5%</td><td>1.5%</td></tr>
+                                <tr style="background:rgba(255,255,255,0.05);"><td style="text-align:left;padding:4px;">⚪ Common</td><td>18%</td><td>7.5%</td><td>6%</td><td>2.5%</td><td>0.5%</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="enc-rule-text" style="margin-top:10px;">
+                        💡 <strong>Perlu diingat:</strong> Persentase ini hanya peluang — jika kartu Mythic sudah tidak tersisa di tumpukan, kamu tidak akan bisa mendapatkannya meskipun di Level 5. Klik tombol <strong>ℹ️</strong> di sebelah Draw Card untuk cek level & progress-mu saat ini!
+                    </div>
+                </div>
+
                 <div class="enc-rule-card" style="border-color:#4dd0e1;">
                     <span class="enc-rule-icon">💡</span>
                     <div class="enc-rule-heading">Tips Jago Main!</div>
@@ -1693,6 +1804,31 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- DRAW LEVEL INFO POPUP -->
+    <div id="draw-level-overlay" onclick="hideDrawLevelInfo()">
+        <div class="dl-modal" onclick="event.stopPropagation()">
+            <div class="dl-header">
+                <div class="dl-title">🎰 Draw Level</div>
+                <button class="btn-enc-close" onclick="hideDrawLevelInfo()">✖</button>
+            </div>
+            <div class="dl-level-badge">
+                <span class="dl-level-star" id="dl-star">⭐</span>
+                <span class="dl-level-text" id="dl-level-text">Level 1</span>
+            </div>
+            <div class="dl-progress-wrap">
+                <div class="dl-progress-label">
+                    <span id="dl-progress-label-left">0 / 2 draw menuju Level 2</span>
+                    <span id="dl-progress-label-right">0%</span>
+                </div>
+                <div class="dl-progress-bar-bg">
+                    <div class="dl-progress-bar-fill" id="dl-progress-fill" style="width:0%"></div>
+                </div>
+            </div>
+            <div class="dl-section-title">Rate kartu level ini</div>
+            <div class="dl-rate-grid" id="dl-rate-grid"></div>
         </div>
     </div>
 
@@ -2091,7 +2227,10 @@
                         <div class="player-stats">
                             <div class="player-stat">📇 Kartu: <strong id="player-cards">0</strong></div>
                             <div class="player-stat">⚡ Power: <strong id="player-power">0</strong></div>
-                            <button class="btn-draw" id="btn-draw" disabled style="margin-left:15px;">🎴 Draw Card</button>
+                            <div style="margin-left:15px; display:flex; align-items:center; gap:5px;">
+                                <button class="btn-draw" id="btn-draw" disabled>🎴 Draw Card</button>
+                                <button class="btn-dl-info" id="btn-draw-level-info" onclick="showDrawLevelInfo()" title="Info Draw Level">ℹ️</button>
+                            </div>
                             <div style="margin-left:15px; padding:8px 15px; background:rgba(255,255,255,0.2); border-radius:8px;">
                                 <span style="font-weight:bold; font-size:0.9em;">🎮 Ronde: <strong id="round-number">1</strong></span>
                             </div>
@@ -3853,7 +3992,7 @@
                         provinces.forEach(name => {
                             const chip = document.createElement('div');
                             chip.className = 'prov-chip' + (name === mandatory ? ' mandatory' : '');
-                            chip.innerHTML = `<span class="prov-chip-icon">${name === mandatory ? '⭐' : '🗺️'}</span>${name}`;
+                            chip.innerHTML = `<img src="gambar/provinsi/${name}/peta (${name}).png" alt="${name}" class="prov-chip-icon" onerror="this.style.display='none'">${name}`;
                             grid.appendChild(chip);
                         });
                     }
@@ -4113,7 +4252,7 @@
             div.className = `card ${card.rarity}`;
             div.dataset.cardId = card.id;
 
-            const rarityEmojis = { mythic:'🔥', legendary:'👑', epic:'👾', rareplus:'💎', rarestar:'💙', rare:'💠', uncommon:'💚', uncommonplus:'🍀', commonplus:'🟢', common:'⚪' };
+            const rarityEmojis = { mythic:'👑', legendary:'🔥', epic:'👾', rareplus:'💎', rarestar:'💙', rare:'💠', uncommon:'💚', uncommonplus:'🍀', commonplus:'🟢', common:'⚪' };
             const emojiMap = { 'SDA Unggulan':'⛰️', 'Bangunan Bersejarah':'🏛️', 'Sektor Ekonomi':'💰', 'Rumah Adat':'🏠', 'Senjata Tradisional':'🗡️', 'Pakaian Adat':'👘', 'Alat Musik':'🎵', 'Tarian':'💃', 'Adat Istiadat':'🏮', 'Makanan Khas':'🍜' };
 
             const fallbackEmoji = emojiMap[card.type] || '🎴';
@@ -4150,7 +4289,7 @@
             const player = gameState.players.find(p => p.id === myPlayerId);
             const playerCardIds = player ? player.hand.map(c => c.id) : [];
 
-            const rarityEmojis = { mythic:'🔥', legendary:'👑', epic:'👾', rareplus:'💎', rarestar:'💙', rare:'💠', uncommon:'💚', uncommonplus:'🍀', commonplus:'🟢', common:'⚪' };
+            const rarityEmojis = { mythic:'👑', legendary:'🔥', epic:'👾', rareplus:'💎', rarestar:'💙', rare:'💠', uncommon:'💚', uncommonplus:'🍀', commonplus:'🟢', common:'⚪' };
             const emojiMap = { 'SDA Unggulan':'⛰️', 'Bangunan Bersejarah':'🏛️', 'Sektor Ekonomi':'💰', 'Rumah Adat':'🏠', 'Senjata Tradisional':'🗡️', 'Pakaian Adat':'👘', 'Alat Musik':'🎵', 'Tarian':'💃', 'Adat Istiadat':'🏮', 'Makanan Khas':'🍜' };
 
             provinceData.cards.forEach(card => {
@@ -5718,6 +5857,78 @@
         }
 
         // =============================================
+        // DRAW LEVEL INFO POPUP
+        // =============================================
+        const DL_RATES = {
+            1: { mythic:0.5, legendary:1, epic:2.5, rareplus:5, rarestar:8, rare:12, uncommon:16, uncommonplus:18, commonplus:19, common:18 },
+            2: { mythic:2, legendary:4, epic:7, rareplus:10, rarestar:12, rare:15, uncommon:18, uncommonplus:15, commonplus:9.5, common:7.5 },
+            3: { mythic:5, legendary:8, epic:12, rareplus:13, rarestar:13, rare:12, uncommon:13, uncommonplus:10, commonplus:8, common:6 },
+            4: { mythic:8, legendary:12, epic:15, rareplus:15, rarestar:14, rare:13, uncommon:10, uncommonplus:7, commonplus:3.5, common:2.5 },
+            5: { mythic:25, legendary:20, epic:15, rareplus:12, rarestar:10, rare:8, uncommon:5, uncommonplus:3, commonplus:1.5, common:0.5 }
+        };
+        const DL_LABELS = [
+            { key:'mythic',      label:'👑 Mythic' },
+            { key:'legendary',   label:'🔥 Legendary' },
+            { key:'epic',        label:'👾 Epic' },
+            { key:'rareplus',    label:'💎 Rare+' },
+            { key:'rarestar',    label:'💙 Rare★' },
+            { key:'rare',        label:'💠 Rare' },
+            { key:'uncommon',    label:'💚 Uncommon' },
+            { key:'uncommonplus',label:'🍀 nCommon' },
+            { key:'commonplus',  label:'🟢 Common+' },
+            { key:'common',      label:'⚪ Common' },
+        ];
+        const DL_THRESHOLDS = [0, 0, 2, 5, 9, 14]; // index=level, value=min drawCount
+        const DL_STARS = { 1:'⭐', 2:'⭐⭐', 3:'⭐⭐⭐', 4:'⭐⭐⭐⭐', 5:'⭐⭐⭐⭐⭐' };
+
+        function showDrawLevelInfo() {
+            if (!gameState || !myPlayerId) return;
+            const player = gameState.players.find(p => p.id === myPlayerId);
+            const level  = (player && player.drawLevel) || 1;
+            const count  = (player && player.drawCount) || 0;
+
+            // Bintang & teks level
+            document.getElementById('dl-star').textContent        = DL_STARS[level];
+            document.getElementById('dl-level-text').textContent  = 'Level ' + level;
+
+            // Progress bar
+            const isMax = level >= 5;
+            if (isMax) {
+                document.getElementById('dl-progress-label-left').textContent  = '✨ Level Maksimal!';
+                document.getElementById('dl-progress-label-right').textContent = '';
+                document.getElementById('dl-progress-fill').style.width        = '100%';
+                document.getElementById('dl-progress-fill').style.background   = 'linear-gradient(90deg,#ffd700,#f093fb)';
+            } else {
+                const start      = DL_THRESHOLDS[level];
+                const nextStart  = DL_THRESHOLDS[level + 1];
+                const inLevel    = count - start;
+                const needed     = nextStart - start;
+                const pct        = Math.min(100, Math.round(inLevel / needed * 100));
+                document.getElementById('dl-progress-label-left').textContent  = `${inLevel} / ${needed} draw menuju Level ${level + 1}`;
+                document.getElementById('dl-progress-label-right').textContent = pct + '%';
+                document.getElementById('dl-progress-fill').style.width        = pct + '%';
+                document.getElementById('dl-progress-fill').style.background   = 'linear-gradient(90deg,#f093fb,#f5576c)';
+            }
+
+            // Rate grid
+            const grid = document.getElementById('dl-rate-grid');
+            grid.innerHTML = '';
+            const rates = DL_RATES[level];
+            DL_LABELS.forEach(({ key, label }) => {
+                const row = document.createElement('div');
+                row.className = 'dl-rate-row';
+                row.innerHTML = `<span class="dl-rate-name">${label}</span><span class="dl-rate-pct">${rates[key]}%</span>`;
+                grid.appendChild(row);
+            });
+
+            document.getElementById('draw-level-overlay').classList.add('active');
+        }
+
+        function hideDrawLevelInfo() {
+            document.getElementById('draw-level-overlay').classList.remove('active');
+        }
+
+        // =============================================
         // LEADERBOARD
         // =============================================
         function showLeaderboard() {
@@ -5917,8 +6128,8 @@
                     powerBadge.textContent = '⚡ Power ' + cardData.power;
 
                     const rarityLabels = {
-                        mythic:      '🔥 Mythic',
-                        legendary:   '👑 Legendary',
+                        mythic:      '👑 Mythic',
+                        legendary:   '🔥 Legendary',
                         epic:        '👾 Epic',
                         rareplus:    '💎 Rare+',
                         rarestar:    '💙 Rare★',
