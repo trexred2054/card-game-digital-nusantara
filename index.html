@@ -300,6 +300,59 @@
         .status-dot.waiting { background: #ffc107; animation: pulseDot 1s infinite; }
         @keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.05);opacity:0.9;} }
 
+        /* PROVINCE PREVIEW (setelah lawan ditemukan) */
+        #provinces-preview {
+            background: rgba(10, 5, 40, 0.82);
+            backdrop-filter: blur(18px);
+            border: 2px solid rgba(255,255,255,0.18);
+            border-radius: 20px;
+            padding: 24px 28px;
+            max-width: 480px;
+            width: 92%;
+            text-align: center;
+            margin: 0 auto;
+            animation: fadeInUp 0.4s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .prov-preview-title {
+            font-size: 1.5em; font-weight: bold; color: #fff;
+            margin-bottom: 4px;
+        }
+        .prov-preview-subtitle {
+            font-size: 0.95em; color: rgba(255,255,255,0.65);
+            margin-bottom: 16px;
+        }
+        .prov-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .prov-chip {
+            background: rgba(255,255,255,0.1);
+            border: 1.5px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: 0.9em;
+            color: #fff;
+            display: flex; align-items: center; gap: 6px;
+            text-align: left;
+        }
+        .prov-chip.mandatory {
+            background: rgba(255, 200, 0, 0.18);
+            border-color: #ffd700;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        .prov-chip-icon { font-size: 1.1em; flex-shrink: 0; }
+        .prov-countdown {
+            font-size: 1.1em; color: rgba(255,255,255,0.8);
+        }
+        .prov-countdown span { color: #ffd700; font-weight: bold; font-size: 1.3em; }
+
         /* RIGHT PANEL */
         .right-panel {
             display: flex; flex-direction: column; gap: 10px;
@@ -1528,9 +1581,12 @@
             </div>
 
             <div id="match-starting" style="display:none;">
-                <h2>✅ Lawan Ditemukan!</h2>
-                <p id="match-info" style="font-size:1.3em; margin:20px 0;"></p>
-                <p style="font-size:1.1em;">Game akan dimulai dalam 3 detik...</p>
+                <div id="provinces-preview">
+                    <div class="prov-preview-title">✅ Lawan Ditemukan!</div>
+                    <div class="prov-preview-subtitle">Provinsi yang akan dimainkan di match ini:</div>
+                    <div class="prov-grid" id="prov-grid"></div>
+                    <div class="prov-countdown">Game dimulai dalam <span id="prov-countdown-num">6</span> detik...</div>
+                </div>
             </div>
         </div>
     </div>
@@ -3786,8 +3842,32 @@
                 case 'MATCH_STARTING':
                     DOM.matchmakingScreen.querySelector('#matchmaking-waiting').style.display = 'none';
                     DOM.matchmakingScreen.querySelector('#match-starting').style.display = 'block';
-                    DOM.matchmakingScreen.querySelector('#match-info').textContent = 'Menyiapkan pertandingan...';
                     break;
+
+                case 'PROVINCES_SELECTED': {
+                    const provinces = data.provinces || [];
+                    const mandatory = data.mandatory || 'Bangka Belitung';
+                    const grid = document.getElementById('prov-grid');
+                    if (grid) {
+                        grid.innerHTML = '';
+                        provinces.forEach(name => {
+                            const chip = document.createElement('div');
+                            chip.className = 'prov-chip' + (name === mandatory ? ' mandatory' : '');
+                            chip.innerHTML = `<span class="prov-chip-icon">${name === mandatory ? '⭐' : '🗺️'}</span>${name}`;
+                            grid.appendChild(chip);
+                        });
+                    }
+                    // Hitung mundur
+                    let secs = 6;
+                    const numEl = document.getElementById('prov-countdown-num');
+                    if (numEl) numEl.textContent = String(secs);
+                    const cdInterval = setInterval(() => {
+                        secs--;
+                        if (numEl) numEl.textContent = String(Math.max(0, secs));
+                        if (secs <= 0) clearInterval(cdInterval);
+                    }, 1000);
+                    break;
+                }
 
                 case 'GAME_STARTED':
                     // Reset save flags agar tidak bocor dari game sebelumnya
@@ -3814,7 +3894,7 @@
                         }
                         updateGameUI(data.state);
                         addLog('🎮 Game dimulai! Selamat bermain!');
-                    }, 3000);
+                    }, 500);
                     break;
 
                 case 'GAME_STATE_UPDATE':
@@ -4526,6 +4606,7 @@
             if (idle) idle.style.display = 'flex';
             if (waiting) waiting.style.display = 'none';
             if (starting) starting.style.display = 'none';
+            DOM.matchmakingScreen.style.justifyContent = 'flex-end';
 
             // Sembunyikan pre-loading screen, tampilkan matchmaking-screen (layar utama)
             const preScreen = document.getElementById('pre-loading-screen');
