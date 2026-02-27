@@ -18,7 +18,7 @@
             background-size: 100% 100%;
             min-height: 100vh;
             color: #fff;
-            overflow-y: auto;
+            overflow: hidden;
         }
 
         /* ============================================ */
@@ -102,6 +102,7 @@
         body:has(.game-container.active) {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
             background-image: none !important;
+            overflow-y: auto;
         }
         /* ============================================ */
         /* MATCHMAKING SCREEN */
@@ -3165,8 +3166,7 @@
             }
 
             reconnectAttempts++;
-            addLog(`🔄 Menyambung kembali... (percobaan ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
-            
+
             if (ws) {
                 // Hapus handler dulu agar onclose lama tidak trigger reconnect lagi
                 ws.onclose = null; ws.onerror = null; ws.onmessage = null;
@@ -3174,11 +3174,22 @@
                 ws = null;
             }
 
-            // Tampilkan game container agar log terlihat
-            document.getElementById('pre-loading-screen').style.display = 'none';
+            // Tampilkan preloading screen dengan status reconnect (BUKAN game container dulu)
+            // agar tidak ada flash layar game saat reconnect gagal (room sudah selesai)
             document.getElementById('matchmaking-screen').classList.remove('active');
             document.getElementById('profile-badge').style.display = 'none';
-            document.getElementById('game-container').classList.add('active');
+            document.getElementById('game-container').classList.remove('active');
+            const _preScreen = document.getElementById('pre-loading-screen');
+            _preScreen.style.display = 'flex';
+            _preScreen.classList.remove('hidden');
+            const _infoEl = document.getElementById('pre-loading-info');
+            if (_infoEl) { _infoEl.style.display = 'block'; _infoEl.textContent = `🔄 Menyambung kembali... (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`; }
+            const _spinnerEl = document.getElementById('pre-loading-spinner');
+            if (_spinnerEl) _spinnerEl.style.display = 'block';
+            const _subtitleEl = document.querySelector('.pre-loading-subtitle');
+            if (_subtitleEl) _subtitleEl.style.display = 'none';
+            const _playBtnEl = document.getElementById('btn-play');
+            if (_playBtnEl) _playBtnEl.style.display = 'none';
             
             ws = new WebSocket(SERVER_URL);
 
@@ -3203,6 +3214,9 @@
                     reconnectAttempts = 0; // reset karena berhasil
                     currentRoomId = roomId;
                     myPlayerId = playerId;
+                    // Baru tampilkan game container setelah reconnect berhasil dikonfirmasi server
+                    document.getElementById('pre-loading-screen').style.display = 'none';
+                    DOM.gameContainer.classList.add('active');
                     updateGameUI(data.state);
                     addLog('✅ Berhasil tersambung kembali!');
                     ws.send(JSON.stringify({ type: 'PLAYER_ACTIVE', roomId: currentRoomId }));
@@ -3227,10 +3241,16 @@
                     // Pindah ke onmessage normal
                     ws.onmessage = (ev) => { try { handleServerMessage(JSON.parse(ev.data)); } catch(e) {} };
                 } else if (data.type === 'ERROR') {
-                    addLog('❌ ' + data.message);
+                    // Room sudah tidak ada (game selesai) — hentikan semua retry dan kembali ke home
                     lsDel(LS.ROOM_ID); lsDel(LS.PLAYER_ID); lsDel(LS.GAME_ACTIVE);
-                    reconnectAttempts = 0;
-                    showPreloadingScreen();
+                    reconnected.value = true;              // Cegah branch pertama onclose memicu retry
+                    reconnectAttempts = MAX_RECONNECT_ATTEMPTS; // Cegah branch kedua onclose memicu retry
+                    currentRoomId = null;
+                    myPlayerId = null;
+                    document.getElementById('game-container').classList.remove('active');
+                    showPreloadingScreen(false);
+                    showHomeButtons();
+                    document.getElementById('profile-badge').style.display = 'block';
                 } else {
                     // Pesan lain (misal LOG) tiba sebelum GAME_STATE_UPDATE.
                     // Set ID sementara agar handleServerMessage bisa render UI,
@@ -4587,6 +4607,7 @@
             if (_endGameShown) return; // cegah pemanggilan ganda (misal dari WS stale)
             _endGameShown = true;
             lsClear();
+            currentRoomId = null; // Cegah beforeunload menyimpan ulang room yang sudah selesai
 
             // Tutup surrender-choice & match-result modal jika masih terbuka
             document.getElementById('surrender-choice-modal').classList.remove('active');
