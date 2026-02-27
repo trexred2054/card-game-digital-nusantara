@@ -4104,6 +4104,13 @@
                     pendingClientSaveRank = null;
                     hasGameOverSaved = false;
                     _endGameShown = false;
+                    _rankSnapshot = null; // reset dulu
+                    // Simpan snapshot rankData SEBELUM game — dipakai endGame() untuk tampilan rank change yang benar
+                    if (currentUser) {
+                        db.ref(`users/${currentUser.uid}/rankData`).get().then(snap => {
+                            _rankSnapshot = snap.exists() ? snap.val() : { rankName: 'Bronze III', points: 0 };
+                        }).catch(() => { _rankSnapshot = null; });
+                    }
                     currentRoomId = data.roomId;
                     myPlayerId = data.playerId;
                     
@@ -4344,8 +4351,7 @@
                     ? `⏳ Bot bergabung dalam ${secs} detik jika tidak ada pemain...`
                     : '🤖 Menambahkan bot ke pertandingan...';
             };
-            update();
-            el.style.display = 'block';
+            // el.style.display = 'block'; // Disembunyikan — bot disamarkan sebagai pemain
             _matchmakingCountdownInterval = setInterval(() => {
                 secs--;
                 update();
@@ -4602,6 +4608,8 @@
         let hasGameOverSaved = false;
         // Guard agar endGame() hanya berjalan sekali per pertandingan
         let _endGameShown = false;
+        // Snapshot rankData sebelum game dimulai — dipakai endGame() agar tidak baca nilai yang sudah di-update server
+        let _rankSnapshot = null;
 
         function endGame(finalRankings) {
             if (_endGameShown) return; // cegah pemanggilan ganda (misal dari WS stale)
@@ -4644,10 +4652,10 @@
                 pendingClientSaveRank = myResult.rank;
                 hasGameOverSaved = true;
 
-                // Tampilkan rank change card (baca rank lama dari Firebase, hitung perubahan)
+                // Tampilkan rank change card — gunakan _rankSnapshot (diambil saat GAME_STARTED)
+                // agar tidak terkena race condition dengan update Firebase dari server
                 if (currentUser) {
-                    db.ref(`users/${currentUser.uid}/rankData`).get().then(snap => {
-                        const r       = snap.exists() ? snap.val() : { rankName: 'Bronze III', points: 0 };
+                    const _showRankCard = (r) => {
                         const oldName = r.rankName || 'Bronze III';
                         const oldPts  = r.points   || 0;
                         const result  = calculateNewRank(oldName, oldPts, myResult.rank);
@@ -4660,8 +4668,7 @@
                         const deltaHtml = delta >= 0
                             ? `<span class="rank-change-delta-pos">+${delta} poin</span>`
                             : `<span class="rank-change-delta-neg">${delta} poin</span>`;
-                        const newPtsLabel = result.rankName === 'Platinum MAX'
-                            ? `${result.points} poin` : `${result.points} / 100`;
+                        const newPtsLabel = `${result.points} poin`;
 
                         const card = document.createElement('div');
                         card.className = 'rank-change-card';
@@ -4671,7 +4678,7 @@
                                 <div class="rank-change-item">
                                     <img src="${rankImgSrc(oldName)}" class="rank-change-img" alt="${oldName}">
                                     <div>${oldName}</div>
-                                    <div class="rank-pts-old">${oldPts} / 100</div>
+                                    <div class="rank-pts-old">${oldPts} poin</div>
                                 </div>
                                 <div class="rank-change-arrow">${deltaHtml}<br>→</div>
                                 <div class="rank-change-item">
@@ -4683,7 +4690,15 @@
                         // Hapus kartu lama jika ada (safety net)
                         DOM.rankings.parentElement.querySelectorAll('.rank-change-card').forEach(el => el.remove());
                         DOM.rankings.after(card);
-                    }).catch(() => {});
+                    };
+                    if (_rankSnapshot) {
+                        _showRankCard(_rankSnapshot);
+                    } else {
+                        // Fallback: baca dari Firebase jika snapshot tidak tersedia
+                        db.ref(`users/${currentUser.uid}/rankData`).get().then(snap => {
+                            _showRankCard(snap.exists() ? snap.val() : { rankName: 'Bronze III', points: 0 });
+                        }).catch(() => {});
+                    }
                 }
             }
         }
@@ -4751,8 +4766,7 @@
             if (currentUser && myPlayerId) {
                 const me = gameState.players.find(p => p.id === myPlayerId);
                 if (me && me.winner && me.rank > 0) {
-                    db.ref(`users/${currentUser.uid}/rankData`).get().then(snap => {
-                        const r       = snap.exists() ? snap.val() : { rankName: 'Bronze III', points: 0 };
+                    const _showRankCard2 = (r) => {
                         const oldName = r.rankName || 'Bronze III';
                         const oldPts  = r.points   || 0;
                         const result  = calculateNewRank(oldName, oldPts, me.rank);
@@ -4765,8 +4779,7 @@
                         const deltaHtml = delta >= 0
                             ? `<span class="rank-change-delta-pos">+${delta} poin</span>`
                             : `<span class="rank-change-delta-neg">${delta} poin</span>`;
-                        const newPtsLabel = result.rankName === 'Platinum MAX'
-                            ? `${result.points} poin` : `${result.points} / 100`;
+                        const newPtsLabel = `${result.points} poin`;
 
                         const card = document.createElement('div');
                         card.className = 'rank-change-card';
@@ -4776,7 +4789,7 @@
                                 <div class="rank-change-item">
                                     <img src="${rankImgSrc(oldName)}" class="rank-change-img" alt="${oldName}">
                                     <div>${oldName}</div>
-                                    <div class="rank-pts-old">${oldPts} / 100</div>
+                                    <div class="rank-pts-old">${oldPts} poin</div>
                                 </div>
                                 <div class="rank-change-arrow">${deltaHtml}<br>→</div>
                                 <div class="rank-change-item">
@@ -4786,7 +4799,14 @@
                                 </div>
                             </div>`;
                         rcContainer.appendChild(card);
-                    }).catch(() => {});
+                    };
+                    if (_rankSnapshot) {
+                        _showRankCard2(_rankSnapshot);
+                    } else {
+                        db.ref(`users/${currentUser.uid}/rankData`).get().then(snap => {
+                            _showRankCard2(snap.exists() ? snap.val() : { rankName: 'Bronze III', points: 0 });
+                        }).catch(() => {});
+                    }
                 }
             }
         }
