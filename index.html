@@ -1167,7 +1167,7 @@
         .dl-modal {
             background: linear-gradient(160deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
             border: 1px solid rgba(255,255,255,0.18); border-radius: 18px;
-            width: 320px; max-width: 94vw; padding: 0 0 18px;
+            width: 500px; max-width: 94vw; padding: 0 0 18px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.6);
             animation: popIn .18s ease;
         }
@@ -1205,7 +1205,7 @@
             padding: 6px 18px 4px;
         }
         .dl-rate-grid {
-            display: grid; grid-template-columns: 1fr 1fr;
+            display: grid; grid-template-columns: 1fr;
             gap: 5px; padding: 0 18px;
         }
         .dl-rate-row {
@@ -1213,8 +1213,9 @@
             background: rgba(255,255,255,0.07); border-radius: 8px;
             padding: 5px 10px; font-size: 0.82em;
         }
-        .dl-rate-name { color: rgba(255,255,255,0.85); }
-        .dl-rate-pct  { font-weight: bold; color: #ffd700; }
+        .dl-rate-name { color: rgba(255,255,255,0.85); flex: 1; }
+        .dl-rate-pct  { font-weight: bold; color: #ffd700; min-width: 48px; text-align: right; }
+        .dl-rate-stock { font-size: 0.78em; color: rgba(255,255,255,0.5); min-width: 90px; text-align: right; padding-left: 10px; }
         .btn-dl-info {
             background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
             color: #fff; border-radius: 50%; width: 26px; height: 26px;
@@ -2411,11 +2412,11 @@
             'Platinum MAX'
         ];
         const RANK_CHANGES = {
-            'Bronze':   [20, 10,  5,  -5],
-            'Silver':   [16,  8,  4, -12],
-            'Gold':     [12,  6,  3, -20],
-            'Diamond':  [ 8,  4,  2, -28],
-            'Platinum': [ 5,  2,  1, -35]
+            'Bronze':   [60, 30, 15, -10],
+            'Silver':   [48, 24, 12, -17],
+            'Gold':     [36, 18,  9, -24],
+            'Diamond':  [24, 12,  6, -31],
+            'Platinum': [15,  6,  3, -40]
         };
         function getRankTier(rankName) {
             if (rankName === 'Platinum MAX') return 'Platinum';
@@ -2436,10 +2437,6 @@
             const tier    = getRankTier(rankName);
             const change  = RANK_CHANGES[tier][position - 1];
             const idx     = RANKS.indexOf(rankName);
-            // Platinum MAX: no cap, no demotion, min 0
-            if (rankName === 'Platinum MAX') {
-                return { rankName: 'Platinum MAX', points: Math.max(0, points + change) };
-            }
             let newPoints   = points + change;
             let newRankName = rankName;
             if (newPoints >= 100) {
@@ -5925,10 +5922,13 @@
             const grid = document.getElementById('dl-rate-grid');
             grid.innerHTML = '';
             const rates = DL_RATES[level];
+            const stock = (gameState && gameState.rarityStock) || {};
             DL_LABELS.forEach(({ key, label }) => {
                 const row = document.createElement('div');
                 row.className = 'dl-rate-row';
-                row.innerHTML = `<span class="dl-rate-name">${label}</span><span class="dl-rate-pct">${rates[key]}%</span>`;
+                const s = stock[key];
+                const stockText = s ? `${s.remaining}/${s.total} kartu` : '—';
+                row.innerHTML = `<span class="dl-rate-name">${label}</span><span class="dl-rate-pct">${rates[key]}%</span><span class="dl-rate-stock">📦 ${stockText}</span>`;
                 grid.appendChild(row);
             });
 
