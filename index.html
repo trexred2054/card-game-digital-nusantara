@@ -2041,8 +2041,8 @@
         <div class="auth-container">
             <h1 class="auth-title">👤Account👤<br></h1>
             <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchAuthTab('login')">🔐 Login</button>
-                <button class="auth-tab" onclick="switchAuthTab('register')">📝 Daftar</button>
+                <button class="auth-tab active" onclick="playSound('button');switchAuthTab('login')">🔐 Login</button>
+                <button class="auth-tab" onclick="playSound('button');switchAuthTab('register')">📝 Daftar</button>
             </div>
             <div id="auth-error" class="auth-error"></div>
             
@@ -2050,7 +2050,7 @@
             <div id="login-form">
                 <input type="email" class="auth-input" id="login-email" placeholder="📧 Email" autocomplete="email">
                 <input type="password" class="auth-input" id="login-password" placeholder="🔑 Password" autocomplete="current-password">
-                <button class="btn-auth" onclick="doLogin()">🚀 Masuk</button>
+                <button class="btn-auth" onclick="playSound('button');doLogin()">🚀 Masuk</button>
             </div>
             
             <!-- Register Form -->
@@ -2062,7 +2062,7 @@
                 <input type="text" class="auth-input" id="reg-email" placeholder="📧 Email (@cardgame.local)" autocomplete="off">
                 <input type="password" class="auth-input" id="reg-password" placeholder="🔑 Password (min 6 karakter)">
                 <input type="password" class="auth-input" id="reg-confirm" placeholder="🔑 Konfirmasi Password">
-                <button class="btn-auth" onclick="doRegister()">✨ Buat Akun</button>
+                <button class="btn-auth" onclick="playSound('button');doRegister()">✨ Buat Akun</button>
             </div>
             
             <div class="auth-loading" id="auth-loading">⏳ Memproses...</div>
@@ -2086,7 +2086,7 @@
             <div style="margin-bottom:15px; font-size:0.9em; opacity:0.7;">
                 Preview: <strong id="nickname-preview">...</strong>
             </div>
-            <button class="btn-auth" onclick="saveNickname()">✅ Simpan & Lanjutkan</button>
+            <button class="btn-auth" onclick="playSound('button');saveNickname()">✅ Simpan & Lanjutkan</button>
         </div>
     </div>
 
@@ -2097,7 +2097,7 @@
             <p class="pre-loading-subtitle">Kenali budaya Indonesia melalui permainan kartu!</p>
             <div class="pre-loading-spinner" id="pre-loading-spinner"></div>
             <p class="pre-loading-info" id="pre-loading-info">Memuat aset...</p>
-            <button class="btn-play" id="btn-play" onclick="goToMatchmaking()">▶ PLAY</button>
+            <button class="btn-play" id="btn-play" onclick="playSound('button');goToMatchmaking()">▶ PLAY</button>
         </div>
     </div>
 
@@ -2117,22 +2117,22 @@
     <div id="matchmaking-screen">
         <div class="matchmaking-container">
             <div id="matchmaking-idle" style="display:flex;flex-direction:column;align-items:center;width:100%;">
-                <button class="btn-start" onclick="showPartyLobby()">🎮 MAIN ONLINE</button>
+                <button class="btn-start" onclick="playSound('button');showPartyLobby()">🎮 MAIN ONLINE</button>
                 <div class="menu-bottom-nav">
-                    <button class="menu-nav-arrow" onclick="scrollMenuNav(-1)">◀</button>
+                    <button class="menu-nav-arrow" onclick="playSound('button');scrollMenuNav(-1)">◀</button>
                     <div class="menu-nav-scroll" id="menu-nav-scroll">
                         <div class="menu-nav-scroll-inner" id="menu-nav-inner">
-                            <button class="btn-encyclopedia btn-leaderboard" onclick="showLeaderboard()">🏆 Leaderboard</button>
-                            <button class="btn-encyclopedia btn-ensiklopedia-style" onclick="showEncyclopedia()">🧭 Ensiklopedia</button>
+                            <button class="btn-encyclopedia btn-leaderboard" onclick="playSound('button');showLeaderboard()">🏆 Leaderboard</button>
+                            <button class="btn-encyclopedia btn-ensiklopedia-style" onclick="playSound('button');showEncyclopedia()">🧭 Ensiklopedia</button>
                             <div class="btn-teman-wrapper">
-                                <button class="btn-encyclopedia btn-teman-style" onclick="showTemanScreen()">👥 Teman</button>
+                                <button class="btn-encyclopedia btn-teman-style" onclick="playSound('button');showTemanScreen()">👥 Teman</button>
                                 <div id="teman-notif-badge"></div>
                             </div>
-                            <button class="btn-encyclopedia btn-kostum-style" onclick="showKostumPicker()">⚔️ Kostum</button>
-                            <button class="btn-encyclopedia btn-settings-style" onclick="showSettingsScreen()">⚙️ Pengaturan</button>
+                            <button class="btn-encyclopedia btn-kostum-style" onclick="playSound('button');showKostumPicker()">⚔️ Kostum</button>
+                            <button class="btn-encyclopedia btn-settings-style" onclick="playSound('button');showSettingsScreen()">⚙️ Pengaturan</button>
                         </div>
                     </div>
-                    <button class="menu-nav-arrow" onclick="scrollMenuNav(1)">▶</button>
+                    <button class="menu-nav-arrow" onclick="playSound('button');scrollMenuNav(1)">▶</button>
                 </div>
             </div>
 
@@ -2142,7 +2142,7 @@
                     <h2 class="matchmaking-waiting-title">🔍 Mencari Lawan...</h2>
                     <p class="matchmaking-status" id="queue-status">Menunggu pemain lain...</p>
                     <p class="matchmaking-bot-countdown" id="matchmaking-bot-countdown" style="display:none;"></p>
-                    <button class="btn-cancel" onclick="cancelMatchmaking()">✖ Batal</button>
+                    <button class="btn-cancel" onclick="playSound('x');cancelMatchmaking()">✖ Batal</button>
                 </div>
             </div>
 
@@ -2161,12 +2161,12 @@
     <div id="encyclopedia-screen">
         <div class="enc-header">
             <div class="enc-title">🧭 Ensiklopedia Nusantara</div>
-            <button class="btn-enc-close" onclick="hideEncyclopedia()">✖ Tutup</button>
+            <button class="btn-enc-close" onclick="playSound('x');hideEncyclopedia()">✖ Tutup</button>
         </div>
 
         <div class="enc-tabs">
-            <button class="enc-tab active" id="enc-tab-btn-cards" onclick="showEncTab('cards')">🔶 Kartu</button>
-            <button class="enc-tab" id="enc-tab-btn-rules" onclick="showEncTab('rules')">📖 Aturan</button>
+            <button class="enc-tab active" id="enc-tab-btn-cards" onclick="playSound('button');showEncTab('cards')">🔶 Kartu</button>
+            <button class="enc-tab" id="enc-tab-btn-rules" onclick="playSound('button');showEncTab('rules')">📖 Aturan</button>
         </div>
 
         <!-- TAB KARTU -->
@@ -2307,11 +2307,11 @@
     </div>
 
     <!-- DRAW LEVEL INFO POPUP -->
-    <div id="draw-level-overlay" onclick="hideDrawLevelInfo()">
+    <div id="draw-level-overlay" onclick="playSound('button');hideDrawLevelInfo()">
         <div class="dl-modal" onclick="event.stopPropagation()">
             <div class="dl-header">
                 <div class="dl-title">🎰 Draw Level</div>
-                <button class="btn-enc-close" onclick="hideDrawLevelInfo()">✖</button>
+                <button class="btn-enc-close" onclick="playSound('x');hideDrawLevelInfo()">✖</button>
             </div>
             <div class="dl-level-badge">
                 <span class="dl-level-star" id="dl-star">⭐</span>
@@ -2333,11 +2333,11 @@
 
     <!-- TEMAN SCREEN -->
     <!-- ===== RANK INFO MODAL ===== -->
-    <div id="rank-info-overlay" onclick="hideRankInfo()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:30000;overflow-y:auto;padding:20px;box-sizing:border-box;">
+    <div id="rank-info-overlay" onclick="playSound('button');hideRankInfo()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:30000;overflow-y:auto;padding:20px;box-sizing:border-box;">
         <div class="rank-info-modal" onclick="event.stopPropagation()">
             <div class="rank-info-header">
                 <div class="rank-info-title">ℹ️ Sistem Rank</div>
-                <button class="btn-enc-close" onclick="hideRankInfo()">✖ Tutup</button>
+                <button class="btn-enc-close" onclick="playSound('x');hideRankInfo()">✖ Tutup</button>
             </div>
 
             <!-- Daftar urutan rank -->
@@ -2409,7 +2409,7 @@
     <div id="leaderboard-screen">
         <div class="enc-header">
             <div class="enc-title">🏆 Leaderboard</div>
-            <button class="btn-enc-close" onclick="hideLeaderboard()">✖ Tutup</button>
+            <button class="btn-enc-close" onclick="playSound('x');hideLeaderboard()">✖ Tutup</button>
         </div>
         <div style="padding:20px; max-width:680px; margin:0 auto;">
             <div class="friend-section-title" style="margin-bottom:16px;">🥇 Top 100 Pemain — Rank Tertinggi</div>
@@ -2420,7 +2420,7 @@
     <div id="teman-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); z-index:15000; overflow-y:auto;">
         <div class="enc-header">
             <div class="enc-title">👥 Teman</div>
-            <button class="btn-enc-close" onclick="hideTemanScreen()">✖ Tutup</button>
+            <button class="btn-enc-close" onclick="playSound('x');hideTemanScreen()">✖ Tutup</button>
         </div>
         <div style="padding:20px; max-width:680px; margin:0 auto;">
             <!-- Cari Pemain -->
@@ -2429,7 +2429,7 @@
                 <input type="text" class="friend-search-input" id="friend-search-input"
                        placeholder="Cari berdasarkan nama atau ID (#XXXXXX)..." maxlength="30"
                        onkeydown="if(event.key==='Enter')searchPlayers()">
-                <button class="btn-friend-search" onclick="searchPlayers()">Cari</button>
+                <button class="btn-friend-search" onclick="playSound('button');searchPlayers()">Cari</button>
             </div>
             <div id="friend-search-results"></div>
 
@@ -2451,12 +2451,12 @@
 
     <!-- PROFILE SCREEN -->
     <div id="profile-screen" style="display:none;">
-        <button id="btn-profile-back" onclick="hideProfileScreen()">✕</button>
+        <button id="btn-profile-back" onclick="playSound('x');hideProfileScreen()">✕</button>
         <!-- Sidebar kiri -->
         <div id="profile-sidebar">
-            <button class="profile-tab active" id="btn-tab-profil" onclick="switchProfileTab('profil')">👤 Profil Pemain</button>
-            <button class="profile-tab" id="btn-tab-statistik" onclick="switchProfileTab('statistik')">📊 Statistik</button>
-            <button class="profile-tab" id="btn-tab-riwayat" onclick="switchProfileTab('riwayat')">📜 Riwayat</button>
+            <button class="profile-tab active" id="btn-tab-profil" onclick="playSound('button');switchProfileTab('profil')">👤 Profil Pemain</button>
+            <button class="profile-tab" id="btn-tab-statistik" onclick="playSound('button');switchProfileTab('statistik')">📊 Statistik</button>
+            <button class="profile-tab" id="btn-tab-riwayat" onclick="playSound('button');switchProfileTab('riwayat')">📜 Riwayat</button>
         </div>
         <!-- Konten kanan -->
         <div id="profile-content">
@@ -2487,7 +2487,7 @@
                         <div class="profile-rank-item">
                             <div class="profile-rank-label" style="display:flex;align-items:center;gap:6px;">
                                 Rank Tertinggi
-                                <button class="btn-rank-info" onclick="showRankInfo()" title="Info sistem rank">ℹ️</button>
+                                <button class="btn-rank-info" onclick="playSound('button');showRankInfo()" title="Info sistem rank">ℹ️</button>
                             </div>
                             <img id="prf-peak-img" src="gambar/rank/Bronze.png" alt="Bronze III" class="profile-rank-img">
                             <div class="profile-rank-name" id="prf-peak-name">Bronze III</div>
@@ -2547,12 +2547,12 @@
 
     <!-- HALAMAN PENUH: KUNJUNGI PROFIL PEMAIN LAIN -->
     <div id="visit-profile-screen">
-        <button id="btn-visit-back" onclick="closeVisitProfile()">✕</button>
+        <button id="btn-visit-back" onclick="playSound('x');closeVisitProfile()">✕</button>
         <!-- Sidebar kiri -->
         <div id="visit-profile-sidebar">
-            <button class="visit-tab active" id="btn-vtab-profil" onclick="switchVisitTab('profil')">👤 Profil</button>
-            <button class="visit-tab" id="btn-vtab-statistik" onclick="switchVisitTab('statistik')">📊 Statistik</button>
-            <button class="visit-tab" id="btn-vtab-riwayat" onclick="switchVisitTab('riwayat')">📜 Riwayat</button>
+            <button class="visit-tab active" id="btn-vtab-profil" onclick="playSound('button');switchVisitTab('profil')">👤 Profil</button>
+            <button class="visit-tab" id="btn-vtab-statistik" onclick="playSound('button');switchVisitTab('statistik')">📊 Statistik</button>
+            <button class="visit-tab" id="btn-vtab-riwayat" onclick="playSound('button');switchVisitTab('riwayat')">📜 Riwayat</button>
         </div>
         <!-- Konten kanan -->
         <div id="visit-profile-content">
@@ -2639,7 +2639,7 @@
     <div id="settings-screen" style="display:none;">
         <div class="settings-header">
             <span class="settings-title">⚙️ Pengaturan</span>
-            <button class="btn-settings-close" onclick="hideSettingsScreen()">✖ Tutup</button>
+            <button class="btn-settings-close" onclick="playSound('x');hideSettingsScreen()">✖ Tutup</button>
         </div>
         <div class="settings-body">
 
@@ -2653,7 +2653,7 @@
 
             <div class="settings-section">
                 <span class="settings-section-label">🔑 Ganti Kata Sandi</span>
-                <button onclick="showChangePasswordModal()"
+                <button onclick="playSound('button');showChangePasswordModal()"
                         style="width:100%; margin-top:6px; padding:11px 16px; border-radius:10px; border:none; background:linear-gradient(135deg,#f39c12,#e67e22); color:#fff; font-weight:700; cursor:pointer; font-size:0.95em;">
                     🔑 Ganti Kata Sandi
                 </button>
@@ -2711,7 +2711,7 @@
 
             <hr class="settings-divider">
 
-            <button class="btn-logout-settings" onclick="confirmLogout()">🚪 Keluar</button>
+            <button class="btn-logout-settings" onclick="playSound('button');confirmLogout()">🚪 Keluar</button>
         </div>
     </div>
 
@@ -2748,7 +2748,7 @@
                             <div class="player-stat">⚡ Power: <strong id="player-power">0</strong></div>
                             <div style="margin-left:15px; display:flex; align-items:center; gap:5px;">
                                 <button class="btn-draw" id="btn-draw" disabled>🎰 Draw Card</button>
-                                <button class="btn-dl-info" id="btn-draw-level-info" onclick="showDrawLevelInfo()" title="Info Draw Level">ℹ️</button>
+                                <button class="btn-dl-info" id="btn-draw-level-info" onclick="playSound('button');showDrawLevelInfo()" title="Info Draw Level">ℹ️</button>
                             </div>
                             <div style="margin-left:15px; padding:8px 15px; background:rgba(255,255,255,0.2); border-radius:8px;">
                                 <span style="font-weight:bold; font-size:0.9em;">🎮 Ronde: <strong id="round-number">1</strong></span>
@@ -2774,14 +2774,14 @@
                         <div class="log-entry">🎮 Menghubungkan ke server...</div>
                     </div>
                     <div style="margin-top:15px; text-align:center; padding-top:10px; border-top:2px solid rgba(255,255,255,0.15); display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                        <button id="btn-surrender" onclick="doSurrender()"
+                        <button id="btn-surrender" onclick="playSound('button');doSurrender()"
                             style="padding:12px 30px; font-size:1em; font-weight:bold;
                                    background:linear-gradient(135deg, #f44336 0%, #e53935 100%); color:#fff;
                                    border:2px solid #ef5350; border-radius:10px;
                                    cursor:pointer; transition:all 0.3s; box-shadow:0 4px 14px rgba(244,67,54,0.5);">
                             🏳️ Menyerah
                         </button>
-                        <button id="btn-show-result" onclick="showMatchResult()"
+                        <button id="btn-show-result" onclick="playSound('button');showMatchResult()"
                             style="display:none; padding:12px 30px; font-size:1em; font-weight:bold;
                                    background:linear-gradient(135deg,#667eea,#764ba2);
                                    color:white; border:none; border-radius:10px;
@@ -2797,7 +2797,7 @@
         <div id="ingame-settings-panel" style="display:none;">
             <div class="igs-header">
                 <span class="igs-title">⚙️ Pengaturan</span>
-                <button class="igs-close-btn" onclick="closeIngameSettings()">✖ Tutup</button>
+                <button class="igs-close-btn" onclick="playSound('x');closeIngameSettings()">✖ Tutup</button>
             </div>
             <div class="igs-body">
                 <span class="igs-section-label">🎵 Volume Music 1 (Lobby)</span>
@@ -2847,7 +2847,7 @@
         </div>
 
         <!-- IN-GAME SETTINGS BUTTON (bottom-left) -->
-        <button id="btn-ingame-settings" onclick="toggleIngameSettings()" title="Pengaturan">⚙️</button>
+        <button id="btn-ingame-settings" onclick="playSound('button');toggleIngameSettings()" title="Pengaturan">⚙️</button>
     </div>
 
     <!-- PROCESSING NOTIFICATION -->
@@ -2874,7 +2874,7 @@
             <h2 style="color:#e53935; font-size:2em; margin-bottom:8px;">🏳️ Kamu Menyerah</h2>
             <p style="color:#555; margin-bottom:24px; font-size:1em;">Pertandingan masih berlangsung.<br>Apa yang ingin kamu lakukan?</p>
             <div style="display:flex; flex-direction:column; gap:14px;">
-                <button onclick="continueWatching()"
+                <button onclick="playSound('button');continueWatching()"
                     style="padding:14px 20px; font-size:1em; font-weight:bold;
                            background:linear-gradient(135deg,#667eea,#764ba2);
                            color:white; border:none; border-radius:12px; cursor:pointer;
@@ -2882,7 +2882,7 @@
                     onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
                     👀 Lanjut Menonton
                 </button>
-                <button onclick="showMatchResult()"
+                <button onclick="playSound('button');showMatchResult()"
                     style="padding:14px 20px; font-size:1em; font-weight:bold;
                            background:linear-gradient(135deg,#f6d365,#fda085);
                            color:white; border:none; border-radius:12px; cursor:pointer;
@@ -2904,7 +2904,7 @@
                 style="margin-top:6px; padding:6px 10px; background:#f0f4ff;
                        border-radius:8px; font-size:0.78em; color:#555; text-align:left;"></div>
             <div id="match-result-rank-change"></div>
-            <button onclick="goToHome()"
+            <button onclick="playSound('button');goToHome()"
                 style="margin-top:10px; width:100%; padding:10px; font-size:0.95em; font-weight:bold;
                        background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
                        color:white; border:none; border-radius:10px; cursor:pointer;
@@ -2929,11 +2929,11 @@
                        style="padding:11px 14px; border-radius:10px; border:1.5px solid #ddd; font-size:0.95em; outline:none; width:100%; box-sizing:border-box;">
                 <div id="cp-msg" style="font-size:0.87em; min-height:1.2em; text-align:center; font-weight:600;"></div>
                 <div style="display:flex; gap:10px; margin-top:4px;">
-                    <button onclick="hideChangePasswordModal()"
+                    <button onclick="playSound('x');hideChangePasswordModal()"
                             style="flex:1; padding:12px; border-radius:10px; border:1.5px solid #ddd; background:#f5f5f5; color:#555; font-weight:600; cursor:pointer; font-size:0.95em;">
                         Batal
                     </button>
-                    <button onclick="doChangePassword()"
+                    <button onclick="playSound('button');doChangePassword()"
                             style="flex:1; padding:12px; border-radius:10px; border:none; background:linear-gradient(135deg,#f39c12,#e67e22); color:#fff; font-weight:700; cursor:pointer; font-size:0.95em;">
                         🔑 Simpan
                     </button>
@@ -2948,7 +2948,7 @@
             <h2>🏆 GAME OVER! 🏆</h2>
             <div class="rankings" id="rankings"></div>
             <div style="display:flex; gap:12px; margin-top:12px; justify-content:center; flex-wrap:wrap;">
-                <button class="btn-draw" onclick="goToHome()"
+                <button class="btn-draw" onclick="playSound('button');goToHome()"
                     style="font-size:0.95em; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); border-color:transparent;">
                     🎮 Kembali ke Home
                 </button>
@@ -3038,6 +3038,7 @@
         const LS = {
             ROOM_ID:          'cgn_roomId',
             PLAYER_ID:        'cgn_playerId',
+            IS_SPECTATOR:     'cgn_isSpectator',
             NICKNAME:         'cgn_nickname',
             USER_UID:         'cgn_userUid',
             USER_EMAIL:       'cgn_userEmail',
@@ -3283,22 +3284,25 @@
             setupPresence(user, nickname);
             
             // Cek localStorage apakah ada sesi pertandingan aktif
-            const savedRoomId   = lsGet(LS.ROOM_ID);
-            const savedPlayerId = lsGet(LS.PLAYER_ID);
-            const gameActive    = lsGet(LS.GAME_ACTIVE);
-            const savedUid      = lsGet(LS.USER_UID);
-            
-            // Validasi: pastikan playerId ini milik user yang sedang login
-            if (savedRoomId && savedPlayerId && gameActive === 'true' && savedUid === user.uid) {
-                // Langsung reconnect otomatis, tidak perlu tombol
-                showPreloadingScreen(false); // ← false, jangan tampilkan animasi loading
-                setTimeout(() => {
-                    reconnectToGame(savedRoomId, savedPlayerId);
-                }, 1500);
+            const savedRoomId    = lsGet(LS.ROOM_ID);
+            const savedPlayerId  = lsGet(LS.PLAYER_ID);
+            const savedSpectator = lsGet(LS.IS_SPECTATOR);
+            const gameActive     = lsGet(LS.GAME_ACTIVE);
+            const savedUid       = lsGet(LS.USER_UID);
+
+            if (savedRoomId && savedSpectator === 'true' && gameActive === 'true' && savedUid === user.uid) {
+                // Sesi spectator — reconnect sebagai penonton
+                showPreloadingScreen(false);
+                setTimeout(() => { reconnectAsSpectator(savedRoomId); }, 1500);
+            } else if (savedRoomId && savedPlayerId && gameActive === 'true' && savedUid === user.uid) {
+                // Sesi pemain biasa — reconnect normal
+                showPreloadingScreen(false);
+                setTimeout(() => { reconnectToGame(savedRoomId, savedPlayerId); }, 1500);
             } else {
                 // Hapus sesi lama yang bukan milik user ini
                 lsDel(LS.ROOM_ID);
                 lsDel(LS.PLAYER_ID);
+                lsDel(LS.IS_SPECTATOR);
                 lsDel(LS.GAME_ACTIVE);
                 // Tidak ada localStorage — coba cari room aktif di server via userUid
                 // (untuk support login di device berbeda)
@@ -3324,17 +3328,25 @@
             let resolved = false;
             let tempWs = null;
 
-            const done = (found, roomId, playerId) => {
+            const done = (found, roomId, playerId, isSpectator = false) => {
                 if (resolved) return;
                 resolved = true;
                 clearTimeout(findRoomTimeout);
                 if (tempWs) { tempWs.onclose = null; try { tempWs.close(); } catch(e) {} tempWs = null; }
                 if (found) {
                     lsSet(LS.ROOM_ID, roomId);
-                    lsSet(LS.PLAYER_ID, playerId);
                     lsSet(LS.GAME_ACTIVE, 'true');
-                    addLog('🔍 Pertandingan aktif ditemukan! Menyambung kembali...');
-                    reconnectToGame(roomId, playerId);
+                    if (isSpectator) {
+                        lsSet(LS.IS_SPECTATOR, 'true');
+                        lsDel(LS.PLAYER_ID);
+                        addLog('🔍 Pertandingan aktif ditemukan! Menyambung kembali sebagai penonton...');
+                        reconnectAsSpectator(roomId);
+                    } else {
+                        lsSet(LS.PLAYER_ID, playerId);
+                        lsDel(LS.IS_SPECTATOR);
+                        addLog('🔍 Pertandingan aktif ditemukan! Menyambung kembali...');
+                        reconnectToGame(roomId, playerId);
+                    }
                 } else {
                     showHomeButtons();
                 }
@@ -3347,8 +3359,12 @@
                 tempWs.onopen  = () => tempWs.send(JSON.stringify({ type: 'FIND_MY_ROOM', userUid }));
                 tempWs.onmessage = (event) => {
                     const data = JSON.parse(event.data);
-                    if (data.type === 'ROOM_FOUND')     done(true, data.roomId, data.playerId);
-                    else if (data.type === 'ROOM_NOT_FOUND') done(false);
+                    if (data.type === 'ROOM_FOUND') {
+                        if (data.isSpectator) done(true, data.roomId, null, true);
+                        else done(true, data.roomId, data.playerId);
+                    } else if (data.type === 'ROOM_NOT_FOUND') {
+                        done(false);
+                    }
                 };
                 tempWs.onerror = () => done(false);
                 tempWs.onclose = () => done(false);
@@ -3563,7 +3579,7 @@
                     <b>${nickname}</b> terdeteksi sedang online di <b>${device}</b>.<br>
                     Sesi lama akan digantikan oleh login ini.
                 </div>
-                <button onclick="document.getElementById('online-elsewhere-notif').remove()"
+                <button onclick="playSound('button');document.getElementById('online-elsewhere-notif').remove()"
                     style="margin-top:10px; padding:5px 18px; background:rgba(255,255,255,0.25);
                            border:1px solid rgba(255,255,255,0.5); border-radius:8px;
                            color:white; cursor:pointer; font-size:0.85em;">
@@ -3727,7 +3743,7 @@
         function reconnectToGame(roomId, playerId) {
             if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
                 addLog('❌ Gagal reconnect setelah 3 percobaan. Kembali ke menu.');
-                lsDel(LS.ROOM_ID); lsDel(LS.PLAYER_ID); lsDel(LS.GAME_ACTIVE);
+                lsDel(LS.ROOM_ID); lsDel(LS.PLAYER_ID); lsDel(LS.IS_SPECTATOR); lsDel(LS.GAME_ACTIVE);
                 reconnectAttempts = 0;
                 showPreloadingScreen();
                 return;
@@ -3821,7 +3837,7 @@
                     ws.onmessage = (ev) => { try { handleServerMessage(JSON.parse(ev.data)); } catch(e) {} };
                 } else if (data.type === 'ERROR') {
                     // Room sudah tidak ada (game selesai) — hentikan semua retry dan kembali ke home
-                    lsDel(LS.ROOM_ID); lsDel(LS.PLAYER_ID); lsDel(LS.GAME_ACTIVE);
+                    lsDel(LS.ROOM_ID); lsDel(LS.PLAYER_ID); lsDel(LS.IS_SPECTATOR); lsDel(LS.GAME_ACTIVE);
                     reconnected.value = true;              // Cegah branch pertama onclose memicu retry
                     reconnectAttempts = MAX_RECONNECT_ATTEMPTS; // Cegah branch kedua onclose memicu retry
                     currentRoomId = null;
@@ -3861,6 +3877,80 @@
                     } else {
                         sendAutoMode(true);
                     }
+                }
+            };
+        }
+
+        // =============================================
+        // RECONNECT SEBAGAI SPECTATOR
+        // =============================================
+        function reconnectAsSpectator(roomId) {
+            const _preScreen = document.getElementById('pre-loading-screen');
+            _preScreen.style.display = 'flex';
+            _preScreen.classList.remove('hidden');
+            const _infoEl = document.getElementById('pre-loading-info');
+            if (_infoEl) { _infoEl.style.display = 'block'; _infoEl.textContent = '🔄 Menyambung kembali sebagai penonton...'; }
+
+            if (ws) {
+                ws.onclose = null; ws.onerror = null; ws.onmessage = null;
+                try { ws.close(); } catch(e) {}
+                ws = null;
+            }
+
+            ws = new WebSocket(SERVER_URL);
+            const spectatorReconnected = { value: false };
+
+            ws.onopen = () => {
+                startClientKeepAlive();
+                ws.send(JSON.stringify({
+                    type: 'REJOIN_AS_SPECTATOR',
+                    roomId,
+                    userUid: currentUser ? currentUser.uid : (lsGet(LS.USER_UID) || '')
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'GAME_STARTED' && data.isSpectator) {
+                        spectatorReconnected.value = true;
+                        currentRoomId  = roomId;
+                        myPlayerId     = null;
+                        _isSpectator   = true;
+                        _isCustomRoom  = true;
+                        const spBanner = document.getElementById('spectator-banner');
+                        if (spBanner) spBanner.style.display = 'block';
+                        const btnSurr = document.getElementById('btn-surrender');
+                        if (btnSurr) btnSurr.style.display = 'none';
+                        document.getElementById('pre-loading-screen').style.display = 'none';
+                        DOM.gameContainer.classList.add('active');
+                        updateGameUI(data.state);
+                        addLog('✅ Berhasil tersambung kembali sebagai penonton!');
+                        ws.onmessage = (ev) => { try { handleServerMessage(JSON.parse(ev.data)); } catch(e) {} };
+                    } else if (data.type === 'ERROR') {
+                        spectatorReconnected.value = true;
+                        lsDel(LS.ROOM_ID); lsDel(LS.IS_SPECTATOR); lsDel(LS.GAME_ACTIVE);
+                        document.getElementById('game-container').classList.remove('active');
+                        showPreloadingScreen(false);
+                        showHomeButtons();
+                        document.getElementById('profile-badge').style.display = 'block';
+                    }
+                } catch(e) {}
+            };
+
+            ws.onerror = () => {
+                stopClientKeepAlive();
+                lsDel(LS.ROOM_ID); lsDel(LS.IS_SPECTATOR); lsDel(LS.GAME_ACTIVE);
+                showPreloadingScreen(false);
+                showHomeButtons();
+            };
+
+            ws.onclose = () => {
+                stopClientKeepAlive();
+                if (!spectatorReconnected.value) {
+                    lsDel(LS.ROOM_ID); lsDel(LS.IS_SPECTATOR); lsDel(LS.GAME_ACTIVE);
+                    showPreloadingScreen(false);
+                    showHomeButtons();
                 }
             };
         }
@@ -3944,11 +4034,18 @@
         // Event: Sebelum tutup browser/tab
         window.addEventListener('beforeunload', () => {
             if (currentRoomId) {
-                sendAutoMode(true);
-                // Simpan sesi ke localStorage
-                lsSet(LS.ROOM_ID, currentRoomId);
-                lsSet(LS.PLAYER_ID, myPlayerId);
-                lsSet(LS.GAME_ACTIVE, 'true');
+                if (!_isSpectator) {
+                    sendAutoMode(true);
+                    lsSet(LS.ROOM_ID, currentRoomId);
+                    lsSet(LS.PLAYER_ID, myPlayerId);
+                    lsSet(LS.GAME_ACTIVE, 'true');
+                    lsDel(LS.IS_SPECTATOR);
+                } else {
+                    lsSet(LS.ROOM_ID, currentRoomId);
+                    lsSet(LS.IS_SPECTATOR, 'true');
+                    lsSet(LS.GAME_ACTIVE, 'true');
+                    lsDel(LS.PLAYER_ID);
+                }
             }
         });
 
@@ -4436,6 +4533,8 @@
             zoomOut:   new Audio('sounds/zoom_out.mp3'),
             forcePick: new Audio('sounds/force_pick.mp3'),
             drawCard:  new Audio('sounds/draw_card.mp3'),
+            x:         new Audio('sounds/x.mp3'),
+            button:    new Audio('sounds/button.mp3'),
             bgMusic:   new Audio('sounds/bg_music.mp3'),
             bgMusic2:  new Audio('sounds/bg_music2.mp3')
         };
@@ -4721,12 +4820,17 @@
                     currentRoomId = data.roomId;
                     myPlayerId = data.playerId; // null for spectators
 
-                    // Save session for all players (termasuk custom room) agar bisa rejoin setelah refresh/ganti device
-                    // Spectator tidak disimpan karena tidak punya playerId
+                    // Save session ke localStorage agar bisa rejoin setelah refresh/ganti device
                     if (!_isSpectator) {
                         lsSet(LS.ROOM_ID, data.roomId);
                         lsSet(LS.PLAYER_ID, data.playerId);
                         lsSet(LS.GAME_ACTIVE, 'true');
+                        lsDel(LS.IS_SPECTATOR);
+                    } else {
+                        lsSet(LS.ROOM_ID, data.roomId);
+                        lsSet(LS.IS_SPECTATOR, 'true');
+                        lsSet(LS.GAME_ACTIVE, 'true');
+                        lsDel(LS.PLAYER_ID);
                     }
 
                     setTimeout(() => {
@@ -4905,13 +5009,13 @@
             const infoBtn = document.getElementById('province-info-btn');
             if (infoBtn) {
                 infoBtn.style.display = gs.currentProvince ? 'flex' : 'none';
-                if (!infoBtn._listenerAdded) { infoBtn.addEventListener('click', showProvinceInfo); infoBtn._listenerAdded = true; }
+                if (!infoBtn._listenerAdded) { infoBtn.addEventListener('click', () => { playSound('button'); showProvinceInfo(); }); infoBtn._listenerAdded = true; }
             }
 
             // Close province info modal (spectator path)
             const closeBtn = document.getElementById('province-info-close');
             if (closeBtn && !closeBtn._listenerAdded) {
-                closeBtn.addEventListener('click', closeProvinceInfo);
+                closeBtn.addEventListener('click', () => { playSound('button'); closeProvinceInfo(); });
                 closeBtn._listenerAdded = true;
             }
 
@@ -4964,7 +5068,7 @@
                         dlBtn.className = 'btn-dl-info';
                         dlBtn.title = `Info Draw Level ${getBotDisplayName(p)}`;
                         dlBtn.textContent = 'ℹ️';
-                        dlBtn.addEventListener('click', () => showDrawLevelInfo(p.id));
+                        dlBtn.addEventListener('click', () => { playSound('button'); showDrawLevelInfo(p.id); });
                         nameDiv.appendChild(dlBtn);
                     }
                     section.appendChild(nameDiv);
@@ -5245,6 +5349,7 @@
         }
 
         function closeProvinceInfo() {
+            playSound('x');
             document.getElementById('province-info-modal').classList.remove('active');
         }
 
@@ -5763,21 +5868,21 @@
             const infoBtn = document.getElementById('province-info-btn');
             infoBtn.style.display = gameState.currentProvince ? 'flex' : 'none';
             if (!infoBtn._listenerAdded) {
-                infoBtn.addEventListener('click', showProvinceInfo);
+                infoBtn.addEventListener('click', () => { playSound('button'); showProvinceInfo(); });
                 infoBtn._listenerAdded = true;
             }
 
             // Refresh button listener
             const refreshBtn = document.getElementById('sync-refresh-btn');
             if (!refreshBtn._listenerAdded) {
-                refreshBtn.addEventListener('click', syncRefresh);
+                refreshBtn.addEventListener('click', () => { playSound('button'); syncRefresh(); });
                 refreshBtn._listenerAdded = true;
             }
 
             // Close province info modal
             const closeBtn = document.getElementById('province-info-close');
             if (!closeBtn._listenerAdded) {
-                closeBtn.addEventListener('click', closeProvinceInfo);
+                closeBtn.addEventListener('click', () => { playSound('button'); closeProvinceInfo(); });
                 closeBtn._listenerAdded = true;
             }
 
@@ -6257,8 +6362,8 @@
         // SETTINGS SCREEN
         // =============================================
         // Rasio volume SFX default (relatif antar suara)
-        const SFX_KEYS = ['zoomIn', 'zoomOut', 'forcePick', 'drawCard'];
-        const SFX_BASE = { zoomIn: 0.5, zoomOut: 0.5, forcePick: 0.6, drawCard: 0.5 };
+        const SFX_KEYS = ['zoomIn', 'zoomOut', 'forcePick', 'drawCard', 'x'];
+        const SFX_BASE = { zoomIn: 0.5, zoomOut: 0.5, forcePick: 0.6, drawCard: 0.5, x: 0.5 };
         // Slider master SFX (0-100) → skala ke volume masing-masing dengan rasio base
         const SFX_MAX = Math.max(...Object.values(SFX_BASE)); // 0.6
 
@@ -6536,7 +6641,7 @@
                     } else if (isPending) {
                         actionBtn = `<button class="btn-fa btn-fa-sent" disabled>⏳ Terkirim</button>`;
                     } else {
-                        actionBtn = `<button class="btn-fa btn-fa-add" onclick="sendFriendRequest('${p.uid}','${p.nickname.replace(/'/g,"\\'")}',this)">➕ Tambah</button>`;
+                        actionBtn = `<button class="btn-fa btn-fa-add" onclick="playSound('button');sendFriendRequest('${p.uid}','${p.nickname.replace(/'/g,"\\'")}',this)">➕ Tambah</button>`;
                     }
                     return `
                     <div class="friend-card">
@@ -6546,7 +6651,7 @@
                             <div class="friend-id">#${p.shortId}</div>
                         </div>
                         <div class="friend-actions">
-                            <button class="btn-fa btn-fa-visit" onclick="visitPlayerProfile('${p.uid}')">🌿 Kunjungi</button>
+                            <button class="btn-fa btn-fa-visit" onclick="playSound('button');visitPlayerProfile('${p.uid}')">🌿 Kunjungi</button>
                             ${actionBtn}
                         </div>
                     </div>`;
@@ -6653,9 +6758,9 @@
                             <div class="friend-id">#${r.uid.slice(-6).toUpperCase()}</div>
                         </div>
                         <div class="friend-actions">
-                            <button class="btn-fa btn-fa-visit" onclick="visitPlayerProfile('${r.uid}')">🌿 Kunjungi</button>
-                            <button class="btn-fa btn-fa-accept" onclick="acceptFriendRequest('${r.uid}','${(r.nickname||'').replace(/'/g,"\\'")}')">✅ Terima</button>
-                            <button class="btn-fa btn-fa-reject" onclick="rejectFriendRequest('${r.uid}')">❌ Tolak</button>
+                            <button class="btn-fa btn-fa-visit" onclick="playSound('button');visitPlayerProfile('${r.uid}')">🌿 Kunjungi</button>
+                            <button class="btn-fa btn-fa-accept" onclick="playSound('button');acceptFriendRequest('${r.uid}','${(r.nickname||'').replace(/'/g,"\\'")}')">✅ Terima</button>
+                            <button class="btn-fa btn-fa-reject" onclick="playSound('button');rejectFriendRequest('${r.uid}')">❌ Tolak</button>
                         </div>
                     </div>`).join('');
             } catch(e) {
@@ -6691,8 +6796,8 @@
                             <div class="friend-id">#${f.uid.slice(-6).toUpperCase()}</div>
                         </div>
                         <div class="friend-actions">
-                            <button class="btn-fa btn-fa-visit" onclick="visitPlayerProfile('${f.uid}')">🌿 Kunjungi</button>
-                            <button class="btn-fa btn-fa-remove" onclick="removeFriend('${f.uid}')" title="Hapus teman">🗑</button>
+                            <button class="btn-fa btn-fa-visit" onclick="playSound('button');visitPlayerProfile('${f.uid}')">🌿 Kunjungi</button>
+                            <button class="btn-fa btn-fa-remove" onclick="playSound('button');removeFriend('${f.uid}')" title="Hapus teman">🗑</button>
                         </div>
                     </div>`).join('');
             } catch(e) {
@@ -6886,7 +6991,7 @@
                     if (isFriendSnap.exists()) {
                         btn.style.cssText = 'background:rgba(244,67,54,0.7);color:#fff;';
                         btn.textContent = '🗑 Hapus Teman';
-                        btn.onclick = () => { removeFriend(uid); closeVisitProfile(); };
+                        btn.onclick = () => { playSound('button'); removeFriend(uid); closeVisitProfile(); };
                     } else if (isSentSnap.exists()) {
                         btn.style.cssText = 'background:rgba(255,193,7,0.4);color:#fff;cursor:default;';
                         btn.textContent = '⏳ Permintaan Terkirim';
@@ -6894,7 +6999,7 @@
                     } else {
                         btn.style.cssText = 'background:rgba(76,175,80,0.8);color:#fff;';
                         btn.textContent = '➕ Tambah Teman';
-                        btn.onclick = () => sendFriendRequest(uid, nick, btn);
+                        btn.onclick = () => { playSound('button'); sendFriendRequest(uid, nick, btn); };
                     }
                     actionDiv.appendChild(btn);
                 }
@@ -7123,7 +7228,7 @@
                     const selfCls = isSelf ? 'lb-self' : '';
                     const selfTag = isSelf ? '<span class="lb-self-tag">Kamu</span>' : '';
                     const ptsTxt  = e.rankName === 'Platinum MAX' ? `${e.points} poin` : `${e.points} / 100 poin`;
-                    return `<div class="lb-item ${topCls} ${selfCls}" onclick="visitPlayerProfile('${e.uid}')">
+                    return `<div class="lb-item ${topCls} ${selfCls}" onclick="playSound('button');visitPlayerProfile('${e.uid}')">
                         ${posDisp}
                         <img src="${rankImgSrc(e.rankName)}" class="lb-rank-img" onerror="this.style.display='none'">
                         <div class="lb-info">
@@ -7281,7 +7386,7 @@
                     return;
                 }
                 el.innerHTML = filteredProfiles.map(f => `
-                    <button class="party-friend-item" onclick="_selectPartyFriend('${escHtml(f.uid)}','${escHtml(f.nickname)}',${_openPickerSlot || 2})">
+                    <button class="party-friend-item" onclick="playSound('button');_selectPartyFriend('${escHtml(f.uid)}','${escHtml(f.nickname)}',${_openPickerSlot || 2})">
                         <div class="party-friend-avatar">${escHtml(f.nickname.charAt(0).toUpperCase())}</div>
                         <div class="party-friend-name">${escHtml(f.nickname)}</div>
                     </button>
@@ -7642,14 +7747,14 @@
                     slot.innerHTML = `
                         <div class="custom-slot-num">🤖</div>
                         <div class="custom-slot-name">Bot Lv${entry.level} <span style="font-size:0.75em;color:rgba(255,255,255,0.4);">(${levelLabel})</span></div>
-                        ${canManageBots ? `<button class="custom-slot-clear" onclick="removeBotFromRoom(${slotPos})" title="Hapus bot">✖</button>` : ''}`;
+                        ${canManageBots ? `<button class="custom-slot-clear" onclick="playSound('button');removeBotFromRoom(${slotPos})" title="Hapus bot">✖</button>` : ''}`;
                 } else if (entry) {
                     // Slot teman (terisi atau pending)
                     slot.classList.add('filled');
                     slot.innerHTML = `
                         <div class="custom-slot-num">${slotPos}</div>
                         <div class="custom-slot-name">${escHtml(entry.name)}</div>
-                        ${canManageBots ? `<button class="custom-slot-clear" onclick="clearCustomSlot(${slotIdx})">✖</button>` : ''}`;
+                        ${canManageBots ? `<button class="custom-slot-clear" onclick="playSound('button');clearCustomSlot(${slotIdx})">✖</button>` : ''}`;
                 } else {
                     // Slot kosong
                     if (totalOccupied >= 4) continue; // penuh, jangan tampilkan
@@ -7657,7 +7762,7 @@
                         slot.innerHTML = `
                             <div class="custom-slot-num">${slotPos}</div>
                             <div class="custom-slot-empty-text">Klik untuk undang teman</div>`;
-                        slot.onclick = () => openCustomFriendPicker(slotPos);
+                        slot.onclick = () => { playSound('button'); openCustomFriendPicker(slotPos); };
                     } else {
                         slot.innerHTML = `
                             <div class="custom-slot-num">${slotPos}</div>
@@ -7689,11 +7794,11 @@
             if (canAddBot) {
                 html += `
                     <button class="custom-friend-btn" style="background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.5);color:#fbbf24;"
-                        onclick="addBotToRoomSlot(1)">🤖 Mudah (Lv1)</button>
+                        onclick="playSound('button');addBotToRoomSlot(1)">🤖 Mudah (Lv1)</button>
                     <button class="custom-friend-btn" style="background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.5);color:#fbbf24;"
-                        onclick="addBotToRoomSlot(2)">🤖 Normal (Lv2)</button>
+                        onclick="playSound('button');addBotToRoomSlot(2)">🤖 Normal (Lv2)</button>
                     <button class="custom-friend-btn" style="background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.5);color:#fbbf24;"
-                        onclick="addBotToRoomSlot(3)">🤖 Sulit (Lv3)</button>`;
+                        onclick="playSound('button');addBotToRoomSlot(3)">🤖 Sulit (Lv3)</button>`;
             } else {
                 html += `<div style="color:rgba(255,255,255,0.35);font-size:0.78em;">Slot penuh (maks 4)</div>`;
             }
@@ -7730,7 +7835,7 @@
                     item.innerHTML = `
                         <div class="custom-friend-dot"></div>
                         <div class="custom-friend-name">${escHtml(friendName)}</div>
-                        <button class="custom-friend-btn" onclick="inviteToCustomRoom('${escHtml(uid)}','${escHtml(friendName).replace(/'/g,"\\'")}',${slotPos})">Undang</button>`;
+                        <button class="custom-friend-btn" onclick="playSound('button');inviteToCustomRoom('${escHtml(uid)}','${escHtml(friendName).replace(/'/g,"\\'")}',${slotPos})">Undang</button>`;
                     listDiv.appendChild(item);
                 }
             } catch(e) {
@@ -8122,9 +8227,9 @@
                 <div class="party-vs-divider">+</div>
 
                 <!-- Slot 2: Teman 1 (opsional) -->
-                <div class="party-slot empty" id="pslot-2" onclick="togglePartyFriendPicker(2)">
+                <div class="party-slot empty" id="pslot-2" onclick="playSound('button');togglePartyFriendPicker(2)">
                     <button class="party-slot-clear" id="pslot-2-clear"
-                        onclick="event.stopPropagation();clearPartyFriend(2)" style="display:none;">✖</button>
+                        onclick="event.stopPropagation();playSound('button');clearPartyFriend(2)" style="display:none;">✖</button>
                     <div class="party-slot-icon" id="pslot-2-icon">➕</div>
                     <div class="party-slot-name" id="pslot-2-name">Ajak Teman</div>
                     <div class="party-slot-sub" id="pslot-2-sub">(opsional)</div>
@@ -8133,9 +8238,9 @@
                 <div class="party-vs-divider">+</div>
 
                 <!-- Slot 3: Teman 2 (opsional) -->
-                <div class="party-slot empty" id="pslot-3" onclick="togglePartyFriendPicker(3)">
+                <div class="party-slot empty" id="pslot-3" onclick="playSound('button');togglePartyFriendPicker(3)">
                     <button class="party-slot-clear" id="pslot-3-clear"
-                        onclick="event.stopPropagation();clearPartyFriend(3)" style="display:none;">✖</button>
+                        onclick="event.stopPropagation();playSound('button');clearPartyFriend(3)" style="display:none;">✖</button>
                     <div class="party-slot-icon" id="pslot-3-icon">➕</div>
                     <div class="party-slot-name" id="pslot-3-name">Ajak Teman</div>
                     <div class="party-slot-sub" id="pslot-3-sub">(opsional)</div>
@@ -8151,8 +8256,8 @@
             </div>
 
             <div class="party-lobby-actions">
-                <button class="party-btn-cancel" onclick="closePartyLobby()">✖ Batal</button>
-                <button class="party-btn-start" onclick="startMatchmakingFromParty()">▶ Mulai</button>
+                <button class="party-btn-cancel" onclick="playSound('x');closePartyLobby()">✖ Batal</button>
+                <button class="party-btn-start" onclick="playSound('button');startMatchmakingFromParty()">▶ Mulai</button>
             </div>
         </div>
     </div>
@@ -8163,8 +8268,8 @@
             <div class="party-lobby-title">🎮 Ajakan Main Bareng!</div>
             <p class="party-invite-msg" id="party-invite-msg">Seseorang mengajakmu main bareng!</p>
             <div class="party-lobby-actions">
-                <button class="party-btn-cancel" onclick="declinePartyInvite()">✖ Tolak</button>
-                <button class="party-btn-start" onclick="acceptPartyInvite()">✅ Terima</button>
+                <button class="party-btn-cancel" onclick="playSound('x');declinePartyInvite()">✖ Tolak</button>
+                <button class="party-btn-start" onclick="playSound('button');acceptPartyInvite()">✅ Terima</button>
             </div>
         </div>
     </div>
@@ -8175,18 +8280,18 @@
             <div class="kostum-picker-title">⚔️ Mode Kostum</div>
             <div class="kostum-picker-sub">Pertandingan tidak mempengaruhi rank, riwayat, atau statistik.</div>
             <div class="kostum-role-btns">
-                <button class="kostum-role-btn pemain" onclick="selectKostumRole('pemain')">
+                <button class="kostum-role-btn pemain" onclick="playSound('button');selectKostumRole('pemain')">
                     <span class="role-icon">🎮</span>
                     <span class="role-label">Pemain</span>
                     <span class="role-desc">Ikut bermain dalam pertandingan</span>
                 </button>
-                <button class="kostum-role-btn penonton" onclick="selectKostumRole('penonton')">
+                <button class="kostum-role-btn penonton" onclick="playSound('button');selectKostumRole('penonton')">
                     <span class="role-icon">👁️</span>
                     <span class="role-label">Penonton</span>
                     <span class="role-desc">Hanya menonton, undang 4 pemain</span>
                 </button>
             </div>
-            <button class="btn-kostum-cancel" onclick="closeKostumPicker()">✖ Batal</button>
+            <button class="btn-kostum-cancel" onclick="playSound('x');closeKostumPicker()">✖ Batal</button>
         </div>
     </div>
 
@@ -8206,8 +8311,8 @@
                 </div>
             </div>
             <div class="custom-room-actions">
-                <button class="btn-custom-cancel" onclick="leaveCustomRoom()">✖ Keluar</button>
-                <button class="btn-custom-start" id="btn-custom-start" onclick="startCustomRoomGame()">▶ Mulai</button>
+                <button class="btn-custom-cancel" onclick="playSound('x');leaveCustomRoom()">✖ Keluar</button>
+                <button class="btn-custom-start" id="btn-custom-start" onclick="playSound('button');startCustomRoomGame()">▶ Mulai</button>
             </div>
         </div>
     </div>
@@ -8218,8 +8323,8 @@
             <div class="party-lobby-title">🤝 Undangan Custom Room!</div>
             <p class="party-invite-msg" id="custom-invite-msg">Seseorang mengundangmu ke custom room!</p>
             <div class="party-lobby-actions">
-                <button class="party-btn-cancel" onclick="declineCustomRoomInvite()">✖ Tolak</button>
-                <button class="party-btn-start" onclick="acceptCustomRoomInvite()">✔ Terima</button>
+                <button class="party-btn-cancel" onclick="playSound('x');declineCustomRoomInvite()">✖ Tolak</button>
+                <button class="party-btn-start" onclick="playSound('button');acceptCustomRoomInvite()">✔ Terima</button>
             </div>
         </div>
     </div>
