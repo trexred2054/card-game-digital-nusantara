@@ -4718,7 +4718,7 @@
                 deckDiv.innerHTML = '';
                 gs.players.forEach(p => {
                     const section = document.createElement('div');
-                    section.style.cssText = 'margin-bottom:16px;';
+                    section.style.cssText = 'margin-bottom:16px; width:100%; box-sizing:border-box;';
                     const medals = { 1: '🥇', 2: '🥈', 3: '🥉', 4: '💀' };
                     const statusLabel = p.winner
                         ? `${medals[p.rank] || '🏅'} Peringkat ${p.rank}`
