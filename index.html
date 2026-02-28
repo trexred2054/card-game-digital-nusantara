@@ -443,6 +443,71 @@
             flex-wrap: wrap; padding: 5px; min-height: 140px;
             align-items: flex-start; width: 100%; box-sizing: border-box;
         }
+        .deck-slot {
+            display: inline-flex; flex-direction: column;
+            align-items: center; gap: 4px;
+        }
+        .deck-slot.zoom-in  { animation: cardZoomIn  0.4s ease-out forwards; }
+        .deck-slot.zoom-out { animation: cardZoomOut 0.3s ease-in  forwards !important; pointer-events: none !important; }
+        .deck-province-label {
+            font-size: 0.63em; font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            background: rgba(0,0,0,0.38);
+            padding: 2px 7px; border-radius: 4px;
+            max-width: 108px; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis;
+            text-align: center; pointer-events: none;
+        }
+        .deck-province-label.hidden { display: none; }
+
+        /* ============================================ */
+        /* IN-GAME SETTINGS BUTTON & PANEL              */
+        /* ============================================ */
+        #btn-ingame-settings {
+            position: fixed; bottom: 20px; left: 20px;
+            width: 46px; height: 46px; border-radius: 50%;
+            background: rgba(20, 15, 50, 0.72);
+            backdrop-filter: blur(8px);
+            border: 1.5px solid rgba(255,255,255,0.22);
+            color: #fff; font-size: 1.25em;
+            cursor: pointer; z-index: 9000;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.45);
+            transition: background 0.2s, transform 0.15s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #btn-ingame-settings:hover { background: rgba(60,40,120,0.88); transform: scale(1.08); }
+
+        #ingame-settings-panel {
+            position: fixed; bottom: 76px; left: 14px;
+            width: 292px;
+            background: linear-gradient(150deg, #2a1f5c 0%, #17103a 100%);
+            border: 1px solid rgba(255,255,255,0.17);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+            z-index: 9001; overflow: hidden;
+        }
+        .igs-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 13px 16px;
+            background: rgba(0,0,0,0.28);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .igs-title { color: #fff; font-weight: bold; font-size: 1em; }
+        .igs-close-btn {
+            background: rgba(244,67,54,0.82); color: #fff;
+            border: none; border-radius: 8px;
+            padding: 4px 11px; cursor: pointer; font-size: 0.85em; font-weight: bold;
+        }
+        .igs-close-btn:hover { background: #f44336; }
+        .igs-body { padding: 14px 16px; max-height: 62vh; overflow-y: auto; }
+        .igs-section-label {
+            color: rgba(255,255,255,0.72); font-size: 0.8em;
+            font-weight: bold; margin-bottom: 6px; display: block;
+        }
+        .igs-divider {
+            border: none; border-top: 1px solid rgba(255,255,255,0.12);
+            margin: 13px 0;
+        }
 
         /* CARDS */
         .card {
@@ -1580,6 +1645,52 @@
         .btn-logout-settings:hover { box-shadow: 0 8px 24px rgba(244,67,54,0.6); }
 
         /* ============================================ */
+        /* PROVINCE TOOLTIP & SETTINGS TOGGLE           */
+        /* ============================================ */
+        #province-tooltip {
+            position: fixed;
+            background: rgba(10, 10, 25, 0.92);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.76em;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 99999;
+            white-space: nowrap;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.18);
+            transform: translateX(-50%) translateY(-100%);
+            opacity: 0;
+            transition: opacity 0.12s ease;
+        }
+        #province-tooltip.visible { opacity: 1; }
+
+        .settings-toggle-row {
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 4px 0;
+        }
+        .settings-toggle-label { color: rgba(255,255,255,0.85); font-size: 0.92em; }
+        .settings-toggle {
+            position: relative; display: inline-block;
+            width: 46px; height: 26px; flex-shrink: 0;
+        }
+        .settings-toggle input { opacity: 0; width: 0; height: 0; }
+        .settings-toggle-slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.2); border-radius: 26px;
+            transition: 0.3s;
+        }
+        .settings-toggle-slider:before {
+            position: absolute; content: '';
+            height: 20px; width: 20px; left: 3px; bottom: 3px;
+            background: white; border-radius: 50%; transition: 0.3s;
+        }
+        .settings-toggle input:checked + .settings-toggle-slider { background: #4caf50; }
+        .settings-toggle input:checked + .settings-toggle-slider:before { transform: translateX(20px); }
+
+        /* ============================================ */
         /* PARTY LOBBY POPUP                            */
         /* ============================================ */
         #party-lobby-overlay {
@@ -2578,6 +2689,26 @@
                 </div>
             </div>
 
+            <div class="settings-section">
+                <span class="settings-section-label">🗺️ Tampilan</span>
+                <div class="settings-toggle-row">
+                    <span class="settings-toggle-label">Tooltip nama provinsi saat hover kartu</span>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="toggle-province-tooltip"
+                               onchange="applyProvinceTooltipSetting(this.checked)">
+                        <span class="settings-toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-toggle-row" style="margin-top:12px;">
+                    <span class="settings-toggle-label">Nama provinsi di bawah kartu (deck)</span>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="toggle-deck-province-label"
+                               onchange="applyDeckProvinceLabelSetting(this.checked)">
+                        <span class="settings-toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
             <hr class="settings-divider">
 
             <button class="btn-logout-settings" onclick="confirmLogout()">🚪 Keluar / Log Out</button>
@@ -2661,6 +2792,62 @@
                 </div>
             </div>
         </div>
+
+        <!-- IN-GAME SETTINGS PANEL -->
+        <div id="ingame-settings-panel" style="display:none;">
+            <div class="igs-header">
+                <span class="igs-title">⚙️ Pengaturan</span>
+                <button class="igs-close-btn" onclick="closeIngameSettings()">✖ Tutup</button>
+            </div>
+            <div class="igs-body">
+                <span class="igs-section-label">🎵 Volume Music 1 (Lobby)</span>
+                <div class="settings-slider-row">
+                    <input type="range" class="settings-slider" id="igs-vol-bgmusic1"
+                           min="0" max="100" value="30"
+                           oninput="applyVolumeBgMusic1(this.value)">
+                    <span class="settings-slider-val" id="igs-vol-bgmusic1-val">30%</span>
+                </div>
+
+                <span class="igs-section-label" style="margin-top:12px;">🎶 Volume Music 2 (Game)</span>
+                <div class="settings-slider-row">
+                    <input type="range" class="settings-slider" id="igs-vol-bgmusic2"
+                           min="0" max="100" value="30"
+                           oninput="applyVolumeBgMusic2(this.value)">
+                    <span class="settings-slider-val" id="igs-vol-bgmusic2-val">30%</span>
+                </div>
+
+                <span class="igs-section-label" style="margin-top:12px;">🔊 Volume Sound Effect</span>
+                <div class="settings-slider-row">
+                    <input type="range" class="settings-slider" id="igs-vol-sfx"
+                           min="0" max="100" value="50"
+                           oninput="applyVolumeSfx(this.value)">
+                    <span class="settings-slider-val" id="igs-vol-sfx-val">50%</span>
+                </div>
+
+                <hr class="igs-divider">
+
+                <span class="igs-section-label">🗺️ Tampilan</span>
+                <div class="settings-toggle-row" style="margin-top:8px;">
+                    <span class="settings-toggle-label">Tooltip nama provinsi</span>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="igs-toggle-province-tooltip"
+                               onchange="applyProvinceTooltipSetting(this.checked)">
+                        <span class="settings-toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-toggle-row" style="margin-top:10px;">
+                    <span class="settings-toggle-label">Nama provinsi di bawah kartu</span>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="igs-toggle-deck-province-label"
+                               onchange="applyDeckProvinceLabelSetting(this.checked)">
+                        <span class="settings-toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- IN-GAME SETTINGS BUTTON (bottom-left) -->
+        <button id="btn-ingame-settings" onclick="toggleIngameSettings()" title="Pengaturan">⚙️</button>
     </div>
 
     <!-- PROCESSING NOTIFICATION -->
@@ -2849,12 +3036,14 @@
         // LOCALSTORAGE KEYS
         // =============================================
         const LS = {
-            ROOM_ID:     'cgn_roomId',
-            PLAYER_ID:   'cgn_playerId',
-            NICKNAME:    'cgn_nickname',
-            USER_UID:    'cgn_userUid',
-            USER_EMAIL:  'cgn_userEmail',
-            GAME_ACTIVE: 'cgn_gameActive',
+            ROOM_ID:          'cgn_roomId',
+            PLAYER_ID:        'cgn_playerId',
+            NICKNAME:         'cgn_nickname',
+            USER_UID:         'cgn_userUid',
+            USER_EMAIL:       'cgn_userEmail',
+            GAME_ACTIVE:      'cgn_gameActive',
+            PROVINCE_TOOLTIP:    'cgn_province_tooltip',
+            DECK_PROVINCE_LABEL: 'cgn_deck_province_label',
         };
 
         function lsSet(key, value) { try { localStorage.setItem(key, value); } catch(e) {} }
@@ -4558,6 +4747,21 @@
                                 btnSurrender.style.display = 'inline-block';
                             }
                         }
+                        // Reset inline styles yang di-set oleh spectator view agar tidak bocor ke sesi player berikutnya
+                        if (!_isSpectator) {
+                            const _btnDraw     = document.getElementById('btn-draw');
+                            const _btnDrawInfo = document.getElementById('btn-draw-level-info');
+                            const _pCardStat   = document.getElementById('player-cards')?.closest('.player-stat');
+                            const _pPowerStat  = document.getElementById('player-power')?.closest('.player-stat');
+                            if (_btnDraw)     _btnDraw.style.display     = '';
+                            if (_btnDrawInfo) _btnDrawInfo.style.display = '';
+                            if (_pCardStat)   _pCardStat.style.display   = '';
+                            if (_pPowerStat)  _pPowerStat.style.display  = '';
+                            // Bersihkan deck dari wrapper scaled-card sisa spectator view,
+                            // agar updatePlayerUI tidak mencampur elemen lama (skala 65%) dengan kartu baru
+                            const _deckDiv = document.getElementById('player-deck');
+                            if (_deckDiv) _deckDiv.innerHTML = '';
+                        }
                         updateGameUI(data.state);
                         addLog(_isSpectator ? '👁️ Kamu menonton pertandingan ini.' : '🎮 Game dimulai! Selamat bermain!');
                     }, 500);
@@ -4975,6 +5179,7 @@
             const div = document.createElement('div');
             div.className = `card ${card.rarity}`;
             div.dataset.cardId = card.id;
+            if (card.province) div.dataset.province = card.province;
 
             const rarityEmojis = { mythic:'👑', legendary:'🔥', epic:'👾', rareplus:'💎', rarestar:'💙', rare:'💠', uncommon:'💚', uncommonplus:'🍀', commonplus:'🟢', common:'⚪' };
             const emojiMap = { 'SDA Unggulan':'⛰️', 'Bangunan Bersejarah':'🏛️', 'Sektor Ekonomi':'💰', 'Rumah Adat':'🏠', 'Senjata Tradisional':'🗡️', 'Pakaian Adat':'👘', 'Alat Musik':'🎵', 'Tarian':'💃', 'Adat Istiadat':'🏮', 'Makanan Khas':'🍜' };
@@ -5672,9 +5877,14 @@
             const sortedHand = [...player.hand].sort((a, b) => b.power - a.power);
             const newIds = sortedHand.map(c => c.id);
 
-            // 1. Hapus kartu yang sudah tidak ada di tangan
+            // 1. Hapus slot yang kartunya sudah tidak ada di tangan
             Array.from(deckDiv.children).forEach(el => {
-                if (!newIds.includes(el.dataset.cardId) && !el.classList.contains('fly-to-top') && !el.classList.contains('zoom-out')) {
+                const slotId = el.dataset.slotId ?? el.dataset.cardId;
+                const cardInside = el.querySelector?.('.card') ?? el;
+                if (!newIds.includes(slotId)
+                    && !el.classList.contains('zoom-out')
+                    && !cardInside.classList.contains('fly-to-top')
+                    && !cardInside.classList.contains('zoom-out')) {
                     el.classList.add('zoom-out');
                     if (deckInitialized) playSound('zoomOut');
                     setTimeout(() => { if (el.parentNode) el.remove(); }, 300);
@@ -5683,14 +5893,28 @@
 
             // 2. Tambah kartu baru & update interaktivitas
             sortedHand.forEach(card => {
-                let existing = deckDiv.querySelector(`[data-card-id="${card.id}"]`);
-                if (!existing) {
+                let slot = deckDiv.querySelector(`.deck-slot[data-slot-id="${card.id}"]`);
+                let existing; // elemen .card di dalam slot
+                if (!slot) {
+                    slot = document.createElement('div');
+                    slot.className = 'deck-slot';
+                    slot.dataset.slotId = card.id;
                     const cardEl = createCardElement(card);
-                    deckDiv.appendChild(cardEl);
-                    cardEl.classList.add('zoom-in');
+                    slot.appendChild(cardEl);
+                    const lbl = document.createElement('div');
+                    lbl.className = 'deck-province-label' + (_showDeckProvinceLabel ? '' : ' hidden');
+                    lbl.textContent = card.province || '';
+                    slot.appendChild(lbl);
+                    deckDiv.appendChild(slot);
+                    slot.classList.add('zoom-in');
                     if (deckInitialized) playSound('zoomIn');
-                    setTimeout(() => cardEl.classList.remove('zoom-in'), 400);
+                    setTimeout(() => slot.classList.remove('zoom-in'), 400);
                     existing = cardEl;
+                } else {
+                    existing = slot.querySelector('.card');
+                    // Sinkronkan visibilitas label
+                    const lbl = slot.querySelector('.deck-province-label');
+                    if (lbl) lbl.classList.toggle('hidden', !_showDeckProvinceLabel);
                 }
 
                 // 3. Update interaktivitas
@@ -5731,10 +5955,10 @@
                 }
             });
 
-            // 4. Fix urutan kartu sesuai sortedHand
+            // 4. Fix urutan slot sesuai sortedHand
             sortedHand.forEach(card => {
-                const el = deckDiv.querySelector(`[data-card-id="${card.id}"]`);
-                if (el) deckDiv.appendChild(el);
+                const slot = deckDiv.querySelector(`.deck-slot[data-slot-id="${card.id}"]`);
+                if (slot) deckDiv.appendChild(slot);
             });
 
             // 5. Penalty & Freed notifications
@@ -6038,6 +6262,106 @@
         // Slider master SFX (0-100) → skala ke volume masing-masing dengan rasio base
         const SFX_MAX = Math.max(...Object.values(SFX_BASE)); // 0.6
 
+        // =============================================
+        // PROVINCE TOOLTIP FEATURE
+        // =============================================
+        let _showProvinceTooltip    = lsGet(LS.PROVINCE_TOOLTIP)    !== '0'; // default: aktif
+        let _showDeckProvinceLabel  = lsGet(LS.DECK_PROVINCE_LABEL) === '1'; // default: off
+
+        function applyDeckProvinceLabelSetting(enabled) {
+            _showDeckProvinceLabel = enabled;
+            lsSet(LS.DECK_PROVINCE_LABEL, enabled ? '1' : '0');
+            [document.getElementById('toggle-deck-province-label'),
+             document.getElementById('igs-toggle-deck-province-label')]
+                .forEach(t => { if (t) t.checked = enabled; });
+            // Update semua label yang sudah ada di DOM
+            document.querySelectorAll('#player-deck .deck-province-label').forEach(lbl => {
+                lbl.classList.toggle('hidden', !enabled);
+            });
+        }
+
+        // Buat elemen tooltip sekali, reuse untuk semua kartu
+        const _provinceTooltipEl = document.createElement('div');
+        _provinceTooltipEl.id = 'province-tooltip';
+        document.body.appendChild(_provinceTooltipEl);
+
+        function applyProvinceTooltipSetting(enabled) {
+            _showProvinceTooltip = enabled;
+            lsSet(LS.PROVINCE_TOOLTIP, enabled ? '1' : '0');
+            [document.getElementById('toggle-province-tooltip'),
+             document.getElementById('igs-toggle-province-tooltip')]
+                .forEach(t => { if (t) t.checked = enabled; });
+            if (!enabled) _provinceTooltipEl.classList.remove('visible');
+        }
+
+        // Event delegation: satu listener untuk semua kartu (termasuk yang dibuat dinamis)
+        document.addEventListener('mouseover', (e) => {
+            if (!_showProvinceTooltip) return;
+            const card = e.target.closest('.card[data-province]');
+            if (!card) return;
+            const province = card.dataset.province;
+            if (!province) return;
+            const rect = card.getBoundingClientRect();
+            _provinceTooltipEl.textContent = province;
+            _provinceTooltipEl.style.left = (rect.left + rect.width / 2) + 'px';
+            _provinceTooltipEl.style.top  = (rect.top - 10) + 'px';
+            _provinceTooltipEl.classList.add('visible');
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            const card = e.target.closest('.card[data-province]');
+            if (!card) return;
+            _provinceTooltipEl.classList.remove('visible');
+        });
+
+        // Sembunyikan tooltip saat scroll (agar tidak "mengambang" di posisi lama)
+        document.addEventListener('scroll', () => {
+            _provinceTooltipEl.classList.remove('visible');
+        }, true);
+
+        // =============================================
+        // IN-GAME SETTINGS
+        // =============================================
+        function syncIngameSettings() {
+            const v1   = Math.round(soundEffects.bgMusic.volume * 100);
+            const v2   = Math.round(soundEffects.bgMusic2.volume * 100);
+            const vSfx = Math.round((soundEffects.zoomIn.volume / SFX_MAX) * 100);
+            const s1 = document.getElementById('igs-vol-bgmusic1');
+            const s2 = document.getElementById('igs-vol-bgmusic2');
+            const sSfx = document.getElementById('igs-vol-sfx');
+            if (s1)   { s1.value   = v1;   document.getElementById('igs-vol-bgmusic1-val').textContent = v1   + '%'; }
+            if (s2)   { s2.value   = v2;   document.getElementById('igs-vol-bgmusic2-val').textContent = v2   + '%'; }
+            if (sSfx) { sSfx.value = vSfx; document.getElementById('igs-vol-sfx-val').textContent     = vSfx + '%'; }
+            const t1 = document.getElementById('igs-toggle-province-tooltip');
+            const t2 = document.getElementById('igs-toggle-deck-province-label');
+            if (t1) t1.checked = _showProvinceTooltip;
+            if (t2) t2.checked = _showDeckProvinceLabel;
+        }
+
+        function toggleIngameSettings() {
+            const panel = document.getElementById('ingame-settings-panel');
+            if (panel.style.display === 'none' || panel.style.display === '') {
+                syncIngameSettings();
+                panel.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function closeIngameSettings() {
+            document.getElementById('ingame-settings-panel').style.display = 'none';
+        }
+
+        // Tutup panel saat klik di luar area panel/tombol
+        document.addEventListener('click', (e) => {
+            const panel = document.getElementById('ingame-settings-panel');
+            const btn   = document.getElementById('btn-ingame-settings');
+            if (!panel || panel.style.display === 'none') return;
+            if (!panel.contains(e.target) && e.target !== btn && !btn?.contains(e.target)) {
+                panel.style.display = 'none';
+            }
+        });
+
         function showSettingsScreen() {
             // Tampilkan email akun
             if (currentUser) {
@@ -6053,6 +6377,11 @@
             document.getElementById('vol-bgmusic2-val').textContent = v2 + '%';
             document.getElementById('vol-sfx').value = vSfx;
             document.getElementById('vol-sfx-val').textContent = vSfx + '%';
+            // Sinkronkan toggle tooltip provinsi & label deck
+            const toggleTip = document.getElementById('toggle-province-tooltip');
+            if (toggleTip) toggleTip.checked = _showProvinceTooltip;
+            const toggleLbl = document.getElementById('toggle-deck-province-label');
+            if (toggleLbl) toggleLbl.checked = _showDeckProvinceLabel;
             document.getElementById('settings-screen').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
@@ -6066,12 +6395,16 @@
             const v = parseInt(val) / 100;
             soundEffects.bgMusic.volume = v;
             document.getElementById('vol-bgmusic1-val').textContent = val + '%';
+            const s = document.getElementById('igs-vol-bgmusic1'); if (s) s.value = val;
+            const sv = document.getElementById('igs-vol-bgmusic1-val'); if (sv) sv.textContent = val + '%';
         }
 
         function applyVolumeBgMusic2(val) {
             const v = parseInt(val) / 100;
             soundEffects.bgMusic2.volume = v;
             document.getElementById('vol-bgmusic2-val').textContent = val + '%';
+            const s = document.getElementById('igs-vol-bgmusic2'); if (s) s.value = val;
+            const sv = document.getElementById('igs-vol-bgmusic2-val'); if (sv) sv.textContent = val + '%';
         }
 
         function applyVolumeSfx(val) {
@@ -6080,6 +6413,8 @@
                 soundEffects[k].volume = master * (SFX_BASE[k] / SFX_MAX);
             });
             document.getElementById('vol-sfx-val').textContent = val + '%';
+            const s = document.getElementById('igs-vol-sfx'); if (s) s.value = val;
+            const sv = document.getElementById('igs-vol-sfx-val'); if (sv) sv.textContent = val + '%';
         }
 
         async function saveMatchResult(myRank) {
