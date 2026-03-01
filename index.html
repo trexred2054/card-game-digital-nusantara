@@ -4942,6 +4942,18 @@
                             grid.appendChild(chip);
                         });
                     }
+                    // Untuk custom room: tutup lobby dan tampilkan layar provinsi
+                    if (_customRoomId) {
+                        document.getElementById('custom-room-overlay').style.display = 'none';
+                        document.getElementById('custom-friend-picker').style.display = 'none';
+                        DOM.matchmakingScreen.classList.add('active');
+                        const _idle = DOM.matchmakingScreen.querySelector('#matchmaking-idle');
+                        const _wait = DOM.matchmakingScreen.querySelector('#matchmaking-waiting');
+                        const _start = document.getElementById('match-starting');
+                        if (_idle) _idle.style.display = 'none';
+                        if (_wait) _wait.style.display = 'none';
+                        if (_start) _start.style.display = 'block';
+                    }
                     // Hitung mundur
                     let secs = 6;
                     const numEl = document.getElementById('prov-countdown-num');
@@ -4953,6 +4965,25 @@
                     }, 1000);
                     break;
                 }
+
+                case 'ROOM_DISBANDED':
+                    if (_customRoomId) {
+                        _customRoomSlots.forEach(s => {
+                            if (s?.pending && s.uid) db.ref(`users/${s.uid}/customRoomInvite`).remove().catch(() => {});
+                        });
+                        _customRoomId = null;
+                        _customRoomRole = null;
+                        _customRoomSlots = [];
+                        _customPickerSlot = null;
+                        _pendingCustomJoin = false;
+                        _isCustomRoomCreator = false;
+                        document.getElementById('custom-room-overlay').style.display = 'none';
+                        document.getElementById('custom-friend-picker').style.display = 'none';
+                        _setPresenceStatus('online');
+                        _startCustomRoomInviteListener();
+                        showToast('⚠️ Host telah keluar. Custom room dibubarkan.', 'warning');
+                    }
+                    break;
 
                 case 'CUSTOM_ROOM_CREATED':
                     _customRoomId = data.roomId;
@@ -4981,6 +5012,9 @@
                     // Close custom room lobby & picker if open
                     document.getElementById('custom-room-overlay').style.display = 'none';
                     document.getElementById('custom-friend-picker').style.display = 'none';
+                    // Sembunyikan match-starting (provinces preview) jika ditampilkan dari custom room
+                    const _msEl = document.getElementById('match-starting');
+                    if (_msEl) _msEl.style.display = 'none';
                     _customPickerSlot = null;
                     _pendingCustomJoin = false;
 
@@ -8328,6 +8362,7 @@
             _isCustomRoomCreator = false;
             document.getElementById('custom-room-overlay').style.display = 'none';
             document.getElementById('custom-friend-picker').style.display = 'none';
+            _startCustomRoomInviteListener(); // restart listener agar undangan berikutnya tetap muncul
         }
 
         // Handle CUSTOM_ROOM_UPDATE from server (player joined / bot slot changed)
