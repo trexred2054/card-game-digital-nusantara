@@ -7863,7 +7863,8 @@
                         if (iconEl) iconEl.textContent = '✅';
                     });
                     showToast(`✅ ${acceptedName} menerima undangan!`, 'success');
-                    db.ref(statusPath).remove().catch(() => {});
+                    // Tunda hapus statusPath agar tamu lain (slot 3) sempat membacanya
+                    setTimeout(() => { db.ref(statusPath).remove().catch(() => {}); }, 15000);
                     statusRef.off();
                     if (slotNum === 2) _partyStatusRef = null; else _partyStatus2Ref = null;
                     // Tulis roster agar tamu lain dapat pantau kehadiran slot ini
@@ -7972,11 +7973,17 @@
                 }
                 const inv = snap.val();
                 if (!inv || !inv.fromUid || !inv.partyId) return;
-                // Abaikan undangan lebih dari 2 menit
-                if (inv.timestamp && Date.now() - inv.timestamp > 120000) {
+                // Abaikan undangan yang tidak punya timestamp (data lama dari sesi sebelumnya)
+                if (!inv.timestamp) {
                     db.ref(`users/${currentUser.uid}/partyInvite`).remove();
                     return;
                 }
+                // Abaikan undangan lebih dari 2 menit
+                if (Date.now() - inv.timestamp > 120000) {
+                    db.ref(`users/${currentUser.uid}/partyInvite`).remove();
+                    return;
+                }
+
                 _partyInviteData = inv;
                 document.getElementById('party-invite-msg').textContent =
                     `${inv.fromName || 'Seorang teman'} mengajakmu main bareng!`;
@@ -7988,7 +7995,8 @@
             if (!_partyInviteData || !currentUser) return;
 
             // Tolak jika sedang aktif di game atau custom room
-            if (currentRoomId) {
+            // Tapi abaikan cek ini jika masih dalam proses findMyRoomOnServer (belum resolved)
+            if (currentRoomId && lsGet(LS.GAME_ACTIVE) === 'true') {
                 showToast('⚠️ Kamu sedang dalam pertandingan. Selesaikan dulu.', 'warning');
                 return;
             }
@@ -8092,35 +8100,32 @@
             if (_guestPartyStatusRef) { _guestPartyStatusRef.off(); _guestPartyStatusRef = null; }
             if (_partyId && currentUser) {
                 _guestPartyStatusRef = db.ref(`users/${hostUid}/partyStatus/${_partyId}`);
-                _guestPartyStatusRef.on('value', snap => {
-                    if (!snap.exists()) return;
-                    snap.forEach(child => {
-                        const uid = child.key;
-                        const val = child.val();
-                        if (!val || !val.accepted || uid === currentUser.uid) return;
-                        // Tamu lain menerima → update slot yang satunya lagi (termasuk yang sudah bergabung sebelumnya)
-                        _guestSlot3Uid = uid;
-                        const theirName = val.acceptorName || 'Tamu';
-                        const sOther = document.getElementById(`pslot-${otherSlotNum}`);
-                        if (!sOther) return;
-                        sOther.className = 'party-slot joined';
-                        sOther.onclick = null;
-                        document.getElementById(`pslot-${otherSlotNum}-name`).textContent = escHtml(theirName);
-                        document.getElementById(`pslot-${otherSlotNum}-sub`).textContent  = 'Siap bermain!';
-                        document.getElementById(`pslot-${otherSlotNum}-clear`).style.display = 'none';
-                        document.getElementById(`pslot-${otherSlotNum}-icon`).textContent = '⌛';
-                        Promise.all([
-                            db.ref(`userAvatars/${uid}`).get(),
-                            db.ref(`users/${uid}/rankData`).get()
-                        ]).then(([avSnap, rkSnap]) => {
-                            const avNum  = avSnap.exists() ? String(avSnap.val()) : '7';
-                            const rkName = rkSnap.exists() ? (rkSnap.val().rankName || 'Bronze III') : 'Bronze III';
-                            const fStyle = _getRankFrameStyle(rkName);
-                            const init   = theirName.charAt(0).toUpperCase();
-                            const el = document.getElementById(`pslot-${otherSlotNum}-icon`);
-                            if (el) el.innerHTML = `<div style="width:54px;height:54px;border-radius:10px;overflow:hidden;${fStyle}display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f093fb,#f5576c);font-size:1.4em;font-weight:bold;color:white;"><img src="gambar/avatar/avatar${avNum}.png" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.textContent='${init}'"></div>`;
-                        }).catch(() => {});
-                    });
+                _guestPartyStatusRef.on('child_added', snap => {
+                    const uid = snap.key;
+                    const val = snap.val();
+                    if (!val || !val.accepted || uid === currentUser.uid) return;
+                    // Tamu lain menerima → update slot yang satunya lagi
+                    _guestSlot3Uid = uid;
+                    const theirName = val.acceptorName || 'Tamu';
+                    const sOther = document.getElementById(`pslot-${otherSlotNum}`);
+                    if (!sOther) return;
+                    sOther.className = 'party-slot joined';
+                    sOther.onclick = null;
+                    document.getElementById(`pslot-${otherSlotNum}-name`).textContent = escHtml(theirName);
+                    document.getElementById(`pslot-${otherSlotNum}-sub`).textContent  = 'Siap bermain!';
+                    document.getElementById(`pslot-${otherSlotNum}-clear`).style.display = 'none';
+                    document.getElementById(`pslot-${otherSlotNum}-icon`).textContent = '⌛';
+                    Promise.all([
+                        db.ref(`userAvatars/${uid}`).get(),
+                        db.ref(`users/${uid}/rankData`).get()
+                    ]).then(([avSnap, rkSnap]) => {
+                        const avNum  = avSnap.exists() ? String(avSnap.val()) : '7';
+                        const rkName = rkSnap.exists() ? (rkSnap.val().rankName || 'Bronze III') : 'Bronze III';
+                        const fStyle = _getRankFrameStyle(rkName);
+                        const init   = theirName.charAt(0).toUpperCase();
+                        const el = document.getElementById(`pslot-${otherSlotNum}-icon`);
+                        if (el) el.innerHTML = `<div style="width:54px;height:54px;border-radius:10px;overflow:hidden;${fStyle}display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f093fb,#f5576c);font-size:1.4em;font-weight:bold;color:white;"><img src="gambar/avatar/avatar${avNum}.png" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.textContent='${init}'"></div>`;
+                    }).catch(() => {});
                 });
             }
             // Listener kick/dibubarkan oleh host
