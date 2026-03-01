@@ -2062,6 +2062,91 @@
             box-shadow: 0 4px 16px rgba(0,0,0,0.4); pointer-events: none;
         }
 
+        /* ============================================ */
+        /* MOBILE RESPONSIVE                            */
+        /* ============================================ */
+        @media (max-width: 768px) {
+            body { overflow-y: auto; }
+
+            /* Matchmaking */
+            .matchmaking-waiting-box { padding: 24px 20px; border-radius: 18px; width: 92%; }
+            .matchmaking-title { font-size: 1.8em; }
+            .matchmaking-waiting-title { font-size: 1.3em; }
+
+            /* Game layout: stack opponents above game area */
+            .game-container { padding: 6px; }
+            .main-content { grid-template-columns: 1fr; gap: 8px; }
+
+            /* Opponents panel: horizontal scrolling strip */
+            .opponents-panel {
+                display: flex; flex-direction: row;
+                overflow-x: auto; overflow-y: hidden;
+                max-height: none; height: auto;
+                padding: 8px; gap: 8px; width: 100%;
+            }
+            .opponents-title { display: none; }
+            .opponent-item { min-width: 130px; flex-shrink: 0; margin-bottom: 0; }
+            .opponent-stats { flex-direction: column; gap: 3px; }
+
+            /* Cards */
+            .card {
+                width: 88px; height: 124px;
+                min-width: 88px; max-width: 88px;
+                min-height: 124px; max-height: 124px;
+            }
+            .card-image { height: 44px; }
+            .card-name { font-size: 0.68em; }
+
+            /* Top card area */
+            .top-card-area { min-height: 180px; height: auto; padding: 10px; }
+
+            /* Player area */
+            .player-deck-container { max-height: 200px; }
+            .player-stats { font-size: 0.88em; gap: 6px; }
+            .player-stat { padding: 4px 8px; }
+
+            /* In-game settings panel */
+            #ingame-settings-panel { width: calc(100vw - 28px); left: 14px; }
+
+            /* Party lobby */
+            .party-slot { padding: 12px 4px 10px; }
+            .party-slot-icon { font-size: 1.5em; }
+            .party-slot-name { font-size: 0.72em; }
+
+            /* Province preview */
+            #provinces-preview { padding: 14px 12px; }
+            .prov-grid { grid-template-columns: 1fr 1fr; }
+
+            /* Log */
+            .log-area { max-height: 80px; }
+        }
+
+        @media (max-width: 480px) {
+            .matchmaking-waiting-box { padding: 18px 14px; width: 96%; }
+            .matchmaking-title { font-size: 1.4em; }
+
+            .card {
+                width: 76px; height: 108px;
+                min-width: 76px; max-width: 76px;
+                min-height: 108px; max-height: 108px;
+            }
+            .card-image { height: 36px; }
+            .card-name { font-size: 0.6em; }
+            .card-type { font-size: 0.55em; }
+
+            .player-stat { padding: 3px 6px; font-size: 0.78em; }
+
+            /* Party slots wrap on very small screens */
+            .party-slots { flex-wrap: wrap; }
+            .party-slot { min-width: calc(50% - 8px); }
+
+            .prov-chip { font-size: 0.7em; padding: 4px 6px; }
+            .prov-chip-icon { width: 28px; height: 20px; }
+
+            /* In-game settings panel full width */
+            #ingame-settings-panel { width: calc(100vw - 14px); left: 7px; }
+        }
+
     </style>
     <link rel="preload" as="image" href="gambar/background/bg1.png">
 </head>
