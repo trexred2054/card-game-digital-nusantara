@@ -5029,6 +5029,7 @@
                     // Untuk custom room: tutup lobby dan tampilkan layar provinsi
                     if (_customRoomId) {
                         document.getElementById('custom-room-overlay').style.display = 'none';
+                        _stopCustomPresenceListener();
                         document.getElementById('custom-friend-picker').style.display = 'none';
                         DOM.matchmakingScreen.classList.add('active');
                         const _idle = DOM.matchmakingScreen.querySelector('#matchmaking-idle');
@@ -5062,6 +5063,7 @@
                         _pendingCustomJoin = false;
                         _isCustomRoomCreator = false;
                         document.getElementById('custom-room-overlay').style.display = 'none';
+                        _stopCustomPresenceListener();
                         document.getElementById('custom-friend-picker').style.display = 'none';
                         _setPresenceStatus('online');
                         _startCustomRoomInviteListener();
@@ -5095,6 +5097,7 @@
 
                     // Close custom room lobby & picker if open
                     document.getElementById('custom-room-overlay').style.display = 'none';
+                    _stopCustomPresenceListener();
                     document.getElementById('custom-friend-picker').style.display = 'none';
                     // Sembunyikan match-starting (provinces preview) jika ditampilkan dari custom room
                     const _msEl = document.getElementById('match-starting');
@@ -5241,6 +5244,7 @@
                         _customRoomSlots = [];
                         _customPickerSlot = null;
                         document.getElementById('custom-room-overlay').style.display = 'none';
+                        _stopCustomPresenceListener();
                         document.getElementById('custom-friend-picker').style.display = 'none';
                     }
                     break;
@@ -7625,12 +7629,17 @@
         let _partyGuestRosterRef= null;  // Guest: listener roster untuk update slot 3 saat tamu lain keluar
         let _guestSlot3Uid      = null;  // Guest: UID pemain di slot 3
         let _openPickerSlot   = null;  // Slot mana yang sedang memilih teman (2 atau 3)
+        let _partyPresenceRef = null;  // Real-time listener presence untuk party picker
+        let _partyPresenceCb  = null;
+        let _customPresenceRef = null; // Real-time listener presence untuk custom picker
+        let _customPresenceCb  = null;
 
         function showPartyLobby() {
             // Reset state
             _partyFriendUid = null; _partyFriendName = null;
             _partyFriend2Uid = null; _partyFriend2Name = null;
             _partyId = null; _openPickerSlot = null;
+            _stopPartyPresenceListener();
             document.getElementById('party-friend-picker').style.display = 'none';
             _resetSlot2();
             _resetSlot3();
@@ -7658,6 +7667,7 @@
                 return;
             }
             document.getElementById('party-lobby-overlay').style.display = 'none';
+            _stopPartyPresenceListener();
             document.getElementById('party-friend-picker').style.display = 'none';
             _setPresenceStatus('online');
             // Batalkan invite yang sudah dikirim (jika ada)
@@ -7684,6 +7694,13 @@
             if (!keepPartyId) _partyId = null;
         }
 
+        function _stopPartyPresenceListener() {
+            if (_partyPresenceRef && _partyPresenceCb) {
+                _partyPresenceRef.off('value', _partyPresenceCb);
+                _partyPresenceRef = null; _partyPresenceCb = null;
+            }
+        }
+
         function togglePartyFriendPicker(slotNum) {
             const slotFilled = slotNum === 2 ? _partyFriendUid : _partyFriend2Uid;
             if (slotFilled) return; // slot sudah terisi
@@ -7693,6 +7710,7 @@
                 picker.style.display = 'block';
                 _loadPartyFriendList();
             } else {
+                _stopPartyPresenceListener();
                 picker.style.display = 'none';
                 _openPickerSlot = null;
             }
@@ -7705,6 +7723,11 @@
                 el.innerHTML = '<div style="color:rgba(255,255,255,0.5);font-size:0.85em;">Login diperlukan.</div>';
                 return;
             }
+            // Cleanup listener lama jika ada
+            if (_partyPresenceRef && _partyPresenceCb) {
+                _partyPresenceRef.off('value', _partyPresenceCb);
+                _partyPresenceRef = null; _partyPresenceCb = null;
+            }
             try {
                 const snap = await db.ref(`users/${currentUser.uid}/friends`).get();
                 if (!snap.exists()) {
@@ -7713,32 +7736,59 @@
                 }
                 const friends = snap.val();
                 const uids = Object.keys(friends);
-                const [profiles, presSnap] = await Promise.all([
-                    Promise.all(uids.map(uid =>
-                        db.ref(`users/${uid}/nickname`).get().then(s => ({ uid, nickname: s.val() || 'Unknown' }))
-                    )),
-                    db.ref('presence').get()
-                ]);
-                const presence = presSnap.exists() ? presSnap.val() : {};
-                // Hanya tampilkan teman yang sedang online dan tidak sedang sibuk (tidak di antrian/lobi/game)
-                const onlineProfiles = profiles.filter(f => presence[f.uid]?.online === true && !presence[f.uid]?.status);
-                if (!onlineProfiles.length) {
-                    el.innerHTML = '<div style="color:rgba(255,255,255,0.5);font-size:0.85em;">Tidak ada teman yang online.</div>';
-                    return;
+                // Fetch semua nickname sekali
+                const profiles = await Promise.all(uids.map(uid =>
+                    db.ref(`users/${uid}/nickname`).get().then(s => ({ uid, nickname: s.val() || 'Unknown' }))
+                ));
+
+                // Fungsi render menggunakan data presence terbaru
+                function renderWithPresence(presence) {
+                    const alreadyInvited = [_partyFriendUid, _partyFriend2Uid].filter(Boolean);
+                    const sorted = [...profiles].sort((a, b) => {
+                        const aOk = presence[a.uid]?.online && !presence[a.uid]?.status && !alreadyInvited.includes(a.uid) ? 0 : 1;
+                        const bOk = presence[b.uid]?.online && !presence[b.uid]?.status && !alreadyInvited.includes(b.uid) ? 0 : 1;
+                        return aOk - bOk;
+                    });
+                    if (!sorted.length) {
+                        el.innerHTML = '<div style="color:rgba(255,255,255,0.5);font-size:0.85em;">Belum ada teman.</div>';
+                        return;
+                    }
+                    el.innerHTML = sorted.map(f => {
+                        const pres = presence[f.uid];
+                        const isInvited = alreadyInvited.includes(f.uid);
+                        let canInvite = false, statusLabel = '', statusColor = '';
+                        if (isInvited) {
+                            statusLabel = '✅ Sudah diundang'; statusColor = 'rgba(76,175,80,0.9)';
+                        } else if (!pres?.online) {
+                            statusLabel = '⚫ Offline'; statusColor = 'rgba(255,255,255,0.35)';
+                        } else if (pres.status === 'inGame') {
+                            statusLabel = '🎮 Sedang bermain'; statusColor = 'rgba(244,67,54,0.9)';
+                        } else if (pres.status === 'inQueue') {
+                            statusLabel = '🔍 Mencari lawan'; statusColor = 'rgba(255,193,7,0.9)';
+                        } else if (pres.status === 'inLobby') {
+                            statusLabel = '🚪 Sedang di lobby'; statusColor = 'rgba(255,193,7,0.9)';
+                        } else {
+                            canInvite = true; statusLabel = '🟢 Online'; statusColor = 'rgba(76,175,80,0.9)';
+                        }
+                        return `
+                        <button class="party-friend-item" style="${canInvite ? '' : 'opacity:0.52;cursor:default;'}"
+                            ${canInvite ? `onclick="playSound('button');_selectPartyFriend('${escHtml(f.uid)}','${escHtml(f.nickname)}',${_openPickerSlot || 2})"` : ''}>
+                            <div class="party-friend-avatar">${escHtml(f.nickname.charAt(0).toUpperCase())}</div>
+                            <div style="flex:1;min-width:0;text-align:left;">
+                                <div class="party-friend-name">${escHtml(f.nickname)}</div>
+                                <div style="font-size:0.72em;color:${statusColor};margin-top:2px;">${statusLabel}</div>
+                            </div>
+                        </button>`;
+                    }).join('');
                 }
-                // Filter UIDs yang sudah diundang di slot lain
-                const alreadyInvited = [_partyFriendUid, _partyFriend2Uid].filter(Boolean);
-                const filteredProfiles = onlineProfiles.filter(f => !alreadyInvited.includes(f.uid));
-                if (!filteredProfiles.length) {
-                    el.innerHTML = '<div style="color:rgba(255,255,255,0.5);font-size:0.85em;">Semua teman online sudah diundang.</div>';
-                    return;
-                }
-                el.innerHTML = filteredProfiles.map(f => `
-                    <button class="party-friend-item" onclick="playSound('button');_selectPartyFriend('${escHtml(f.uid)}','${escHtml(f.nickname)}',${_openPickerSlot || 2})">
-                        <div class="party-friend-avatar">${escHtml(f.nickname.charAt(0).toUpperCase())}</div>
-                        <div class="party-friend-name">${escHtml(f.nickname)}</div>
-                    </button>
-                `).join('');
+
+                // Set up real-time listener pada node presence
+                _partyPresenceRef = db.ref('presence');
+                _partyPresenceCb = (presSnap) => {
+                    const presence = presSnap.exists() ? presSnap.val() : {};
+                    renderWithPresence(presence);
+                };
+                _partyPresenceRef.on('value', _partyPresenceCb);
             } catch(e) {
                 el.innerHTML = '<div style="color:rgba(255,255,255,0.5);font-size:0.85em;">❌ Gagal memuat.</div>';
             }
@@ -7751,6 +7801,7 @@
                 _partyId = `party_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
             }
             // Sembunyikan picker
+            _stopPartyPresenceListener();
             document.getElementById('party-friend-picker').style.display = 'none';
             _openPickerSlot = null;
             // Update slot → status menunggu
@@ -7863,6 +7914,7 @@
             // Hapus partyId hanya jika kedua slot kosong
             if (!_partyFriendUid && !_partyFriend2Uid) _partyId = null;
             _resetPartySlot(slotNum);
+            _stopPartyPresenceListener();
             document.getElementById('party-friend-picker').style.display = 'none';
         }
 
@@ -8030,6 +8082,7 @@
             const lobbyCard = document.querySelector('.party-lobby-card');
             if (lobbyCard) lobbyCard.querySelector('.party-btn-start').style.display = 'none';
             // Tampilkan overlay
+            _stopPartyPresenceListener();
             document.getElementById('party-friend-picker').style.display = 'none';
             document.getElementById('party-lobby-overlay').style.display = 'flex';
             // Listener real-time: update slot 3 saat tamu ke-2 menerima undangan host
@@ -8321,11 +8374,16 @@
             } else {
                 html += `<div style="color:rgba(255,255,255,0.35);font-size:0.78em;">Slot penuh (maks 4)</div>`;
             }
-            html += `</div><div class="custom-friend-picker-title">👥 Undang teman online:</div>`;
+            html += `</div><div class="custom-friend-picker-title">👥 Daftar Teman:</div>`;
             listDiv.innerHTML = html + '<div style="color:rgba(255,255,255,0.4);font-size:0.82em;padding:4px 0;">⏳ Memuat...</div>';
 
-            // ── Bagian daftar teman online ────────────────────
+            // ── Bagian daftar semua teman ─────────────────────
             if (!currentUser) return;
+            // Cleanup listener lama jika ada
+            if (_customPresenceRef && _customPresenceCb) {
+                _customPresenceRef.off('value', _customPresenceCb);
+                _customPresenceRef = null; _customPresenceCb = null;
+            }
             try {
                 const myFriendsSnap = await db.ref(`users/${currentUser.uid}/friends`).get();
                 const friendsSection = listDiv.querySelector('div:last-child');
@@ -8334,39 +8392,81 @@
                     return;
                 }
                 const friends = myFriendsSnap.val();
-                const presSnap = await db.ref('presence').get();
-                const presence = presSnap.exists() ? presSnap.val() : {};
-                const invitedUids = _customRoomSlots.filter(s => s && !s.isBot).map(s => s.uid);
-                invitedUids.push(currentUser.uid);
-
-                const onlineFriendUids = Object.keys(friends)
-                    .filter(uid => presence[uid]?.online && !invitedUids.includes(uid) && !presence[uid]?.status);
-
+                const uids = Object.keys(friends);
+                // Fetch semua nickname sekali
+                const profiles = await Promise.all(uids.map(uid =>
+                    db.ref(`users/${uid}/nickname`).get().then(s => ({ uid, nickname: s.val() || 'Unknown' }))
+                ));
                 if (friendsSection) friendsSection.remove();
-                if (onlineFriendUids.length === 0) {
-                    listDiv.insertAdjacentHTML('beforeend', '<div style="color:rgba(255,255,255,0.4);font-size:0.82em;padding:4px 0;">Tidak ada teman online.</div>');
-                    return;
+
+                // Fungsi render menggunakan data presence terbaru
+                function renderCustomWithPresence(presence) {
+                    const invitedUids = _customRoomSlots.filter(s => s && !s.isBot).map(s => s.uid);
+                    invitedUids.push(currentUser.uid);
+                    const sorted = [...profiles].sort((a, b) => {
+                        const aOk = presence[a.uid]?.online && !presence[a.uid]?.status && !invitedUids.includes(a.uid) ? 0 : 1;
+                        const bOk = presence[b.uid]?.online && !presence[b.uid]?.status && !invitedUids.includes(b.uid) ? 0 : 1;
+                        return aOk - bOk;
+                    });
+                    // Hapus semua item teman lama (setelah bot section)
+                    const existing = listDiv.querySelectorAll('.custom-friend-item');
+                    existing.forEach(el => el.remove());
+                    if (!sorted.length) {
+                        listDiv.insertAdjacentHTML('beforeend', '<div style="color:rgba(255,255,255,0.4);font-size:0.82em;padding:4px 0;">Belum ada teman.</div>');
+                        return;
+                    }
+                    for (const f of sorted) {
+                        const pres = presence[f.uid];
+                        const isInRoom = invitedUids.includes(f.uid);
+                        let canInvite = false, statusLabel = '', statusColor = '';
+                        if (isInRoom) {
+                            statusLabel = '✅ Sudah di room'; statusColor = 'rgba(76,175,80,0.9)';
+                        } else if (!pres?.online) {
+                            statusLabel = '⚫ Offline'; statusColor = 'rgba(255,255,255,0.35)';
+                        } else if (pres.status === 'inGame') {
+                            statusLabel = '🎮 Sedang bermain'; statusColor = 'rgba(244,67,54,0.9)';
+                        } else if (pres.status === 'inQueue') {
+                            statusLabel = '🔍 Mencari lawan'; statusColor = 'rgba(255,193,7,0.9)';
+                        } else if (pres.status === 'inLobby') {
+                            statusLabel = '🚪 Sedang di lobby'; statusColor = 'rgba(255,193,7,0.9)';
+                        } else {
+                            canInvite = true; statusLabel = '🟢 Online'; statusColor = 'rgba(76,175,80,0.9)';
+                        }
+                        const item = document.createElement('div');
+                        item.className = 'custom-friend-item';
+                        item.style.opacity = canInvite ? '' : '0.52';
+                        item.innerHTML = `
+                            <div style="flex:1;min-width:0;">
+                                <div class="custom-friend-name">${escHtml(f.nickname)}</div>
+                                <div style="font-size:0.72em;color:${statusColor};margin-top:2px;">${statusLabel}</div>
+                            </div>
+                            ${canInvite ? `<button class="custom-friend-btn" onclick="playSound('button');inviteToCustomRoom('${escHtml(f.uid)}','${escHtml(f.nickname).replace(/'/g,"\\'")}',${slotPos})">Undang</button>` : ''}`;
+                        listDiv.appendChild(item);
+                    }
                 }
-                // Fetch nickname dari Firebase (friends disimpan sebagai { uid: true })
-                const nickSnaps = await Promise.all(
-                    onlineFriendUids.map(uid => db.ref(`users/${uid}/nickname`).get().then(s => ({ uid, nickname: s.val() || uid })))
-                );
-                for (const { uid, nickname } of nickSnaps) {
-                    const item = document.createElement('div');
-                    item.className = 'custom-friend-item';
-                    item.innerHTML = `
-                        <div class="custom-friend-dot"></div>
-                        <div class="custom-friend-name">${escHtml(nickname)}</div>
-                        <button class="custom-friend-btn" onclick="playSound('button');inviteToCustomRoom('${escHtml(uid)}','${escHtml(nickname).replace(/'/g,"\\'")}',${slotPos})">Undang</button>`;
-                    listDiv.appendChild(item);
-                }
+
+                // Set up real-time listener pada node presence
+                _customPresenceRef = db.ref('presence');
+                _customPresenceCb = (presSnap) => {
+                    const presence = presSnap.exists() ? presSnap.val() : {};
+                    renderCustomWithPresence(presence);
+                };
+                _customPresenceRef.on('value', _customPresenceCb);
             } catch(e) {
                 listDiv.insertAdjacentHTML('beforeend', '<div style="color:rgba(255,255,255,0.4);font-size:0.82em;padding:4px 0;">Gagal memuat.</div>');
             }
         }
 
+        function _stopCustomPresenceListener() {
+            if (_customPresenceRef && _customPresenceCb) {
+                _customPresenceRef.off('value', _customPresenceCb);
+                _customPresenceRef = null; _customPresenceCb = null;
+            }
+        }
+
         function addBotToRoomSlot(level) {
             // Simpan slot sebelum null-kan, lalu kirim ADD_BOT_SLOT ke server
+            _stopCustomPresenceListener();
             document.getElementById('custom-friend-picker').style.display = 'none';
             addBotToRoom(level); // addBotToRoom baca _customPickerSlot sebelum di-null
             _customPickerSlot = null;
@@ -8374,6 +8474,7 @@
 
         async function inviteToCustomRoom(uid, name, slotPos) {
             if (!currentUser || !_customRoomId) return;
+            _stopCustomPresenceListener();
             document.getElementById('custom-friend-picker').style.display = 'none';
             // Send Firebase invite
             const myName = currentNickname || lsGet(LS.NICKNAME) || 'Player';
@@ -8403,6 +8504,7 @@
                 }
                 _customRoomSlots[slotIndex] = null;
             }
+            _stopCustomPresenceListener();
             document.getElementById('custom-friend-picker').style.display = 'none';
             _renderCustomRoomLobby();
         }
@@ -8444,6 +8546,7 @@
             _pendingCustomJoin = false;
             _isCustomRoomCreator = false;
             document.getElementById('custom-room-overlay').style.display = 'none';
+            _stopCustomPresenceListener();
             document.getElementById('custom-friend-picker').style.display = 'none';
             _startCustomRoomInviteListener(); // restart listener agar undangan berikutnya tetap muncul
         }
