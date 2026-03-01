@@ -3596,6 +3596,7 @@
                     nickname,
                     device:   deviceLabel,
                     loginAt:  Date.now(),
+                    online:   true,
                 });
             });
         }
@@ -3740,7 +3741,7 @@
             notif.innerHTML = `
                 <div style="font-size:1.3em; margin-bottom:4px;">⚠️ Akun Aktif di Tempat Lain</div>
                 <div style="font-weight:normal; opacity:0.92; font-size:0.88em;">
-                    <b>${nickname}</b> terdeteksi sedang online di <b>${device}</b>.<br>
+                    <b>${escHtml(nickname)}</b> terdeteksi sedang online di <b>${escHtml(device)}</b>.<br>
                     Sesi lama akan digantikan oleh login ini.
                 </div>
                 <button onclick="playSound('button');document.getElementById('online-elsewhere-notif').remove()"
@@ -7025,6 +7026,7 @@
                 if (el('vp-peak-name'))   el('vp-peak-name').textContent   = peak;
                 if (el('vp-peak-points')) el('vp-peak-points').textContent = `${peakPts} poin`;
                 const rs = el('vp-rank-section'); if (rs) rs.style.display = '';
+                if (el('vp-avatar')) el('vp-avatar').style.cssText = _getRankFrameStyle(rn);
             });
 
             // ── stats ──
@@ -7146,6 +7148,7 @@
                     document.getElementById('vp-peak-name').textContent   = peak;
                     document.getElementById('vp-peak-points').textContent = `${peakPts} poin`;
                     document.getElementById('vp-rank-section').style.display = '';
+                    document.getElementById('vp-avatar').style.cssText = _getRankFrameStyle(rn);
                 }).catch(() => {});
 
                 // Tombol pertemanan
