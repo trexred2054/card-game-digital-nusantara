@@ -1048,6 +1048,7 @@
         .lb-pos.silver { color: #c0c0c0; font-size: 1.1em; }
         .lb-pos.bronze { color: #cd7f32; font-size: 1.1em; }
         .lb-rank-img { width: 42px; height: 42px; object-fit: contain; flex-shrink: 0; }
+        .lb-avatar { width: 38px; height: 38px; border-radius: 7px; object-fit: cover; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.25); }
         .lb-info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
         .lb-name { font-size: 0.95em; font-weight: bold; color: #fff; }
         .lb-rank-label { font-size: 0.78em; color: rgba(255,255,255,0.7); }
@@ -2536,20 +2537,25 @@
             <!-- Tab: Profil Pemain -->
             <div id="tab-profil" class="profile-panel active">
                 <div class="profile-panel-title">👤 Profil Pemain</div>
-                <div style="text-align:center;margin-bottom:4px;">
-                    <button class="btn-change-avatar" onclick="playSound('button');showAvatarPicker()">🖼️ Ganti Foto Profil</button>
-                </div>
-                <div class="profile-info-row">
-                    <span class="profile-info-label">Nickname</span>
-                    <span class="profile-info-value" id="prf-nickname">-</span>
-                </div>
-                <div class="profile-info-row">
-                    <span class="profile-info-label">ID</span>
-                    <span class="profile-info-value" id="prf-id" style="font-family:monospace;">-</span>
-                </div>
-                <div class="profile-info-row">
-                    <span class="profile-info-label">Bergabung</span>
-                    <span class="profile-info-value" id="prf-joined">-</span>
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;">
+                    <div title="Klik untuk ganti foto profil" onclick="playSound('button');showAvatarPicker()" style="cursor:pointer;flex-shrink:0;position:relative;">
+                        <div id="prf-avatar-display" style="display:inline-block;"></div>
+                        <div style="position:absolute;bottom:0;right:0;background:rgba(0,0,0,0.55);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;pointer-events:none;">✏️</div>
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <div class="profile-info-row">
+                            <span class="profile-info-label">Nickname</span>
+                            <span class="profile-info-value" id="prf-nickname">-</span>
+                        </div>
+                        <div class="profile-info-row">
+                            <span class="profile-info-label">ID</span>
+                            <span class="profile-info-value" id="prf-id" style="font-family:monospace;">-</span>
+                        </div>
+                        <div class="profile-info-row">
+                            <span class="profile-info-label">Bergabung</span>
+                            <span class="profile-info-value" id="prf-joined">-</span>
+                        </div>
+                    </div>
                 </div>
                 <!-- Rank Section -->
                 <div class="profile-rank-section">
@@ -3351,6 +3357,17 @@
             hideAuthScreen();        // ← pastikan form login tertutup sebelum tampilkan layar berikutnya
             hideNicknameScreen();    // ← pastikan nickname screen juga tertutup
 
+            // Load avatar from Firebase (sync across devices), fallback to localStorage
+            db.ref(`userAvatars/${user.uid}`).get().then(avSnap => {
+                if (avSnap.exists()) {
+                    _selectedAvatar = String(avSnap.val());
+                    localStorage.setItem('selectedAvatar', _selectedAvatar);
+                } else if (!_selectedAvatar) {
+                    _selectedAvatar = '7';
+                }
+                updateProfileAvatar();
+            }).catch(() => { if (!_selectedAvatar) _selectedAvatar = '7'; });
+
             showProfileBadge(user.uid, nickname);
             _startPartyInviteListener();        // dengarkan undangan party dari teman
             _startFriendRequestBadge();         // update badge notifikasi di tombol Teman
@@ -3455,7 +3472,8 @@
         // =============================================
         // AVATAR FOTO PROFIL
         // =============================================
-        let _selectedAvatar = localStorage.getItem('selectedAvatar') || null;
+        let _selectedAvatar = localStorage.getItem('selectedAvatar') || '7';
+        let _cachedRankName = 'Bronze III';
 
         function updateProfileAvatar() {
             const el = document.getElementById('profile-avatar');
@@ -3465,12 +3483,14 @@
                 const nickname = document.getElementById('profile-nickname-display').textContent || '?';
                 el.textContent = nickname.charAt(0).toUpperCase();
             }
+            const dispEl = document.getElementById('prf-avatar-display');
+            if (dispEl) dispEl.innerHTML = _getAvatarWithFrameHtml(72);
         }
 
         function showAvatarPicker() {
             const overlay = document.getElementById('avatar-picker-overlay');
             overlay.style.display = 'flex';
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 8; i++) {
                 document.getElementById('av-opt-' + i).classList.toggle('selected', _selectedAvatar === String(i + 1));
             }
         }
@@ -3482,10 +3502,37 @@
         function selectAvatar(index) {
             _selectedAvatar = String(index + 1);
             localStorage.setItem('selectedAvatar', _selectedAvatar);
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 8; i++) {
                 document.getElementById('av-opt-' + i).classList.toggle('selected', i === index);
             }
+            if (currentUser) {
+                db.ref(`userAvatars/${currentUser.uid}`).set(_selectedAvatar).catch(() => {});
+            }
             updateProfileAvatar();
+        }
+
+        function _getRankFrameStyle(rankName) {
+            const tier = getRankTier(rankName || 'Bronze III');
+            const c = ({
+                'Bronze':   ['#cd7f32', 'rgba(205,127,50,0.55)'],
+                'Silver':   ['#c0c0c0', 'rgba(192,192,192,0.55)'],
+                'Gold':     ['#ffd700', 'rgba(255,215,0,0.65)'],
+                'Diamond':  ['#67e8f9', 'rgba(103,232,249,0.65)'],
+                'Platinum': ['#d946ef', 'rgba(217,70,239,0.65)'],
+            })[tier] || ['#cd7f32', 'rgba(205,127,50,0.55)'];
+            return `border:3px solid ${c[0]};box-shadow:0 0 10px ${c[1]},0 0 20px ${c[1]};`;
+        }
+
+        function _getAvatarWithFrameHtml(size) {
+            size = size || 50;
+            const nick = currentNickname || lsGet(LS.NICKNAME) || '?';
+            const fl = nick.charAt(0).toUpperCase();
+            const frameStyle = _getRankFrameStyle(_cachedRankName);
+            const base = `width:${size}px;height:${size}px;border-radius:${Math.round(size*0.18)}px;overflow:hidden;${frameStyle}display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#f093fb,#f5576c);font-size:${Math.round(size*0.4)}px;font-weight:bold;color:white;`;
+            if (_selectedAvatar) {
+                return `<div style="${base}"><img src="gambar/avatar/avatar${_selectedAvatar}.png" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none'"></div>`;
+            }
+            return `<div style="${base}">${fl}</div>`;
         }
 
         function showProfileBadge(uid, nickname) {
@@ -3581,6 +3628,7 @@
                     ? Math.max(r.peakRankPoints || 0, points)
                     : (r.peakRankPoints || 0);
                 const isMax = rankName === 'Platinum MAX';
+                _cachedRankName = rankName;
                 const ri = document.getElementById('prf-rank-img');
                 const pi = document.getElementById('prf-peak-img');
                 if (ri) { ri.src = rankImgSrc(rankName); ri.alt = rankName; }
@@ -3589,6 +3637,7 @@
                 const rp = document.getElementById('prf-rank-points'); if (rp) rp.textContent = isMax ? `${points} poin` : `${points} / 100 poin`;
                 const pn = document.getElementById('prf-peak-name');   if (pn) pn.textContent = peakRank;
                 const pp = document.getElementById('prf-peak-points'); if (pp) pp.textContent = `${peakPts} poin`;
+                updateProfileAvatar();
             });
 
             // ── stats (statistik tab) ──
@@ -6393,6 +6442,7 @@
                     ? Math.max(r.peakRankPoints || 0, points)
                     : (r.peakRankPoints || 0);
                 const isMax     = rankName === 'Platinum MAX';
+                _cachedRankName = rankName;
                 document.getElementById('prf-rank-img').src    = rankImgSrc(rankName);
                 document.getElementById('prf-rank-img').alt    = rankName;
                 document.getElementById('prf-rank-name').textContent   = rankName;
@@ -6401,6 +6451,7 @@
                 document.getElementById('prf-peak-img').alt    = peakRank;
                 document.getElementById('prf-peak-name').textContent  = peakRank;
                 document.getElementById('prf-peak-points').textContent = `${peakPts} poin`;
+                updateProfileAvatar();
             }).catch(() => {});
         }
 
@@ -7312,7 +7363,7 @@
             if (_leaderboardRef) { _leaderboardRef.off(); _leaderboardRef = null; }
             // Baca dari node /leaderboard (ditulis server, flat & cepat) secara real-time
             _leaderboardRef = db.ref('leaderboard');
-            _leaderboardRef.on('value', snap => {
+            _leaderboardRef.on('value', async snap => {
                 if (!snap.exists()) {
                     listEl.innerHTML = '<div class="profile-empty">Belum ada data pemain.</div>';
                     return;
@@ -7335,6 +7386,12 @@
                 const posLabels = ['🥇','🥈','🥉'];
                 const posClass  = ['gold','silver','bronze'];
                 const itemClass = ['lb-top1','lb-top2','lb-top3'];
+                // Fetch all avatars in one read
+                let avatarMap = {};
+                try {
+                    const avSnap = await db.ref('userAvatars').get();
+                    if (avSnap.exists()) avatarMap = avSnap.val();
+                } catch(e) {}
                 listEl.innerHTML = top100.map((e, i) => {
                     const pos     = i + 1;
                     const isSelf  = e.uid === myUid;
@@ -7345,8 +7402,10 @@
                     const selfCls = isSelf ? 'lb-self' : '';
                     const selfTag = isSelf ? '<span class="lb-self-tag">Kamu</span>' : '';
                     const ptsTxt  = e.rankName === 'Platinum MAX' ? `${e.points} poin` : `${e.points} / 100 poin`;
+                    const avNum   = avatarMap[e.uid] || '7';
                     return `<div class="lb-item ${topCls} ${selfCls}" onclick="playSound('button');visitPlayerProfile('${e.uid}')">
                         ${posDisp}
+                        <img src="gambar/avatar/avatar${avNum}.png" class="lb-avatar" onerror="this.src='gambar/avatar/avatar7.png'">
                         <img src="${rankImgSrc(e.rankName)}" class="lb-rank-img" onerror="this.style.display='none'">
                         <div class="lb-info">
                             <div class="lb-name">${escHtml(e.nick)}${selfTag}</div>
@@ -7429,7 +7488,7 @@
             // Isi slot 1 dengan nama player sendiri
             const name = currentNickname || lsGet(LS.NICKNAME) || 'Kamu';
             document.getElementById('pslot-1-name').textContent = name;
-            document.getElementById('pslot-1-icon').textContent = name.charAt(0).toUpperCase();
+            document.getElementById('pslot-1-icon').innerHTML = _getAvatarWithFrameHtml(54);
             // Tampilkan overlay
             document.getElementById('party-lobby-overlay').style.display = 'flex';
         }
@@ -7854,7 +7913,7 @@
                     // Slot diri sendiri (hanya pemain)
                     slot.classList.add('self');
                     slot.innerHTML = `
-                        <div class="custom-slot-num">1</div>
+                        ${_getAvatarWithFrameHtml(36)}
                         <div class="custom-slot-name">${myName}</div>
                         <div class="custom-slot-tag">Kamu</div>`;
                 } else if (entry?.isBot) {
@@ -8460,6 +8519,8 @@
                 <div class="avatar-option" id="av-opt-3" onclick="selectAvatar(3)"><img src="gambar/avatar/avatar4.png" alt="Avatar 4" onerror="this.parentElement.textContent='👤'"></div>
                 <div class="avatar-option" id="av-opt-4" onclick="selectAvatar(4)"><img src="gambar/avatar/avatar5.png" alt="Avatar 5" onerror="this.parentElement.textContent='👤'"></div>
                 <div class="avatar-option" id="av-opt-5" onclick="selectAvatar(5)"><img src="gambar/avatar/avatar6.png" alt="Avatar 6" onerror="this.parentElement.textContent='👤'"></div>
+                <div class="avatar-option" id="av-opt-6" onclick="selectAvatar(6)"><img src="gambar/avatar/avatar7.png" alt="Avatar 7" onerror="this.parentElement.textContent='👤'"></div>
+                <div class="avatar-option" id="av-opt-7" onclick="selectAvatar(7)"><img src="gambar/avatar/avatar8.png" alt="Avatar 8" onerror="this.parentElement.textContent='👤'"></div>
             </div>
             <button id="btn-avatar-close" onclick="hideAvatarPicker()">✕ Tutup</button>
         </div>
