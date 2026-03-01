@@ -328,7 +328,7 @@
         .opponent-item.warning { background: rgba(244,67,54,0.3); border: 2px solid #f44336; }
         .opponent-item.human-player { border-left: 3px solid #4caf50; }
         .opponent-item.bot-player { border-left: 3px solid #ffc107; }
-        .opponent-name { font-weight: bold; font-size: 1em; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .opponent-name { font-weight: bold; font-size: 1em; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; overflow: hidden; }
         .opponent-stats { display: flex; gap: 8px; font-size: 0.85em; }
         .stat-badge { background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 10px; flex: 1; text-align: center; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
@@ -4786,7 +4786,6 @@
             return player.name;
         }
 
-        // Tambahkan ini setelah baris "let refreshButtonTimer = null;"
         const DOM = {
             matchmakingScreen: document.getElementById('matchmaking-screen'),
             gameContainer:     document.getElementById('game-container'),
@@ -6327,8 +6326,7 @@
                 div.innerHTML = `
                     <div class="opponent-name">
                         <span class="status-dot ${isDone ? 'done' : 'waiting'}"></span>
-                        👤 ${getBotDisplayName(p)}
-                        ${p.winner ? ` 🏆#${p.rank}` : ''}
+                        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;">👤 ${getBotDisplayName(p)}${p.winner ? ` 🏆#${p.rank}` : ''}</span>
                     </div>
                     <div class="opponent-stats">
                         <div class="stat-badge">📇 ${p.hand ? p.hand.length : 0}</div>
