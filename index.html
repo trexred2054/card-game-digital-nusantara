@@ -8614,24 +8614,23 @@
                 // Cancel invite if still pending
                 if (_customRoomSlots[slotIndex].pending) {
                     db.ref(`users/${uid}/customRoomInvite`).remove().catch(() => {});
-                }
-            else if (uid) {
-                // Jika pemain sudah join (bukan pending), kirim sinyal kick via Firebase
-                db.ref(`users/${uid}/customKick`).set({
-                    roomId: _customRoomId,
-                    timestamp: Date.now(),
-                    reason: 'kick'
-                }).catch(() => {});
+                } else if (uid) {
+                    // Jika pemain sudah join (bukan pending), kirim sinyal kick via Firebase
+                    db.ref(`users/${uid}/customKick`).set({
+                        roomId: _customRoomId,
+                        timestamp: Date.now(),
+                        reason: 'kick'
+                    }).catch(() => {});
 
-                // Kirim sinyal ke server agar state room terupdate (hapus player dari server)
-                if (ws && ws.readyState === WebSocket.OPEN && _customRoomId) {
-                    ws.send(JSON.stringify({
-                        type: 'KICK_FROM_CUSTOM_ROOM',
-                        targetUid: uid,
-                        userUid: currentUser ? currentUser.uid : ''
-                    }));
+                    // Kirim sinyal ke server agar state room terupdate (hapus player dari server)
+                    if (ws && ws.readyState === WebSocket.OPEN && _customRoomId) {
+                        ws.send(JSON.stringify({
+                            type: 'KICK_FROM_CUSTOM_ROOM',
+                            targetUid: uid,
+                            userUid: currentUser ? currentUser.uid : ''
+                        }));
+                    }
                 }
-            }
                 _customRoomSlots[slotIndex] = null;
             }
             _stopCustomPresenceListener();
