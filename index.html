@@ -7712,8 +7712,8 @@
             if (_partyRosterRef) { _partyRosterRef.off(); _partyRosterRef = null; }
             // Jika host benar-benar menutup lobby (bukan mulai matchmaking), beritahu semua tamu
             if (!keepPartyId && _partyId && currentUser) {
-                if (_partyFriendUid)  db.ref(`users/${_partyFriendUid}/partyKick`).set({ disbanded: true }).catch(() => {});
-                if (_partyFriend2Uid) db.ref(`users/${_partyFriend2Uid}/partyKick`).set({ disbanded: true }).catch(() => {});
+                if (_partyFriendUid)  db.ref(`users/${_partyFriendUid}/partyKick`).set({ disbanded: true, partyId: _partyId }).catch(() => {});
+                if (_partyFriend2Uid) db.ref(`users/${_partyFriend2Uid}/partyKick`).set({ disbanded: true, partyId: _partyId }).catch(() => {});
                 db.ref(`partyRoster/${_partyId}`).remove().catch(() => {});
                 // Hapus seluruh partyStatus agar tidak terbaca di sesi berikutnya
                 db.ref(`users/${currentUser.uid}/partyStatus`).remove().catch(() => {});
@@ -8059,7 +8059,7 @@
             if (_partyGuestRosterRef) { _partyGuestRosterRef.off(); _partyGuestRosterRef = null; }
             if (_guestPartyStatusRef) { _guestPartyStatusRef.off(); _guestPartyStatusRef = null; }
             // Hapus partyKick lama dari Firebase agar tidak terbaca lagi
-            db.ref(`users/${currentUser.uid}/partyKick`).remove().catch(() => {});
+            await db.ref(`users/${currentUser.uid}/partyKick`).remove().catch(() => {});
 
             const inv = _partyInviteData;
             _partyInviteData = null;
@@ -8201,6 +8201,10 @@
                     if (!snap.exists()) return;
                     const val = snap.val();
                     db.ref(`users/${currentUser.uid}/partyKick`).remove().catch(() => {});
+                    
+                    // Validasi: abaikan jika notifikasi berasal dari party lain (masa lalu)
+                    if (val.partyId && val.partyId !== _partyId) return;
+
                     if (_partyKickRef) { _partyKickRef.off(); _partyKickRef = null; }
                     if (_partySignalRef) { _partySignalRef.off(); _partySignalRef = null; }
                     _closeGuestPartyLobby();
@@ -8743,30 +8747,6 @@
                 document.getElementById('custom-invite-msg').textContent =
                     `${inv.fromName || 'Seorang teman'} mengundangmu ke custom room!`;
                 document.getElementById('custom-room-invite-popup').style.display = 'flex';
-            });
-        }
-
-        // Listener untuk notifikasi kick/disband dari custom room
-        function _startCustomKickListener() {
-            if (!currentUser) return;
-            if (_customKickRef) _customKickRef.off();
-            _customKickRef = db.ref(`users/${currentUser.uid}/customKick`);
-            _customKickRef.on('value', snap => {
-                if (snap.exists()) {
-                    const val = snap.val();
-                    // Hapus notifikasi agar tidak terpanggil lagi
-                    db.ref(`users/${currentUser.uid}/customKick`).remove();
-                    
-                    // Jika sedang berada di room yang sama, keluar
-                    if (_customRoomId && val.roomId === _customRoomId) {
-                        leaveCustomRoom();
-                        if (val.reason === 'disband') {
-                            showToast('⚠️ Room dibubarkan oleh host.', 'warning');
-                        } else {
-                            showToast('ℹ️ Anda dikeluarkan dari room.', 'warning');
-                        }
-                    }
-                }
             });
         }
 
