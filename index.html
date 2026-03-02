@@ -8589,6 +8589,23 @@
             const slotIdx = isSpect ? (slotPos - 1) : (slotPos - 2);
             _customRoomSlots[slotIdx] = { name: `${name} (menunggu...)`, uid, pending: true };
             _renderCustomRoomLobby();
+
+            // Listener untuk deteksi Decline (node dihapus tapi tidak join room)
+            const onInviteChange = customInviteRef.on('value', snap => {
+                if (!snap.exists()) {
+                    customInviteRef.off('value', onInviteChange); // Stop listening
+                    // Tunggu sebentar untuk cek apakah ini Accept (WS update) atau Decline
+                    setTimeout(() => {
+                        const currentSlot = _customRoomSlots[slotIdx];
+                        // Jika slot masih pending dengan UID yang sama, berarti tidak ada update WS -> Decline
+                        if (currentSlot && currentSlot.uid === uid && currentSlot.pending) {
+                            _customRoomSlots[slotIdx] = null;
+                            _renderCustomRoomLobby();
+                            showToast(`${name} menolak undangan.`, 'warning');
+                        }
+                    }, 2000);
+                }
+            });
         }
 
         function clearCustomSlot(slotIndex) {
