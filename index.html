@@ -7683,9 +7683,12 @@
             // Jika dalam mode tamu, gunakan alur batal khusus tamu
             if (_isPartyGuest) {
                 if (_partySignalRef) { _partySignalRef.off(); _partySignalRef = null; }
-                // Hapus diri dari roster agar host tahu tamu keluar sukarela
+                // Hapus diri dari roster & bersihkan partyStatus agar host tidak baca data accept lama
                 if (_partyId && currentUser) {
                     db.ref(`partyRoster/${_partyId}/${currentUser.uid}`).remove().catch(() => {});
+                    if (_partyHostUid) {
+                        db.ref(`users/${_partyHostUid}/partyStatus/${_partyId}/${currentUser.uid}`).remove().catch(() => {});
+                    }
                 }
                 _closeGuestPartyLobby();
                 _partyId = null;
