@@ -3975,12 +3975,24 @@
             _pendingCustomJoin = false;
 
             // Bersihkan party state & listener
-            if (_partyStatusRef) { _partyStatusRef.off(); _partyStatusRef = null; }
-            if (_partyInviteRef) { _partyInviteRef.off(); _partyInviteRef = null; }
+            if (_partyStatusRef)       { _partyStatusRef.off();       _partyStatusRef = null; }
+            if (_partyStatus2Ref)      { _partyStatus2Ref.off();      _partyStatus2Ref = null; }
+            if (_partyInviteRef)       { _partyInviteRef.off();       _partyInviteRef = null; }
+            if (_partyRosterRef)       { _partyRosterRef.off();       _partyRosterRef = null; }
+            if (_partyKickRef)         { _partyKickRef.off();         _partyKickRef = null; }
+            if (_partyGuestRosterRef)  { _partyGuestRosterRef.off();  _partyGuestRosterRef = null; }
+            if (_guestPartyStatusRef)  { _guestPartyStatusRef.off();  _guestPartyStatusRef = null; }
             _partyInviteData = null;
             _partyFriendUid = null;
             _partyFriendName = null;
+            _partyFriend2Uid = null;
+            _partyFriend2Name = null;
             _partyId = null;
+            _partyQueueSize = null;
+            _isPartyGuest = false;
+            _partyHostUid = null;
+            _guestSlot3Uid = null;
+            _openPickerSlot = null;
 
             // Reset form login agar tidak auto-isi dari sesi lama
             const loginEmail = document.getElementById('login-email');
@@ -5011,6 +5023,11 @@
         function cancelMatchmaking() {
             _setPresenceStatus('online');
             stopMatchmakingCountdown();
+            // Beritahu tamu party (jika ada) bahwa host membatalkan antrian
+            if (currentUser && (_partyFriendUid || _partyFriend2Uid)) {
+                if (_partyFriendUid)  db.ref(`users/${_partyFriendUid}/partyKick`).set({ disbanded: true });
+                if (_partyFriend2Uid) db.ref(`users/${_partyFriend2Uid}/partyKick`).set({ disbanded: true });
+            }
             _partyId = null; // reset party state
             _partyQueueSize = null;
             if (ws) {
@@ -5066,8 +5083,8 @@
                         if (_wait) _wait.style.display = 'none';
                         if (_start) _start.style.display = 'block';
                     }
-                    // Hitung mundur
-                    let secs = 6;
+                    // Hitung mundur — gunakan remainingMs jika tersedia (rejoin)
+                    let secs = Math.ceil((data.remainingMs != null ? data.remainingMs : 6000) / 1000);
                     const numEl = document.getElementById('prov-countdown-num');
                     if (numEl) numEl.textContent = String(secs);
                     const cdInterval = setInterval(() => {
@@ -5322,6 +5339,7 @@
                         }));
                     }
                     // Tampilkan layar matchmaking (menunggu match)
+                    DOM.matchmakingScreen.classList.add('active');
                     DOM.matchmakingScreen.querySelector('#matchmaking-idle').style.display = 'none';
                     DOM.matchmakingScreen.querySelector('#matchmaking-waiting').style.display = 'flex';
                     DOM.matchmakingScreen.querySelector('#match-starting').style.display = 'none';
@@ -5876,7 +5894,7 @@
             const medals = ['🥇 Juara 1', '🥈 Juara 2', '🥉 Juara 3', '💀 Kalah'];
             [...finalRankings].sort((a, b) => a.rank - b.rank).forEach(p => {
                 const div = document.createElement('div');
-                const isMe = myName && p.name === myName;
+                const isMe = myPlayerId ? p.id === myPlayerId : (myName && p.name === myName);
                 div.className = p.rank <= 3 ? 'ranking-item winner' : 'ranking-item loser';
                 if (isMe) div.style.cssText = 'outline: 2px solid #ffd700; outline-offset: 2px;';
                 div.textContent = `${medals[p.rank - 1] || '🎖️'} - ${getBotDisplayName(p)} (${p.hand ? p.hand.length : p.cardsLeft || 0} kartu tersisa)${isMe ? '  ← Kamu' : ''}`;
@@ -7555,6 +7573,7 @@
             // Lepas listener saat leaderboard ditutup
             if (_leaderboardRef) { _leaderboardRef.off(); _leaderboardRef = null; }
         }
+        let _lbRenderVersion = 0; // versi render — mencegah race condition async avatar fetch
         function loadLeaderboard() {
             const listEl = document.getElementById('leaderboard-list');
             listEl.innerHTML = '<div class="profile-empty">⏳ Memuat leaderboard...</div>';
@@ -7563,6 +7582,7 @@
             // Baca dari node /leaderboard (ditulis server, flat & cepat) secara real-time
             _leaderboardRef = db.ref('leaderboard');
             _leaderboardRef.on('value', async snap => {
+                const myVersion = ++_lbRenderVersion; // tandai versi render ini
                 if (!snap.exists()) {
                     listEl.innerHTML = '<div class="profile-empty">Belum ada data pemain.</div>';
                     return;
@@ -7591,6 +7611,8 @@
                     const avSnap = await db.ref('userAvatars').get();
                     if (avSnap.exists()) avatarMap = avSnap.val();
                 } catch(e) {}
+                // Jika ada render lebih baru (snapshot Firebase berikutnya sudah diproses), batalkan
+                if (myVersion !== _lbRenderVersion) return;
                 listEl.innerHTML = top100.map((e, i) => {
                     const pos     = i + 1;
                     const isSelf  = e.uid === myUid;
@@ -8358,6 +8380,12 @@
         function _ensureWsConnected() {
             return new Promise(resolve => {
                 if (ws && ws.readyState === WebSocket.OPEN) { resolve(); return; }
+                // Tutup koneksi lama yang masih CONNECTING agar tidak jadi zombie
+                if (ws && ws.readyState === WebSocket.CONNECTING) {
+                    ws.onopen = null; ws.onclose = null; ws.onerror = null; ws.onmessage = null;
+                    try { ws.close(); } catch(_) {}
+                    ws = null;
+                }
                 ws = new WebSocket(SERVER_URL);
                 ws.onopen = () => {
                     startClientKeepAlive();
@@ -8864,6 +8892,7 @@
             document.getElementById('enc-tab-rules').classList.toggle('active', tab === 'rules');
         }
 
+        let _encDropdownClickHandler = null; // referensi handler global untuk tutup dropdown
         function renderEncFilter() {
             const filterDiv = document.getElementById('enc-prov-filter');
             if (!filterDiv) return;
@@ -8921,11 +8950,13 @@
                 mainBtn.classList.toggle('open', !isOpen);
             };
 
-            // Tutup dropdown saat klik di luar
-            document.addEventListener('click', () => {
+            // Tutup dropdown saat klik di luar — lepas handler lama agar tidak menumpuk
+            if (_encDropdownClickHandler) document.removeEventListener('click', _encDropdownClickHandler);
+            _encDropdownClickHandler = () => {
                 list.classList.remove('open');
                 mainBtn.classList.remove('open');
-            });
+            };
+            document.addEventListener('click', _encDropdownClickHandler);
 
             wrap.appendChild(mainBtn);
             wrap.appendChild(list);
