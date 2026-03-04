@@ -6392,8 +6392,21 @@
         function updatePingPanel(pings) {
             const list = document.getElementById('ping-list');
             if (!list) return;
+
+            // Tambahkan bot dengan ping simulasi ~99ms agar terlihat seperti pemain
+            const allPings = [...pings];
+            if (gameState && gameState.players) {
+                gameState.players.forEach(p => {
+                    if (p.isBot && !allPings.find(x => x.id === p.id)) {
+                        const base = 88 + (p.id.charCodeAt(p.id.length - 1) % 22); // 88–110ms, stabil per bot
+                        const jitter = Math.floor(Math.random() * 11) - 5;          // ±5ms variasi
+                        allPings.push({ id: p.id, name: p.name, ping: base + jitter });
+                    }
+                });
+            }
+
             list.innerHTML = '';
-            pings.forEach(p => {
+            allPings.forEach(p => {
                 const { cls, label } = _pingCategory(p.ping);
                 const item = document.createElement('div');
                 item.className = 'ping-item';
