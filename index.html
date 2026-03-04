@@ -453,6 +453,11 @@
             margin-bottom: 10px; padding: 8px;
             background: rgba(255,255,255,0.2); border-radius: 8px;
         }
+        .province-label-map {
+            height: 28px; width: auto; max-width: 56px;
+            object-fit: contain; vertical-align: middle;
+            margin-right: 6px; display: inline-block;
+        }
         .top-cards {
             display: flex; flex-wrap: wrap; gap: 10px;
             justify-content: center; align-items: center;
@@ -1143,7 +1148,7 @@
         .lb-pos.silver { color: #c0c0c0; font-size: 1.1em; }
         .lb-pos.bronze { color: #cd7f32; font-size: 1.1em; }
         .lb-rank-img { width: 42px; height: 42px; object-fit: contain; flex-shrink: 0; }
-        .lb-avatar { width: 38px; height: 38px; border-radius: 7px; object-fit: cover; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.25); }
+        .lb-avatar { width: 38px; height: 38px; border-radius: 7px; object-fit: cover; display: block; }
         .lb-info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
         .lb-name { font-size: 0.95em; font-weight: bold; color: #fff; }
         .lb-rank-label { font-size: 0.78em; color: rgba(255,255,255,0.7); }
@@ -3844,6 +3849,7 @@
                 const nickname = document.getElementById('profile-nickname-display').textContent || '?';
                 el.textContent = nickname.charAt(0).toUpperCase();
             }
+            el.style.cssText += _getRankFrameStyle(_cachedRankName);
             const dispEl = document.getElementById('prf-avatar-display');
             if (dispEl) dispEl.innerHTML = _getAvatarWithFrameHtml(72);
         }
@@ -3879,7 +3885,7 @@
                 'Silver':   ['#c0c0c0', 'rgba(192,192,192,0.55)'],
                 'Gold':     ['#ffd700', 'rgba(255,215,0,0.65)'],
                 'Diamond':  ['#67e8f9', 'rgba(103,232,249,0.65)'],
-                'Platinum': ['#d946ef', 'rgba(217,70,239,0.65)'],
+                'Platinum': ['#38bdf8', 'rgba(56,189,248,0.65)'],
             })[tier] || ['#cd7f32', 'rgba(205,127,50,0.55)'];
             return `border:3px solid ${c[0]};box-shadow:0 0 10px ${c[1]},0 0 20px ${c[1]};`;
         }
@@ -3907,7 +3913,7 @@
             updateProfileAvatar();
 
             // Klik badge untuk buka profil
-            document.getElementById('profile-badge').onclick = showProfileScreen;
+            document.getElementById('profile-badge').onclick = () => { playSound('button'); showProfileScreen(); };
             document.getElementById('profile-badge').title = 'Lihat profil pemain';
         }
 
@@ -5669,7 +5675,7 @@
             const pl = document.getElementById('province-label');
             if (rn) rn.textContent = gs.round || 1;
             if (ph) ph.textContent = gs.phase || 1;
-            if (pl) pl.textContent = gs.currentProvince ? `📍 ${gs.currentProvince}` : 'Menunggu kartu...';
+            if (pl) pl.innerHTML = gs.currentProvince ? `<img src="${av(`gambar/provinsi/${gs.currentProvince}/peta (${gs.currentProvince}).png`)}" alt="Peta" class="province-label-map" onerror="this.style.display='none'"> ${gs.currentProvince}` : 'Menunggu kartu...';
 
             // Draw/discard pile counts
             const dp2 = document.getElementById('draw-pile-count-2');
@@ -6596,7 +6602,7 @@
 
             // Province label
             const provinceLabel = document.getElementById('province-label');
-            provinceLabel.textContent = gameState.currentProvince ? `📍 ${gameState.currentProvince}` : 'Menunggu kartu...';
+            provinceLabel.innerHTML = gameState.currentProvince ? `<img src="${av(`gambar/provinsi/${gameState.currentProvince}/peta (${gameState.currentProvince}).png`)}" alt="Peta" class="province-label-map" onerror="this.style.display='none'"> ${gameState.currentProvince}` : 'Menunggu kartu...';
 
             // Province info button
             const infoBtn = document.getElementById('province-info-btn');
@@ -8005,9 +8011,12 @@
                     const selfTag = isSelf ? '<span class="lb-self-tag">Kamu</span>' : '';
                     const ptsTxt  = e.rankName === 'Platinum MAX' ? `${e.points} poin` : `${e.points} / 100 poin`;
                     const avNum   = avatarMap[e.uid] || '7';
+                    const fStyle  = _getRankFrameStyle(e.rankName);
                     return `<div class="lb-item ${topCls} ${selfCls}" onclick="playSound('button');visitPlayerProfile('${e.uid}')">
                         ${posDisp}
-                        <img src="${av(`gambar/avatar/avatar${avNum}.png`)}" class="lb-avatar" onerror="this.src='gambar/avatar/avatar7.png?v='+ASSET_V">
+                        <div style="width:38px;height:38px;border-radius:7px;overflow:hidden;${fStyle}flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f093fb,#f5576c);">
+                            <img src="${av(`gambar/avatar/avatar${avNum}.png`)}" class="lb-avatar" onerror="this.src='gambar/avatar/avatar7.png?v='+ASSET_V">
+                        </div>
                         <img src="${rankImgSrc(e.rankName)}" class="lb-rank-img" onerror="this.style.display='none'">
                         <div class="lb-info">
                             <div class="lb-name">${escHtml(e.nick)}${selfTag}</div>
@@ -8401,7 +8410,7 @@
             const el = document.getElementById(`pslot-${slotNum}`);
             if (!el) return;
             el.className = 'party-slot empty';
-            el.onclick = () => togglePartyFriendPicker(slotNum);
+            el.onclick = () => { playSound('button'); togglePartyFriendPicker(slotNum); };
             document.getElementById(`pslot-${slotNum}-icon`).textContent  = '➕';
             document.getElementById(`pslot-${slotNum}-name`).textContent  = 'Ajak Teman';
             document.getElementById(`pslot-${slotNum}-sub`).textContent   = '(opsional)';
@@ -9310,7 +9319,7 @@
             allItem.className = 'enc-prov-list-item active';
             allItem.dataset.name = 'Semua';
             allItem.textContent = '🌏 Semua Provinsi';
-            allItem.onclick = () => setFilter('Semua', 'Semua Provinsi');
+            allItem.onclick = () => { playSound('button'); setFilter('Semua', 'Semua Provinsi'); };
             list.appendChild(allItem);
 
             // Item per provinsi
@@ -9319,13 +9328,14 @@
                 item.className = 'enc-prov-list-item';
                 item.dataset.name = prov.name;
                 item.textContent = prov.name;
-                item.onclick = () => setFilter(prov.name, prov.name);
+                item.onclick = () => { playSound('button'); setFilter(prov.name, prov.name); };
                 list.appendChild(item);
             });
 
             // Toggle dropdown saat tombol diklik
             mainBtn.onclick = (e) => {
                 e.stopPropagation();
+                playSound('button');
                 const isOpen = list.classList.contains('open');
                 list.classList.toggle('open', !isOpen);
                 mainBtn.classList.toggle('open', !isOpen);
@@ -9527,21 +9537,21 @@
     <div id="toast-container"></div>
 
     <!-- AVATAR PICKER OVERLAY -->
-    <div id="avatar-picker-overlay" onclick="if(event.target===this)hideAvatarPicker()">
+    <div id="avatar-picker-overlay" onclick="if(event.target===this){playSound('x');hideAvatarPicker();}">
         <div id="avatar-picker-box">
             <h3>🖼️ Pilih Foto Profil</h3>
             <div class="avatar-grid">
-                <div class="avatar-option" id="av-opt-0" onclick="selectAvatar(0)"><img src="gambar/avatar/avatar1.png?v=1.0" alt="Avatar 1" onerror="this.parentElement.textContent='👤'"></div>
-                <div class="avatar-option" id="av-opt-1" onclick="selectAvatar(1)"><img src="gambar/avatar/avatar2.png?v=1.0" alt="Avatar 2" onerror="this.parentElement.textContent='👤'"></div>
-                <div class="avatar-option" id="av-opt-2" onclick="selectAvatar(2)"><img src="gambar/avatar/avatar3.png?v=1.0" alt="Avatar 3" onerror="this.parentElement.textContent='👤'"></div>
-                <div class="avatar-option" id="av-opt-3" onclick="selectAvatar(3)"><img src="gambar/avatar/avatar4.png?v=1.0" alt="Avatar 4" onerror="this.parentElement.textContent='👤'"></div>
-                <div class="avatar-option" id="av-opt-4" onclick="selectAvatar(4)"><img src="gambar/avatar/avatar5.png?v=1.0" alt="Avatar 5" onerror="this.parentElement.textContent='👤'"></div>
-                <div class="avatar-option" id="av-opt-5" onclick="selectAvatar(5)"><img src="gambar/avatar/avatar6.png?v=1.0" alt="Avatar 6" onerror="this.parentElement.textContent='👤'"></div>
-                <div class="avatar-option" id="av-opt-6" onclick="selectAvatar(6)"><img src="gambar/avatar/avatar7.png?v=1.0" alt="Avatar 7" onerror="this.parentElement.textContent='👤'"></div>
-                <div class="avatar-option" id="av-opt-7" onclick="selectAvatar(7)"><img src="gambar/avatar/avatar8.png?v=1.0" alt="Avatar 8" onerror="this.parentElement.textContent='👤'"></div>
-                <div class="avatar-option" id="av-opt-8" onclick="selectAvatar(8)"><img src="gambar/avatar/avatar9.png?v=1.0" alt="Avatar 9" onerror="this.parentElement.textContent='👤'"></div>
+                <div class="avatar-option" id="av-opt-0" onclick="playSound('button');selectAvatar(0)"><img src="gambar/avatar/avatar1.png?v=1.0" alt="Avatar 1" onerror="this.parentElement.textContent='👤'"></div>
+                <div class="avatar-option" id="av-opt-1" onclick="playSound('button');selectAvatar(1)"><img src="gambar/avatar/avatar2.png?v=1.0" alt="Avatar 2" onerror="this.parentElement.textContent='👤'"></div>
+                <div class="avatar-option" id="av-opt-2" onclick="playSound('button');selectAvatar(2)"><img src="gambar/avatar/avatar3.png?v=1.0" alt="Avatar 3" onerror="this.parentElement.textContent='👤'"></div>
+                <div class="avatar-option" id="av-opt-3" onclick="playSound('button');selectAvatar(3)"><img src="gambar/avatar/avatar4.png?v=1.0" alt="Avatar 4" onerror="this.parentElement.textContent='👤'"></div>
+                <div class="avatar-option" id="av-opt-4" onclick="playSound('button');selectAvatar(4)"><img src="gambar/avatar/avatar5.png?v=1.0" alt="Avatar 5" onerror="this.parentElement.textContent='👤'"></div>
+                <div class="avatar-option" id="av-opt-5" onclick="playSound('button');selectAvatar(5)"><img src="gambar/avatar/avatar6.png?v=1.0" alt="Avatar 6" onerror="this.parentElement.textContent='👤'"></div>
+                <div class="avatar-option" id="av-opt-6" onclick="playSound('button');selectAvatar(6)"><img src="gambar/avatar/avatar7.png?v=1.0" alt="Avatar 7" onerror="this.parentElement.textContent='👤'"></div>
+                <div class="avatar-option" id="av-opt-7" onclick="playSound('button');selectAvatar(7)"><img src="gambar/avatar/avatar8.png?v=1.0" alt="Avatar 8" onerror="this.parentElement.textContent='👤'"></div>
+                <div class="avatar-option" id="av-opt-8" onclick="playSound('button');selectAvatar(8)"><img src="gambar/avatar/avatar9.png?v=1.0" alt="Avatar 9" onerror="this.parentElement.textContent='👤'"></div>
             </div>
-            <button id="btn-avatar-close" onclick="hideAvatarPicker()">✕ Tutup</button>
+            <button id="btn-avatar-close" onclick="playSound('x');hideAvatarPicker()">✕ Tutup</button>
         </div>
     </div>
 </body>
