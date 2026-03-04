@@ -6412,7 +6412,7 @@
                 item.className = 'ping-item';
                 const isSelf = p.id === myPlayerId;
                 item.innerHTML = `
-                    <span class="ping-name">${isSelf ? '👤' : '🧑'} ${p.name}${isSelf ? ' (Kamu)' : ''}</span>
+                    <span class="ping-name">${isSelf ? '👤' : '👤'} ${p.name}${isSelf ? ' (Kamu)' : ''}</span>
                     <span class="ping-badge ${cls}">${label}</span>`;
                 list.appendChild(item);
             });
