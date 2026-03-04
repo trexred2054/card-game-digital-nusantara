@@ -2119,6 +2119,7 @@
             border: 1px solid rgba(168,85,247,0.4);
             border-radius: 20px; padding: 24px 20px; width: 94%; max-width: 420px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto;
+            position: relative;
         }
         .custom-room-title { font-size: 1.2em; font-weight: 700; color: #e2b3ff; text-align: center; margin-bottom: 4px; }
         .custom-room-subtitle { font-size: 0.78em; color: rgba(255,255,255,0.45); text-align: center; margin-bottom: 18px; }
@@ -2310,6 +2311,41 @@
             #ingame-settings-panel { width: calc(100vw - 14px); left: 7px; }
         }
 
+        /* Lobby minimize button */
+        .lobby-minimize-btn {
+            position: absolute; top: 12px; right: 14px;
+            background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.3);
+            color: #fff; border-radius: 8px; width: 30px; height: 30px;
+            cursor: pointer; font-size: 1.1em; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s; padding: 0; line-height: 1; z-index: 2;
+        }
+        .lobby-minimize-btn:hover { background: rgba(255,255,255,0.3); transform: none; box-shadow: none; }
+        /* Lobby floating bubble (shown when minimized) */
+        .lobby-bubble {
+            position: fixed; bottom: 80px; right: 18px;
+            background: linear-gradient(135deg, rgba(20,10,60,0.97), rgba(60,20,120,0.97));
+            border: 1.5px solid rgba(255,255,255,0.25);
+            border-radius: 50px; padding: 10px 16px 10px 12px;
+            display: none; align-items: center; gap: 9px;
+            z-index: 21500; cursor: pointer;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+            max-width: 230px; animation: bubbleIn 0.25s ease;
+        }
+        @keyframes bubbleIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.92); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .lobby-bubble-icon { font-size: 1.3em; flex-shrink: 0; }
+        .lobby-bubble-info { display: flex; flex-direction: column; gap: 1px; }
+        .lobby-bubble-label { font-size: 0.82em; font-weight: 700; color: #fff; white-space: nowrap; }
+        .lobby-bubble-sub   { font-size: 0.7em; color: rgba(255,255,255,0.6); white-space: nowrap; }
+        .lobby-bubble-dot   { width: 7px; height: 7px; border-radius: 50%; background: #ffd700;
+                              flex-shrink: 0; margin-left: auto; animation: pulseDot 1s infinite; }
+        @keyframes pulseDot {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50%      { opacity: 0.5; transform: scale(0.7); }
+        }
     </style>
     <link rel="preload" as="image" href="gambar/background/bg1.png">
 </head>
@@ -5116,7 +5152,8 @@
             x:         new Audio(av('sounds/x.mp3')),
             button:    new Audio(av('sounds/button.mp3')),
             bgMusic:   new Audio(av('sounds/bg_music.mp3')),
-            bgMusic2:  new Audio(av('sounds/bg_music2.mp3'))
+            bgMusic2:  new Audio(av('sounds/bg_music2.mp3')),
+            invite:    new Audio(av('sounds/Invite.mp3'))
         };
 
         soundEffects.bgMusic.loop = true;
@@ -5354,6 +5391,7 @@
                     }
                     // Untuk custom room (pemain maupun penonton): tutup lobby dan tampilkan layar provinsi
                     if (_customRoomId || _customRoomRole) {
+                        _resetCustomRoomOverlay();
                         document.getElementById('custom-room-overlay').style.display = 'none';
                         _stopCustomPresenceListener();
                         document.getElementById('custom-friend-picker').style.display = 'none';
@@ -5390,6 +5428,7 @@
                         _customPickerSlot = null;
                         _pendingCustomJoin = false;
                         _isCustomRoomCreator = false;
+                        _resetCustomRoomOverlay();
                         document.getElementById('custom-room-overlay').style.display = 'none';
                         _stopCustomPresenceListener();
                         document.getElementById('custom-friend-picker').style.display = 'none';
@@ -5409,6 +5448,7 @@
                         _customPickerSlot = null;
                         _pendingCustomJoin = false;
                         _isCustomRoomCreator = false;
+                        _resetCustomRoomOverlay();
                         document.getElementById('custom-room-overlay').style.display = 'none';
                         _stopCustomPresenceListener();
                         document.getElementById('custom-friend-picker').style.display = 'none';
@@ -5443,6 +5483,7 @@
                     _isSpectator  = !!data.isSpectator;
 
                     // Close custom room lobby & picker if open
+                    _resetCustomRoomOverlay();
                     document.getElementById('custom-room-overlay').style.display = 'none';
                     _stopCustomPresenceListener();
                     document.getElementById('custom-friend-picker').style.display = 'none';
@@ -8099,7 +8140,67 @@
         let _customPresenceRef = null; // Real-time listener presence untuk custom picker
         let _customPresenceCb  = null;
 
+        // ── Lobby minimize / restore helpers ──────────────────────────────────
+        function minimizePartyLobby() {
+            const ov = document.getElementById('party-lobby-overlay');
+            ov.style.background = 'transparent';
+            ov.style.backdropFilter = 'none';
+            ov.style.webkitBackdropFilter = 'none';
+            ov.style.pointerEvents = 'none';
+            document.querySelector('#party-lobby-overlay .party-lobby-card').style.display = 'none';
+            document.getElementById('party-lobby-bubble').style.display = 'flex';
+        }
+        function restorePartyLobby() {
+            const ov = document.getElementById('party-lobby-overlay');
+            ov.style.background = '';
+            ov.style.backdropFilter = '';
+            ov.style.webkitBackdropFilter = '';
+            ov.style.pointerEvents = '';
+            document.querySelector('#party-lobby-overlay .party-lobby-card').style.display = '';
+            document.getElementById('party-lobby-bubble').style.display = 'none';
+        }
+        function _resetPartyLobbyOverlay() {
+            const ov = document.getElementById('party-lobby-overlay');
+            ov.style.background = '';
+            ov.style.backdropFilter = '';
+            ov.style.webkitBackdropFilter = '';
+            ov.style.pointerEvents = '';
+            const card = document.querySelector('#party-lobby-overlay .party-lobby-card');
+            if (card) card.style.display = '';
+            document.getElementById('party-lobby-bubble').style.display = 'none';
+        }
+        function minimizeCustomRoom() {
+            const ov = document.getElementById('custom-room-overlay');
+            ov.style.background = 'transparent';
+            ov.style.backdropFilter = 'none';
+            ov.style.webkitBackdropFilter = 'none';
+            ov.style.pointerEvents = 'none';
+            document.querySelector('#custom-room-overlay .custom-room-card').style.display = 'none';
+            document.getElementById('custom-lobby-bubble').style.display = 'flex';
+        }
+        function restoreCustomRoom() {
+            const ov = document.getElementById('custom-room-overlay');
+            ov.style.background = '';
+            ov.style.backdropFilter = '';
+            ov.style.webkitBackdropFilter = '';
+            ov.style.pointerEvents = '';
+            document.querySelector('#custom-room-overlay .custom-room-card').style.display = '';
+            document.getElementById('custom-lobby-bubble').style.display = 'none';
+        }
+        function _resetCustomRoomOverlay() {
+            const ov = document.getElementById('custom-room-overlay');
+            ov.style.background = '';
+            ov.style.backdropFilter = '';
+            ov.style.webkitBackdropFilter = '';
+            ov.style.pointerEvents = '';
+            const card = document.querySelector('#custom-room-overlay .custom-room-card');
+            if (card) card.style.display = '';
+            document.getElementById('custom-lobby-bubble').style.display = 'none';
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         function showPartyLobby() {
+            _resetPartyLobbyOverlay();
             // Reset state
             _partyFriendUid = null; _partyFriendName = null;
             _partyFriend2Uid = null; _partyFriend2Name = null;
@@ -8134,6 +8235,7 @@
                 _setPresenceStatus('online');
                 return;
             }
+            _resetPartyLobbyOverlay();
             document.getElementById('party-lobby-overlay').style.display = 'none';
             _stopPartyPresenceListener();
             document.getElementById('party-friend-picker').style.display = 'none';
@@ -8341,6 +8443,7 @@
                         const iconEl = document.getElementById(`pslot-${slotNum}-icon`);
                         if (iconEl) iconEl.textContent = '✅';
                     });
+                    playSound('invite');
                     showToast(`✅ ${acceptedName} menerima undangan!`, 'success');
                     // Jangan hapus statusPath — biarkan tetap ada agar tamu yang accept belakangan
                     // bisa membaca siapa saja yang sudah join lewat listener _guestPartyStatusRef
@@ -8685,6 +8788,7 @@
             if (_partyKickRef) { _partyKickRef.off(); _partyKickRef = null; }
             if (_partyGuestRosterRef) { _partyGuestRosterRef.off(); _partyGuestRosterRef = null; }
             _guestSlot3Uid = null;
+            _resetPartyLobbyOverlay();
             document.getElementById('party-lobby-overlay').style.display = 'none';
             _resetSlot2();
             _resetSlot3();
@@ -9087,6 +9191,7 @@
             _customPickerSlot = null;
             _pendingCustomJoin = false;
             _isCustomRoomCreator = false;
+            _resetCustomRoomOverlay();
             document.getElementById('custom-room-overlay').style.display = 'none';
             _stopCustomPresenceListener();
             document.getElementById('custom-friend-picker').style.display = 'none';
@@ -9099,6 +9204,7 @@
             if (!data.slots) return;
             const isSpect = _customRoomRole === 'penonton';
             const myUid   = currentUser ? currentUser.uid : null;
+            const prevSlots = _customRoomSlots.slice();
 
             if (isSpect) {
                 // Penonton: semua 4 slot berdasarkan posisi server
@@ -9131,6 +9237,13 @@
                     if (!newSlots[i] && _customRoomSlots[i]?.pending) newSlots[i] = _customRoomSlots[i];
                 }
                 _customRoomSlots = newSlots;
+            }
+            // Detect new human players joining (not self, not bot, not pending)
+            const prevUids = new Set(prevSlots.filter(s => s && !s.isBot && s.uid).map(s => s.uid));
+            const newHumans = _customRoomSlots.filter(s => s && !s.isBot && s.uid && !s.pending && !prevUids.has(s.uid) && s.uid !== myUid);
+            if (newHumans.length > 0) {
+                playSound('invite');
+                newHumans.forEach(p => showToast(`✅ ${p.name} bergabung ke lobi!`, 'success'));
             }
             _renderCustomRoomLobby();
         }
@@ -9418,6 +9531,7 @@
     <!-- PARTY LOBBY POPUP -->
     <div id="party-lobby-overlay" style="display:none;">
         <div class="party-lobby-card">
+            <button class="lobby-minimize-btn" onclick="playSound('button');minimizePartyLobby()" title="Perkecil">—</button>
             <div class="party-lobby-title">🎮 Ranked</div>
 
             <!-- Tiga slot pemain -->
@@ -9502,6 +9616,7 @@
     <!-- KOSTUM: CUSTOM ROOM LOBBY -->
     <div id="custom-room-overlay" style="display:none;">
         <div class="custom-room-card">
+            <button class="lobby-minimize-btn" onclick="playSound('button');minimizeCustomRoom()" title="Perkecil">—</button>
             <div class="custom-room-title" id="custom-room-title">⚔️ Custom Room</div>
             <div class="custom-room-subtitle" id="custom-room-subtitle">Undang teman untuk bermain bersama</div>
             <div class="custom-room-badge" id="custom-room-id-badge">Kode: —</div>
@@ -9531,6 +9646,26 @@
                 <button class="party-btn-start" onclick="playSound('button');acceptCustomRoomInvite()">✔ Terima</button>
             </div>
         </div>
+    </div>
+
+    <!-- PARTY LOBBY MINIMIZED BUBBLE -->
+    <div id="party-lobby-bubble" class="lobby-bubble" onclick="playSound('button');restorePartyLobby()">
+        <span class="lobby-bubble-icon">🎮</span>
+        <div class="lobby-bubble-info">
+            <span class="lobby-bubble-label">Ranked Lobby</span>
+            <span class="lobby-bubble-sub">Menunggu teman…</span>
+        </div>
+        <span class="lobby-bubble-dot"></span>
+    </div>
+
+    <!-- CUSTOM ROOM MINIMIZED BUBBLE -->
+    <div id="custom-lobby-bubble" class="lobby-bubble" onclick="playSound('button');restoreCustomRoom()">
+        <span class="lobby-bubble-icon">⚔️</span>
+        <div class="lobby-bubble-info">
+            <span class="lobby-bubble-label">Custom Room</span>
+            <span class="lobby-bubble-sub">Menunggu pemain…</span>
+        </div>
+        <span class="lobby-bubble-dot"></span>
     </div>
 
     <!-- TOAST CONTAINER -->
